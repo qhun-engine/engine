@@ -24,7 +24,7 @@ export class MessageBus {
      * send a message
      * @param message the message to send
      */
-    public send(message: Message<any>): void {
+    public send(message: Message): void {
 
         // append this message to the queue
         this.queue.push(message);
@@ -34,7 +34,7 @@ export class MessageBus {
      * send a message directly into the message bus (high priority)
      * @param message the message to send
      */
-    public sendImmediately(message: Message<any>): void {
+    public sendImmediately(message: Message): void {
 
         // dispatch this message immediatly
         this.dispatchMessages([message]);
