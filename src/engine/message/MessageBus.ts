@@ -1,9 +1,11 @@
 import { Message } from "./Message";
 import { Observer, Observable, Subscription } from "../async/rx";
+import { Injectable } from "../di/Injectable";
 
 /**
  * the message bus is responsable for taking messages and deliver them to the right target
  */
+@Injectable()
 export class MessageBus {
 
     /**

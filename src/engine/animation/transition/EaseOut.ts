@@ -1,8 +1,10 @@
 import { Transition } from "./Transition";
+import { Injectable } from "../../di/Injectable";
 
 /**
  * implements a transition ease out calculation
  */
+@Injectable()
 export class EaseOut implements Transition {
 
     public calculate(x: number): number {

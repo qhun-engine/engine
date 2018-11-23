@@ -1,9 +1,11 @@
 import { Resource } from "./Resource";
 import { ResourceRequest } from "./ResourceRequest";
+import { Injectable } from "../di/Injectable";
 
 /**
  * Is responsable for loading resources from sync or async sources
  */
+@Injectable()
 export class ResourceLoader {
 
     /**
