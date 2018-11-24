@@ -55,6 +55,7 @@ export function QhunGame(options: Partial<QhunGameOptions> = {
                 (window as any).game = gameInstance;
 
                 logger.printText("Exposing main game class to window");
+                logger.log(gameInstance);
             }
 
             // print total performance

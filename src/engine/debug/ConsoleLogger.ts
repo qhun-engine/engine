@@ -17,4 +17,13 @@ export abstract class ConsoleLogger {
 
         console.log(`%c${text}`, "color: #afafaf;");
     }
+
+    /**
+     * logs all arguments using console.log
+     * @param args the arguments to log
+     */
+    public log(...args: any[]): void {
+
+        console.log(...args);
+    }
 }
