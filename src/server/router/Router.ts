@@ -1,12 +1,13 @@
 import { Injectable } from "../../engine/di/Injectable";
 import { Router as ExpressRouter } from "express";
-import { controllerMetadataKey, ControllerMetadataStructure } from "../controller/Controller";
-import { requestMappingMetadataKey, RequestMappingStructure, HttpMethod } from "./RequestMapping";
+import { ControllerMetadataStructure } from "../controller/Controller";
+import { RequestMappingStructure, HttpMethod } from "./RequestMapping";
 import qhunServerControllers from "../controller";
 import "reflect-metadata";
 import { Injector } from "../../engine/di/Injector";
 import * as express from "express";
 import { FileResponse } from "../controller/response/FileResponse";
+import { ReflectionMetadata } from "../../engine/constraint/ReflectionMetadata";
 
 @Injectable()
 export class Router {
@@ -40,13 +41,13 @@ export class Router {
         qhunServerControllers.forEach(controller => {
 
             // get prefix for controller
-            const controllerMetadata: ControllerMetadataStructure = Reflect.getMetadata(controllerMetadataKey, controller);
+            const controllerMetadata: ControllerMetadataStructure = Reflect.getMetadata(ReflectionMetadata.Controller, controller);
 
             // get controller instance
             const controllerInstance = injector.instantiateClass(controller);
 
             // get request mapping metadata
-            const requestMappingMetadata: RequestMappingStructure = Reflect.getMetadata(requestMappingMetadataKey, controllerInstance);
+            const requestMappingMetadata: RequestMappingStructure = Reflect.getMetadata(ReflectionMetadata.RequestMapping, controllerInstance);
 
             // iterate over every request mapping and add it to the router
             Object.keys(requestMappingMetadata).forEach((path: keyof RequestMappingStructure) => {

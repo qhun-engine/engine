@@ -1,8 +1,7 @@
 import { ClassConstructor } from "../../engine/constraint/ClassConstructor";
 import { Injectable } from "../../engine/di/Injectable";
 import "reflect-metadata";
-
-export const controllerMetadataKey = "engine:controller:prefix";
+import { ReflectionMetadata } from "../../engine/constraint/ReflectionMetadata";
 
 export declare type ControllerMetadataStructure = {
     prefix: string,
@@ -19,7 +18,7 @@ export function Controller(prefixPath: string): ClassDecorator {
     return <ClassDecorator>((target: ClassConstructor) => {
 
         // register prefix for controller via reflection
-        Reflect.defineMetadata(controllerMetadataKey, {
+        Reflect.defineMetadata(ReflectionMetadata.Controller, {
             name: target.name,
             prefix: prefixPath
         } as ControllerMetadataStructure, target);

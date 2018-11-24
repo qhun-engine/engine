@@ -1,4 +1,5 @@
 import { ClassConstructor } from "./ClassConstructor";
+import { ReflectionMetadata } from "./ReflectionMetadata";
 import "reflect-metadata";
 
 interface SingletonClass<T extends ClassConstructor> extends ClassConstructor<T> {
@@ -9,8 +10,6 @@ interface SingletonClass<T extends ClassConstructor> extends ClassConstructor<T>
     __singletonHasBeenCreated?: boolean;
 }
 
-export const singletonReflectionMarker = "engine:marker:singleton";
-
 /**
  * a class level decorator to make sure that this class is only instantiated one time by checking
  * the singleton design pattern at runtime
@@ -20,7 +19,7 @@ export function Singleton(): ClassDecorator {
     return <ClassDecorator>(<Target extends SingletonClass<any>>(target: Target) => {
 
         // add singleton marker
-        Reflect.defineMetadata(singletonReflectionMarker, true, target);
+        Reflect.defineMetadata(ReflectionMetadata.Singleton, true, target);
 
         // return singleton implementation
         return class SingletonImpl extends target {
@@ -31,7 +30,7 @@ export function Singleton(): ClassDecorator {
             constructor(...args: any[]) {
                 if (target.__singletonHasBeenCreated) {
 
-                    // throw new Error(`The singleton class cannot be instantiated twice! Class name was ${target.constructor.name}.`);
+                    throw new Error(`The singleton class cannot be instantiated twice! Class name was ${target.constructor.name}.`);
                 }
 
                 // set singleton property

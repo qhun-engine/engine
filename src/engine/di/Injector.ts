@@ -1,6 +1,5 @@
 import { ClassConstructor } from "../constraint/ClassConstructor";
-import { singletonReflectionMarker } from "../constraint/Singleton";
-import { injectableReflectKey } from "./Injectable";
+import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
 import "reflect-metadata";
 
 export class Injector {
@@ -49,7 +48,7 @@ export class Injector {
         const instance = new target(...injections);
 
         // check if this instance should be stored
-        if (Reflect.getMetadata(singletonReflectionMarker, target)) {
+        if (Reflect.getMetadata(ReflectionMetadata.Singleton, target)) {
 
             // add to cache
             this.addToCache(target, instance);
@@ -93,7 +92,7 @@ export class Injector {
      */
     private getCacheIndex(target: ClassConstructor): string {
 
-        return Reflect.getMetadata(injectableReflectKey, target);
+        return Reflect.getMetadata(ReflectionMetadata.Injectable, target);
     }
 
 }

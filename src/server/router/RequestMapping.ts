@@ -1,8 +1,8 @@
 import * as express from "express";
+import { ReflectionMetadata } from "../../engine/constraint/ReflectionMetadata";
 
 export declare type HttpMethod = Extract<keyof express.IRouter<any>, "get" | "post" | "index" | "put" | "patch" | "options" | "head">;
 
-export const requestMappingMetadataKey = "engine:controller:requestMapping";
 export declare type RequestMappingStructure = {
     [path: string]: {
         method: HttpMethod,
@@ -25,7 +25,7 @@ export function RequestMapping(options: { path?: string, method?: HttpMethod } =
     return <MethodDecorator>(<T extends { [index: string]: any }>(target: T, propertyKey: keyof T, descriptor: TypedPropertyDescriptor<T>) => {
 
         // get current reflection state
-        const current: RequestMappingStructure = Reflect.getMetadata(requestMappingMetadataKey, target) || {};
+        const current: RequestMappingStructure = Reflect.getMetadata(ReflectionMetadata.RequestMapping, target) || {};
 
         // add this method
         current[options.path as string] = {
@@ -35,7 +35,7 @@ export function RequestMapping(options: { path?: string, method?: HttpMethod } =
         };
 
         // save metadata
-        Reflect.defineMetadata(requestMappingMetadataKey, current, target);
+        Reflect.defineMetadata(ReflectionMetadata.RequestMapping, current, target);
     });
 
 }
