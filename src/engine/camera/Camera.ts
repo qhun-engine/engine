@@ -1,6 +1,5 @@
 import { Vector } from "../math/Vector";
 import { Transition } from "../animation/transition/Transition";
-import { Engine } from "../Engine";
 import { RenderContext } from "../render/RenderContext";
 
 /**
@@ -62,7 +61,7 @@ export interface Camera {
      * @param engine the engine instance
      * @param delta the delta in milliseconds since the last update call
      */
-    update(engine: Engine, delta: number): void;
+    update(delta: number): void;
 
     /**
      * the main draw function where camera effects such as transitions and zooming should take place

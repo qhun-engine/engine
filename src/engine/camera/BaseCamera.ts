@@ -1,7 +1,6 @@
 import { Camera } from "./Camera";
 import { Vector } from "../math/Vector";
 import { Transition } from "../animation/transition/Transition";
-import { Engine } from "../Engine";
 import { RenderContext } from "../render/RenderContext";
 
 /**
@@ -84,7 +83,7 @@ export abstract class BaseCamera implements Camera {
 
     public abstract shake(intensity: Vector, duration: number, transition: Transition): void;
     public abstract zoom(scale: number, duration: number, transition: Transition): void;
-    public abstract update(engine: Engine, delta: number): void;
+    public abstract update(delta: number): void;
     public abstract draw(context: RenderContext): void;
 
 }

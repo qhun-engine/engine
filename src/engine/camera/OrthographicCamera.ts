@@ -1,7 +1,6 @@
 import { Vector } from "../math/Vector";
 import { BaseCamera } from "./BaseCamera";
 import { Transition } from "../animation/transition/Transition";
-import { Engine } from "../Engine";
 import { RenderContext } from "../render/RenderContext";
 import { TransitionContainer } from "../animation/transition/TransitionContainer";
 import { Inject } from "../di/Inject";
@@ -31,7 +30,7 @@ export class OrthographicCamera extends BaseCamera {
     /**
      * @inheritdoc
      */
-    public update(engine: Engine, delta: number): void {
+    public update(delta: number): void {
         /** noop */
     }
 

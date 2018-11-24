@@ -17,5 +17,10 @@ export const poweredBy: QhunEnginePoweredBy = [
     }, {
         text: "made with ❤️ by wartoshika", style: []
     },
+    {
+        text: "[Repo] https://github.com/wartoshika/qhun-engine2", style: [
+            "color: grey;", "font-family: monospace;"
+        ]
+    },
     { text: "", style: [] }
 ];

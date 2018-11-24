@@ -40,7 +40,7 @@ export interface SFXSound {
 
     flangeDelayTime: number;
 
-    dlangeFeedbackVolume: number;
+    flangeFeedbackVolume: number;
 
     gain: number;
 
