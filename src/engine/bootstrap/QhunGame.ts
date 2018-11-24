@@ -12,12 +12,14 @@ import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
  */
 export function QhunGame(options: Partial<QhunGameOptions> = {
     exposeGameInstance: false,
-    canvasId: "qhunGameCanvas"
+    canvasId: "qhunGameCanvas",
+    renderer: "auto"
 }): ClassDecorator {
 
     // apply default values
     options.exposeGameInstance = typeof options.exposeGameInstance === "boolean" ? options.exposeGameInstance : false;
     options.canvasId = options.canvasId ? options.canvasId : "qhunGameCanvas";
+    options.renderer = options.renderer ? options.renderer : "auto";
 
     // get performance debug logger
     const logger = Injector.getInstance().instantiateClass(ConsolePerformanceLogger);
@@ -30,7 +32,7 @@ export function QhunGame(options: Partial<QhunGameOptions> = {
         });
 
         // enable engine bootstraping
-        const bootstrap = new EngineBootstrap(options.canvasId as string);
+        const bootstrap = new EngineBootstrap(options as Required<QhunGameOptions>);
 
         // print before engine bootstrap
         logger.printText("Engine and game sourcecode evaluated");

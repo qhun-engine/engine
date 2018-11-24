@@ -13,4 +13,12 @@ export interface QhunGameOptions {
      * @default qhunGameCanvas
      */
     canvasId: string;
+
+    /**
+     * the rendering method that should be used when rendering your application.
+     * auto is used to detect the capabilities of the user's browser and chooses the
+     * best available engine
+     * @default "auto"
+     */
+    renderer: "auto" | "canvas" | "webgl";
 }

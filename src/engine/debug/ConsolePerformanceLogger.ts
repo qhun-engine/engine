@@ -55,7 +55,7 @@ export class ConsolePerformanceLogger extends ConsoleLogger {
         if (time > red) {
             color = "red";
         } else if (time > yellow) {
-            color = "yellow";
+            color = "#d6d634";
         }
 
         return `color: ${color};`;

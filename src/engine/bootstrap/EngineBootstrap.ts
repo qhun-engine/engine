@@ -2,6 +2,9 @@ import { Singleton } from "../constraint/Singleton";
 import { EngineError } from "../exception/EngineError";
 import { Inject } from "../di/Inject";
 import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
+import { Engine } from "../Engine";
+import { QhunGameOptions } from "./QhunGameOptions";
+import { RenderContextFactory } from "../render/RenderContextFactory";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -11,15 +14,30 @@ import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
 export class EngineBootstrap {
 
     /**
-     * the main game canvas element
+     * console logger
      */
-    private canvas!: HTMLCanvasElement;
-
     @Inject()
     private logger!: ConsolePerformanceLogger;
 
+    /**
+     * main engine object that needs to be filled while bootstrapping the engine
+     */
+    @Inject()
+    private engine!: Engine;
+
+    /**
+     * the canvas element
+     */
+    private canvas!: HTMLCanvasElement;
+
+    /**
+     * the renderer context factory to get the rendering engine
+     */
+    @Inject()
+    private renderContextFactory!: RenderContextFactory;
+
     constructor(
-        private canvasId: string
+        private options: QhunGameOptions
     ) { }
 
     /**
@@ -36,6 +54,10 @@ export class EngineBootstrap {
 
         // find game canvas
         this.findGameCanvas();
+
+        // construct context renderer
+        await this.constructRenderContext();
+
     }
 
     /**
@@ -43,13 +65,17 @@ export class EngineBootstrap {
      */
     private findGameCanvas(): void {
 
-        this.canvas = document.getElementById(this.canvasId) as HTMLCanvasElement;
+        const canvas = document.getElementById(this.options.canvasId) as HTMLCanvasElement;
 
         // check result
-        if (!this.canvas) {
+        if (!canvas) {
 
-            throw new EngineError(`Could not find the main game canvas element with id ${this.canvasId}. Make sure your canvas element exists!`);
+            throw new EngineError(`Could not find the main game canvas element with id ${this.options.canvasId}. Make sure your canvas element exists!`);
         }
+
+        // add canvas to the engine
+        this.canvas = canvas;
+        this.engine.setCanvasObject(canvas);
     }
 
     /**
@@ -72,6 +98,18 @@ export class EngineBootstrap {
             document.addEventListener("DOMContentLoaded", handler, false);
             document.addEventListener("error", reject, false);
         });
+    }
+
+    /**
+     * constructs the rendering context for the engine
+     */
+    private async constructRenderContext(): Promise<void> {
+
+        // get engine
+        const engine = this.renderContextFactory.createRenderContext(this.canvas, this.options.renderer);
+
+        // store engine
+        this.engine.setRenderContext(engine);
     }
 
 }
