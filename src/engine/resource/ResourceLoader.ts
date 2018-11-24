@@ -1,19 +1,7 @@
 import { Resource } from "./Resource";
 import { Injectable } from "../di/Injectable";
 import { ClassConstructor } from "../constraint/ClassConstructor";
-
-declare type ResourceOptions = {
-
-    /**
-     * the type of the resource
-     */
-    type?: XMLHttpRequestResponseType,
-
-    /**
-     * ignores http cache by appending a nonce value to the url
-     */
-    ignoreCache?: boolean
-};
+import { ResourceOptions } from "./ResourceRequestOptions";
 
 /**
  * Is responsable for loading resources from sync or async sources
@@ -39,49 +27,57 @@ export class ResourceLoader {
         // wrap with a promise
         return new Promise<R>((resolve, reject) => {
 
-            // apply default option values
-            options.ignoreCache = typeof options.ignoreCache === "boolean" ? options.ignoreCache : false;
-            options.type = typeof options.type === "string" ? options.type : "text";
-
-            // construct a xhr request
-            const request = new XMLHttpRequest();
-            request.open("GET", `${url}${options.ignoreCache ? this.getIgnoreCacheSuffix(url) : ""}`);
-            request.responseType = options.type;
-
-            // handle errors
-            request.onerror = reject;
-
-            // handle load event
             try {
+
+                // apply default option values
+                options.ignoreCache = typeof options.ignoreCache === "boolean" ? options.ignoreCache : false;
+                options.type = typeof options.type === "string" ? options.type : "text";
+
+                // construct a xhr request
+                const request = new XMLHttpRequest();
+                request.open("GET", `${url}${options.ignoreCache ? this.getIgnoreCacheSuffix(url) : ""}`);
+                request.responseType = options.type;
+
+                // handle errors
+                request.onerror = reject;
+
+                // handle load event
                 request.onload = () => {
 
-                    // check status, must be 0 or 200 like
-                    if (request.status === 0 || (request.status >= 200 && request.status <= 299)) {
+                    try {
 
-                        // check for a valid response
-                        const response = request.response;
-                        if (response) {
+                        // check status, must be 0 or 200 like
+                        if (request.status === 0 || (request.status >= 200 && request.status <= 299)) {
 
-                            const resourceInstance = this.getResourceFromHttpResponse(response, resource);
-                            return resolve(resourceInstance);
-                        } else {
+                            // check for a valid response
+                            const response = request.response;
+                            if (response) {
 
-                            throw new Error(`Server answered with status ${request.statusText} but there is no payload to continue with.`);
+                                const resourceInstance = this.getResourceFromHttpResponse(response, resource);
+                                resolve(resourceInstance);
+                                return;
+                            } else {
+
+                                reject(`Server answered with status ${request.status} (${request.statusText}) but there is no payload to continue with.`);
+                            }
                         }
-                    }
 
-                    throw new Error(`Server did not respond with a good status code. No resource data available`);
+                        // tslint:disable-next-line max-line-length
+                        reject(`Server did not respond with a good status code. Status code was ${request.status} (${request.statusText}). No resource data available`);
+
+                    } catch (e) {
+
+                        reject(e);
+                    }
                 };
+
+                // finally send the http request
+                request.send();
 
             } catch (e) {
 
-                // reject the constructed promise
-                return reject(e);
+                reject(e);
             }
-
-            // finally send the http request
-            request.send();
-
         });
     }
 

@@ -1,6 +1,6 @@
 import { QhunGame } from "../engine/bootstrap/QhunGame";
-import { ResourceLoader } from "../engine/resource/ResourceLoader";
 import { SoundManager } from "../engine/resource/sound/SoundManager";
+import { ResourceManager } from "../engine/resource/ResourceManager";
 
 @QhunGame({
     exposeGameInstance: true
@@ -8,7 +8,7 @@ import { SoundManager } from "../engine/resource/sound/SoundManager";
 class Game {
 
     constructor(
-        public rl: ResourceLoader,
+        public resource: ResourceManager,
         public sound: SoundManager
     ) { }
 }
