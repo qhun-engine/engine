@@ -15,7 +15,7 @@ export function Inject(dependency?: ClassConstructor): PropertyDecorator & Param
         if (!dependency) {
 
             // resolve the type
-            const token = (Reflect.getMetadata("design:paramtypes", target, propertyKey) || [])[0];
+            const token = Reflect.getMetadata("design:type", target, propertyKey);
 
             if (!token) {
                 const key = propertyKey.toString();

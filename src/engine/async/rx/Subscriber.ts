@@ -28,13 +28,13 @@ export class Subscriber<T> extends Subscription implements Observer<T> {
         }
     }
 
-    public next(data?: T): void {
+    public next(data: T): void {
         if (this.active) {
             this.intervalObserver.next(data);
         }
     }
 
-    public error(error?: T | Error): void {
+    public error(error: T | Error): void {
         if (this.active) {
 
             this.active = false;

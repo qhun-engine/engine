@@ -1,4 +1,3 @@
-export * from "./BehaviourSubject";
 export * from "./Observable";
 export * from "./Observer";
 export * from "./Subject";

@@ -2,6 +2,9 @@ import { InjectableOptions } from "./InjectableOptions";
 import { ClassConstructor } from "../constraint/ClassConstructor";
 import { Singleton } from "../constraint/Singleton";
 import { Injector } from "./Injector";
+import "reflect-metadata";
+
+export const injectableReflectKey = "engine:marker:injectable";
 
 /**
  * a class level decorator to tell the injection system that this class is
@@ -17,6 +20,9 @@ export function Injectable(options: InjectableOptions = { singleton: true }): Cl
         if (options.singleton) {
             originClass = Singleton()(target) as ClassConstructor;
         }
+
+        // add reflection class id
+        Reflect.defineMetadata(injectableReflectKey, Math.random().toString(36).substr(2, 9), target);
 
         // get the injector
         const injector = Injector.getInstance();

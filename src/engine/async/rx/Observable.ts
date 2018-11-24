@@ -8,7 +8,7 @@ import { Observer } from "./Observer";
 
 export class Observable<T> implements Subscribable<T> {
 
-    private internalSubscribe: (this: Observable<T>, subscriber: Subscriber<T>) => Unsubscribable;
+    private internalSubscribe!: (this: Observable<T>, subscriber: Subscriber<T>) => Unsubscribable;
 
     constructor(subscribe: (this: Observable<T>, subscriber: Subscriber<T>) => Unsubscribable) {
 
@@ -29,10 +29,16 @@ export class Observable<T> implements Subscribable<T> {
     }
 
     public subscribe(
-        observer: Observer<T> | ((data: T) => void),
+        observer: Observer<T> | ((data: T) => void) | undefined,
         error?: (error: T | Error) => void,
         complete?: () => void
     ): Subscription {
+
+        if (!observer) {
+            observer = () => {
+                /* noop */
+            };
+        }
 
         const subscriber = new Subscriber(observer, error, complete);
         this.internalSubscribe(subscriber);
