@@ -1,13 +1,15 @@
-import * as express from "express";
-import * as fs from "fs";
-import * as path from "path";
+import { QhunEngineServer } from "./QhunEngineServer";
 
+const q = new QhunEngineServer();
+q.listen();
+
+/*
 const app = express();
 app.get("/", (request, response) => {
 
-    const html = fs.readFileSync(__dirname + "/public/index.html");
+    const html = fs.readFileSync(__dirname + "/public/index.html").toString();
     const engine = `<script type="text/javascript" src="qhun-engine.js"></script>`;
-    response.send(html + engine);
+    response.send(html.replace("</head>", engine + "</head>"));
 });
 
 app.get("/qhun-engine.js", (request, response) => {
@@ -18,3 +20,4 @@ app.get("/qhun-engine.js", (request, response) => {
 app.listen(3000, () => {
     console.log("Up and running...");
 });
+*/
