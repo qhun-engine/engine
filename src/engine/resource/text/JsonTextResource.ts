@@ -3,13 +3,10 @@ import { TextResource } from "./TextResource";
 export class JsonTextResource<T extends object> extends TextResource<T> {
 
     /**
-     * @param data the json data in string form
+     * @inheritdoc
      */
-    constructor(
-        data: string
-    ) {
+    public async process(data: string): Promise<T> {
 
-        // call parent constructor with parsed data
-        super(JSON.parse(data));
+        return JSON.parse(data);
     }
 }

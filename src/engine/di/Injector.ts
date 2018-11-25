@@ -1,11 +1,32 @@
 import { ClassConstructor } from "../constraint/ClassConstructor";
 import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
+import { Observable, Observer, Subscription } from "../async/rx";
 import "reflect-metadata";
 
 export class Injector {
 
     private static instance: Injector;
     private readonly parameterTypeReflection: string = "design:paramtypes";
+
+    /**
+     * the message observable
+     */
+    private injectionObserver!: Observer<object>;
+    private injectionObservable = new Observable<object>(observer => {
+
+        // save observer
+        this.injectionObserver = observer;
+
+        // dispatch every injection
+        this.dispatchInjectionQueue();
+
+        return new Subscription();
+    });
+
+    /**
+     * all injections that took place before observable was ready
+     */
+    private injectionQueue: object[] = [];
 
     /**
      * the internal injector cache for storing singleton instances
@@ -24,6 +45,14 @@ export class Injector {
         }
 
         return Injector.instance;
+    }
+
+    /**
+     * get an observable for injected classes that where instantiated
+     */
+    public onInjection(): Observable<object> {
+
+        return this.injectionObservable;
     }
 
     /**
@@ -52,6 +81,13 @@ export class Injector {
 
             // add to cache
             this.addToCache(target, instance);
+        }
+
+        // next observable
+        if (this.injectionObserver) {
+            this.injectionObserver.next(instance);
+        } else {
+            this.injectionQueue.push(instance);
         }
 
         // finally return the instance
@@ -93,6 +129,19 @@ export class Injector {
     private getCacheIndex(target: ClassConstructor): string {
 
         return Reflect.getMetadata(ReflectionMetadata.Injectable, target);
+    }
+
+    /**
+     * dispatch injections to the observable when ready
+     */
+    private dispatchInjectionQueue(): void {
+
+        this.injectionQueue.forEach(injection => {
+            this.injectionObserver.next(injection);
+        });
+
+        // queue is not nessesary anymore
+        delete this.injectionQueue;
     }
 
 }

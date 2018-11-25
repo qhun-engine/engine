@@ -53,8 +53,8 @@ export class ResourceLoader {
                             const response = request.response;
                             if (response) {
 
-                                const resourceInstance = this.getResourceFromHttpResponse(response, resource);
-                                resolve(resourceInstance);
+                                // parse response
+                                this.getResourceFromHttpResponse(response, resource).then(ri => resolve(ri), reject);
                                 return;
                             } else {
 
@@ -86,9 +86,19 @@ export class ResourceLoader {
      * @param httpResponse the current http response object
      * @param resource the resource to construct
      */
-    private getResourceFromHttpResponse<R extends Resource = Resource>(httpResponse: any, resource: ClassConstructor<R>): R {
+    private async getResourceFromHttpResponse<R extends Resource = Resource>(httpResponse: any, resource: ClassConstructor<R>): Promise<R> {
 
-        return new resource(httpResponse);
+        const resourceInstance = new resource();
+
+        // check if data should be processed
+        if (typeof resourceInstance.process === "function") {
+            httpResponse = await resourceInstance.process(httpResponse);
+        }
+
+        // set content
+        resourceInstance.setData(httpResponse);
+
+        return resourceInstance;
     }
 
     /**

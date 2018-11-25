@@ -6,11 +6,9 @@ import { Resource } from "./Resource";
 export abstract class BaseResource<T = any> implements Resource<T> {
 
     /**
-     * @param data the resoruce data in binary form
+     * the data of the resource
      */
-    constructor(
-        protected data: T
-    ) { }
+    protected data!: T;
 
     /**
      * get the raw resource data
@@ -35,4 +33,9 @@ export abstract class BaseResource<T = any> implements Resource<T> {
 
         return this.data !== undefined;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public process?(data: any): Promise<T>;
 }

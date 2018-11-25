@@ -18,4 +18,10 @@ export interface Resource<T = any> {
      * Determines if the resource is currently loaded
      */
     isLoaded(): boolean;
+
+    /**
+     * converts the given data from the backend request into T
+     * @param data the data to convert to T
+     */
+    process?(data: any): Promise<T>;
 }

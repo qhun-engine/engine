@@ -6,6 +6,8 @@ import { Engine } from "../Engine";
 import { QhunGameOptions } from "./QhunGameOptions";
 import { RenderContextFactory } from "../render/RenderContextFactory";
 import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
+import { MessageBus } from "../message/MessageBus";
+import { EngineBootstrapFinishedMessage } from "../message/internal/state/EngineBootstrapFinishedMessage";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -25,6 +27,9 @@ export class EngineBootstrap {
      */
     @Inject()
     private engine!: Engine;
+
+    @Inject()
+    private messageBus!: MessageBus;
 
     /**
      * the canvas element
@@ -61,6 +66,9 @@ export class EngineBootstrap {
 
         // construct context renderer
         await this.constructRenderContext();
+
+        // send bootstrap finished message
+        this.messageBus.sendImmediately(new EngineBootstrapFinishedMessage(this.engine));
 
         // return constructed engine
         return this.engine;

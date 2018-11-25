@@ -3,6 +3,8 @@ import { RenderContext } from "./render/RenderContext";
 import { QhunGameOptions } from "./bootstrap/QhunGameOptions";
 import { ConsolePerformanceLogger } from "./debug/ConsolePerformanceLogger";
 import { ConsoleLoggerPrefix } from "./debug/ConsoleLoggerPrefix";
+import { SceneManager } from "./scene/SceneManager";
+import { MessageBus } from "./message/MessageBus";
 
 @Injectable()
 export class Engine {
@@ -26,11 +28,23 @@ export class Engine {
     private then!: number;
     private interval!: number;
     private delta!: number;
+    private targetFps!: number;
     private fps: number = 0;
     private oldTime: number = 0;
+    private timePerFrame: number = 0;
+
+    /**
+     * life cycle hooks into the engine
+     */
+    private lifeCycleHooks: {
+        draw: ((delta: number, renderContent: RenderContext, engine: Engine) => void)[],
+        update: ((delta: number, engine: Engine) => void)[]
+    } = { draw: [], update: [] };
 
     constructor(
-        private logger: ConsolePerformanceLogger
+        private logger: ConsolePerformanceLogger,
+        private sceneManager: SceneManager,
+        private messageBus: MessageBus
     ) {
 
         // get animation frame function
@@ -92,6 +106,33 @@ export class Engine {
     }
 
     /**
+     * get the cpu usage of the engine by evaluating the
+     * maximal possible (target fps) fps with the current fps
+     */
+    public getEngineUsage(): number {
+
+        // 0 check
+        if (this.timePerFrame === 0) {
+            return 0;
+        }
+
+        // time to render frame at fps rate
+        const timeRenderFps = (1 / this.targetFps) * 1000;
+
+        // get pct
+        return this.timePerFrame * 100 / timeRenderFps;
+    }
+
+    public addLifeCycleHook(phase: "draw", method: (delta: number, renderContent: RenderContext, engine: Engine) => void): void;
+    public addLifeCycleHook(phase: "update", method: (delta: number, engine: Engine) => void): void;
+    public addLifeCycleHook(phase: string, method: (...args: any[]) => void): void {
+
+        if (typeof this.lifeCycleHooks[phase as "draw"] === "object") {
+            this.lifeCycleHooks[phase as "draw"].push(method);
+        }
+    }
+
+    /**
      * the main game look where everything will come together
      */
     private gameLoop(time: number): void {
@@ -108,16 +149,29 @@ export class Engine {
 
             // update then and timeNeedForFrame
             this.then = this.now - (this.delta % this.interval);
+            const tmpDelta = time - this.oldTime;
             this.fps = 1000 / (time - this.oldTime);
             this.oldTime = time;
 
             // handle other things!
+            this.messageBus.dispatch();
 
             // handle user input
+            this.messageBus.dispatch();
 
             // handle business logic
+            this.lifeCycleHooks.update.forEach(handler => handler(tmpDelta, this));
+            this.sceneManager.update(tmpDelta, this);
+            this.messageBus.dispatch();
 
             // handle rendering the world
+            this.renderContent.before();
+            this.lifeCycleHooks.draw.forEach(handler => handler(tmpDelta, this.renderContent, this));
+            this.sceneManager.draw(tmpDelta, this.renderContent, this);
+            this.messageBus.dispatch();
+
+            // calculate time per frame
+            this.timePerFrame = performance.now() - this.now;
         }
     }
 
@@ -146,6 +200,7 @@ export class Engine {
 
         // update interval
         this.interval = 1000 / targetFps;
+        this.targetFps = targetFps;
 
         // another performance print
         this.logger.printText(`Engine will run at ${targetFps} FPS`, ConsoleLoggerPrefix.Bootstrap, 500, 250);

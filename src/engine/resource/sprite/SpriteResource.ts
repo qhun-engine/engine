@@ -1,12 +1,36 @@
-import { BaseResource } from "../BaseResource";
 import { SpriteAnimation } from "./SpriteAnimation";
+import { ImageResource } from "./ImageResource";
+import { Inject } from "../../di/Inject";
+import { SpriteImageExtractor } from "./SpriteImageExtractor";
 
-export class SpriteResource<T = any> extends BaseResource<T> {
+export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> extends ImageResource<T> {
+
+    @Inject()
+    private spriteImageExtractor!: SpriteImageExtractor;
 
     /**
      * the animation data for this sprite
      */
     protected animation!: SpriteAnimation;
+
+    /**
+     * contains all animation images
+     */
+    protected animationImages: ImageResource[] = [];
+
+    /**
+     * take the sprite sheet and animation data to extract all available
+     * sub images of the sprite sheet and stores them in this object
+     */
+    public async prepareSpriteAnimationImages(): Promise<void> {
+
+        // decouple sprite images
+        const result = await this.spriteImageExtractor.extractImagesFromSpriteSheet(this);
+
+        // save images
+        this.animationImages = result.map(r => r.image);
+
+    }
 
     /**
      * set the animation data for this sprite
@@ -16,5 +40,21 @@ export class SpriteResource<T = any> extends BaseResource<T> {
 
         this.animation = animation;
         return this;
+    }
+
+    /**
+     * get the animation data of the sprite
+     */
+    public getAnimation(): SpriteAnimation {
+
+        return this.animation;
+    }
+
+    /**
+     * get all animation images
+     */
+    public getAnimationImages(): ImageResource[] {
+
+        return this.animationImages;
     }
 }

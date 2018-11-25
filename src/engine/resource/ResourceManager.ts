@@ -6,8 +6,8 @@ import { ResourceOptions } from "./ResourceRequestOptions";
 import { SpriteResource } from "./sprite/SpriteResource";
 import { ImageResource } from "./sprite/ImageResource";
 import { JsonTextResource } from "./text/JsonTextResource";
-import { ResourceConstructor } from "./ResourceConstructor";
 import { SpriteAnimation } from "./sprite/SpriteAnimation";
+import { ClassConstructor } from "../constraint/ClassConstructor";
 
 /**
  * The resource manager stores resources, group resources and load resources when
@@ -28,7 +28,7 @@ export class ResourceManager {
      */
     public async loadSound<T extends SoundResource>(
         url: string,
-        resource: ResourceConstructor<T> = SoundResource as ResourceConstructor<T>,
+        resource: ClassConstructor<T> = SoundResource as ClassConstructor<T>,
         options?: ResourceOptions
     ): Promise<T> {
 
@@ -45,7 +45,7 @@ export class ResourceManager {
      */
     public async loadText<T extends TextResource<any>>(
         url: string,
-        resource: ResourceConstructor<T> = TextResource as ResourceConstructor<T>,
+        resource: ClassConstructor<T> = TextResource as ClassConstructor<T>,
         options?: ResourceOptions
     ): Promise<T> {
 
@@ -62,7 +62,7 @@ export class ResourceManager {
      */
     public async loadImage<T extends ImageResource>(
         url: string,
-        resource: ResourceConstructor<T> = ImageResource as ResourceConstructor<T>,
+        resource: ClassConstructor<T> = ImageResource as ClassConstructor<T>,
         options?: ResourceOptions
     ): Promise<T> {
 
@@ -81,20 +81,24 @@ export class ResourceManager {
     public async loadSprite<T extends SpriteResource>(
         imageUrl: string,
         animationDataUrl: string,
-        resource: ResourceConstructor<T> = SpriteResource as ResourceConstructor<T>,
+        resource: ClassConstructor<T> = SpriteResource as ClassConstructor<T>,
         options?: ResourceOptions
     ): Promise<T> {
 
         // load image and json data
         return Promise.all([
-            this.loadImage(imageUrl, ImageResource, options),
+            this.loadImage(imageUrl, resource, options),
             this.loadText<JsonTextResource<SpriteAnimation>>(animationDataUrl, JsonTextResource, options)
-        ]).then(result => {
+        ]).then(async (result) => {
 
-            const resourceInstance = new resource(result[0].getData());
-            resourceInstance.setAnimationData(result[1].getData());
+            // add animation data
+            result[0].setAnimationData(result[1].getData());
 
-            return resourceInstance;
+            // extract sprite data
+            await result[0].prepareSpriteAnimationImages();
+
+            // return complete sprite
+            return result[0];
         });
     }
 

@@ -65,7 +65,7 @@ export class Random {
      * get a random value from the array data
      * @param arrayData the array data stack
      */
-    public getFrom<T extends any[], R extends keyof T>(arrayData: T): R {
+    public getFrom<T>(arrayData: T[]): T {
 
         return arrayData[this.getBetween(0, arrayData.length)];
     }

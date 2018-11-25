@@ -4,13 +4,18 @@ import { MessageBus } from "../message/MessageBus";
 import { SceneLoadedMessage } from "../message/event/scene/SceneLoadedMessage";
 import { SceneSwitchedMessage } from "../message/event/scene/SceneSwitchedMessage";
 import { SceneUnloadedMessage } from "../message/event/scene/SceneUnloadedMessage";
+import { Updateable } from "../constraint/Updateable";
+import { Drawable } from "../constraint/Drawable";
+import { Engine } from "../Engine";
+import { RenderContext } from "../render/RenderContext";
+import { RenderableEntity } from "../entity/RenderableEntity";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
  * unloading current scenes
  */
 @Injectable()
-export class SceneManager {
+export class SceneManager implements Updateable, Drawable {
 
     /**
      * the currently active scene
@@ -75,5 +80,28 @@ export class SceneManager {
             // unload but dont await the unloading
             this.unloadScene(this.previousScene);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public update(delta: number, engine: Engine): void {
+        // noop
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public draw(delta: number, renderer: RenderContext, engine: Engine): void {
+
+        // dont draw if there is no active scene
+        if (!this.activeScene) {
+            return;
+        }
+
+        // iterate over the entities and draw them
+        this.activeScene.getEntities()
+            .filter(entity => renderer.isEntityRenderable(entity))
+            .forEach(entity => renderer.drawEntity(entity as RenderableEntity));
     }
 }
