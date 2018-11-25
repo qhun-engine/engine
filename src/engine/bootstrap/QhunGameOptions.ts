@@ -28,4 +28,9 @@ export interface QhunGameOptions {
      * run at that refresh rate speed. max will not try to restrict the fps
      */
     fps: number | "auto" | "max";
+
+    /**
+     * enables the debug mode wich prints engine usage and fps
+     */
+    debugMode: boolean;
 }

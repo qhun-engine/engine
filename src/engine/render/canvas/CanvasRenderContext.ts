@@ -62,4 +62,16 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
             this.context.setTransform(1, 0, 0, 1, 0, 0);
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    public drawText(text: string, position: Vector): void {
+
+        this.context.transform(1, 0, 0, 1, 0, 0);
+
+        this.context.font = "12px Arial";
+        this.context.fillStyle = "black";
+        this.context.fillText(text, position.x, position.y);
+    }
 }

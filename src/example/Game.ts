@@ -8,7 +8,8 @@ import { Vector } from "../engine/math/Vector";
 
 @QhunGame({
     exposeGameInstance: true,
-    renderer: "canvas"
+    renderer: "canvas",
+    debugMode: true
 })
 class Game {
 

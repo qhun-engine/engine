@@ -5,6 +5,7 @@ import { ConsolePerformanceLogger } from "./debug/ConsolePerformanceLogger";
 import { ConsoleLoggerPrefix } from "./debug/ConsoleLoggerPrefix";
 import { SceneManager } from "./scene/SceneManager";
 import { MessageBus } from "./message/MessageBus";
+import { Vector } from "./math/Vector";
 
 @Injectable()
 export class Engine {
@@ -32,6 +33,9 @@ export class Engine {
     private fps: number = 0;
     private oldTime: number = 0;
     private timePerFrame: number = 0;
+
+    private engineUsageStack: number[] = [];
+    private fpsStack: number[] = [];
 
     /**
      * life cycle hooks into the engine
@@ -176,10 +180,40 @@ export class Engine {
             this.renderContent.before();
             this.lifeCycleHooks.draw.forEach(handler => handler(tmpDelta, this.renderContent, this));
             this.sceneManager.draw(tmpDelta, this.renderContent, this);
+            this.printDebugInformation();
             this.messageBus.dispatch();
 
             // calculate time per frame
             this.timePerFrame = performance.now() - this.now;
+        }
+    }
+
+    /**
+     * prints debug information if enabled
+     */
+    private printDebugInformation(): void {
+
+        if (this.gameOptions.debugMode) {
+
+            this.engineUsageStack.unshift(Math.floor(this.getEngineUsage()));
+            this.fpsStack.unshift(Math.floor(this.getFPS()));
+
+            if (this.engineUsageStack.length > 250) {
+
+                // remove oldest element
+                this.engineUsageStack.pop();
+                this.fpsStack.pop();
+
+                // calc average
+                const avgEngine = Math.floor(
+                    this.engineUsageStack.reduce((accumulator, currentValue) => accumulator + currentValue) / this.engineUsageStack.length
+                );
+                const avgFps = Math.floor(
+                    this.fpsStack.reduce((accumulator, currentValue) => accumulator + currentValue) / this.engineUsageStack.length
+                );
+
+                this.renderContent.drawText(`FPS: ${avgFps} - Engine Usage: ${avgEngine}%`, Vector.from(10, 20));
+            }
         }
     }
 

@@ -2,6 +2,7 @@ import { RenderContext } from "../RenderContext";
 import { BaseRenderContext } from "../BaseRenderContext";
 import { Singleton } from "../../constraint/Singleton";
 import { RenderableEntity } from "../../entity/RenderableEntity";
+import { Vector } from "../../math/Vector";
 
 /**
  * the webgl render context
@@ -18,6 +19,14 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
      * @inheritdoc
      */
     public drawEntity(entity: RenderableEntity): void {
+        // @todo: implement
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public drawText(text: string, position: Vector): void {
+
         // @todo: implement
     }
 }
