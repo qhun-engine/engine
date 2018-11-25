@@ -1,17 +1,21 @@
 import { QhunGame } from "../engine/bootstrap/QhunGame";
-import { SoundManager } from "../engine/resource/sound/SoundManager";
-import { ResourceManager } from "../engine/resource/ResourceManager";
-import { Engine } from "../engine/Engine";
+import { MessageBus } from "../engine/message/MessageBus";
+import { SceneManager } from "../engine/scene/SceneManager";
+import { SceneSwitchedMessage } from "../engine/message/event/scene/SceneSwitchedMessage";
 
 @QhunGame({
-    exposeGameInstance: true,
-    renderer: "auto"
+    exposeGameInstance: true
 })
 class Game {
 
     constructor(
-        public resource: ResourceManager,
-        public sound: SoundManager,
-        public engine: Engine
-    ) { }
+        public mb: MessageBus,
+        public sm: SceneManager
+    ) {
+
+        const scene: any = { testScene: true, loadScene: () => new Promise(resolve => resolve()), isLoaded: () => false };
+        this.sm.switchScene(scene);
+
+        this.mb.observe().filter(m => m instanceof SceneSwitchedMessage).subscribe(m => console.log(m));
+    }
 }

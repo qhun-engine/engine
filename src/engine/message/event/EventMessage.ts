@@ -2,9 +2,9 @@ import { MessageType } from "../MessageType";
 import { BaseMessage } from "../BaseMessage";
 
 /**
- * base class for all internal messages
+ * base class for all event messages
  */
-export abstract class InternalMessage<Payload = void> extends BaseMessage<Payload> {
+export abstract class EventMessage<Payload = void> extends BaseMessage<Payload> {
 
     /**
      * @param payload the payload
@@ -12,6 +12,6 @@ export abstract class InternalMessage<Payload = void> extends BaseMessage<Payloa
     constructor(
         payload: Payload
     ) {
-        super(MessageType.INTERNAL, payload);
+        super(MessageType.EVENT, payload);
     }
 }

@@ -1,3 +1,5 @@
+import { ConsoleLoggerPrefix } from "./ConsoleLoggerPrefix";
+
 export abstract class ConsoleLogger {
 
     /**
@@ -12,10 +14,11 @@ export abstract class ConsoleLogger {
     /**
      * prints the given text with grey color
      * @param text the text to print
+     * @param prefix optional prefix
      */
-    public printGrey(text: string): void {
+    public printGrey(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None): void {
 
-        console.log(`%c${text}`, "color: #afafaf;");
+        console.log(`%c${prefix}${text}`, "color: #afafaf;");
     }
 
     /**

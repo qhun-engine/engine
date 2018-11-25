@@ -1,5 +1,6 @@
 import { Injectable } from "../di/Injectable";
 import { ConsoleLogger } from "./ConsoleLogger";
+import { ConsoleLoggerPrefix } from "./ConsoleLoggerPrefix";
 
 @Injectable()
 export class ConsolePerformanceLogger extends ConsoleLogger {
@@ -11,8 +12,9 @@ export class ConsolePerformanceLogger extends ConsoleLogger {
      * prints a text onto the console with aditional performance measureing since
      * the last call to this function
      * @param text the text to print
+     * @param prefix optional prefix
      */
-    public printText(text: string): void {
+    public printText(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None): void {
 
         // get current performance offset
         const current = performance.now();
@@ -22,7 +24,7 @@ export class ConsolePerformanceLogger extends ConsoleLogger {
         const style = this.getPerformanceStyle(offsetMs);
 
         // print the text
-        console.log(`${text} %c[+${offsetMs}ms]`, style);
+        console.log(`${prefix}${text} %c[+${offsetMs}ms]`, style);
 
         // update round time
         this.roundTime = current;
@@ -31,8 +33,9 @@ export class ConsolePerformanceLogger extends ConsoleLogger {
     /**
      * prints the total time since the start of the application with the given text
      * @param text the text to print
+     * @param prefix optional prefix
      */
-    public printTotalText(text: string): void {
+    public printTotalText(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None): void {
 
         // get current performance offset
         const current = performance.now();
@@ -42,7 +45,7 @@ export class ConsolePerformanceLogger extends ConsoleLogger {
         const style = this.getPerformanceStyle(offsetMs, 500, 250);
 
         // print the text
-        console.log(`${text} %c[${offsetMs}ms]`, style);
+        console.log(`${prefix}${text} %c[${offsetMs}ms]`, style);
     }
 
     /**

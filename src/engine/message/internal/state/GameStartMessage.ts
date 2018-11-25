@@ -1,4 +1,3 @@
-import { MessageType } from "../../MessageType";
 import { InternalMessage } from "../InternalMessage";
 
 /**
@@ -7,6 +6,6 @@ import { InternalMessage } from "../InternalMessage";
 export class GameStartMessage extends InternalMessage<void> {
 
     constructor() {
-        super(MessageType.INTERNAL, undefined);
+        super(undefined);
     }
 }

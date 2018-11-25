@@ -1,4 +1,3 @@
-import { MessageType } from "../../MessageType";
 import { InternalMessage } from "../InternalMessage";
 
 /**
@@ -7,6 +6,6 @@ import { InternalMessage } from "../InternalMessage";
 export class ViewportBlurMessage extends InternalMessage<Event> {
 
     constructor(blurEvent: Event) {
-        super(MessageType.INTERNAL, blurEvent);
+        super(blurEvent);
     }
 }

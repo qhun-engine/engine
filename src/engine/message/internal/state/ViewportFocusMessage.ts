@@ -1,4 +1,3 @@
-import { MessageType } from "../../MessageType";
 import { InternalMessage } from "../InternalMessage";
 
 /**
@@ -7,6 +6,6 @@ import { InternalMessage } from "../InternalMessage";
 export class ViewportFocusMessage extends InternalMessage<Event> {
 
     constructor(focusEvent: Event) {
-        super(MessageType.INTERNAL, focusEvent);
+        super(focusEvent);
     }
 }

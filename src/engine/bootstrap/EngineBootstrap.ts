@@ -5,6 +5,7 @@ import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
 import { Engine } from "../Engine";
 import { QhunGameOptions } from "./QhunGameOptions";
 import { RenderContextFactory } from "../render/RenderContextFactory";
+import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -50,7 +51,7 @@ export class EngineBootstrap {
         await this.waitForDocumentReadyEvent();
 
         // print dom ready performance
-        this.logger.printText("DOM ready event fired");
+        this.logger.printText("DOM ready event fired", ConsoleLoggerPrefix.Bootstrap);
 
         // find game canvas
         this.findGameCanvas();

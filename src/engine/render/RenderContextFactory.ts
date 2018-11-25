@@ -4,6 +4,7 @@ import { QhunGameOptions } from "../bootstrap/QhunGameOptions";
 import { CanvasRenderContext } from "./canvas/CanvasRenderContext";
 import { WebGLRenderContext } from "./webgl/WebGLRenderContext";
 import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
+import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 
 /**
  * responsable for creating the desired rendering context based of
@@ -28,10 +29,10 @@ export class RenderContextFactory {
 
             case "auto": return this.autoDetectRenderContext(canvas);
             case "canvas":
-                this.logger.printText("Using CanvasRenderer as rendering method");
+                this.logger.printText("Using CanvasRenderer as rendering method", ConsoleLoggerPrefix.Bootstrap);
                 return new CanvasRenderContext(canvas, canvas.getContext("2d")!);
             case "webgl":
-                this.logger.printText("Using WebGLRenderer as rendering method");
+                this.logger.printText("Using WebGLRenderer as rendering method", ConsoleLoggerPrefix.Bootstrap);
                 return new WebGLRenderContext(canvas, (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))!);
         }
     }
@@ -43,7 +44,7 @@ export class RenderContextFactory {
     private autoDetectRenderContext(canvas: HTMLCanvasElement): RenderContext {
 
         // print log
-        this.logger.printGrey("Auto detect supported rendering engine ...");
+        this.logger.printGrey("Auto detect supported rendering engine ...", ConsoleLoggerPrefix.Bootstrap);
 
         // try to get a webgl context
         const tempCanvas = document.createElement("canvas");

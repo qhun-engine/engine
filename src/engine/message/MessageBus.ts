@@ -44,14 +44,20 @@ export class MessageBus {
 
     /**
      * dispatches all messages that are on the queue
+     * @return the number of dispatched messages
      */
-    public dispatch(): void {
+    public dispatch(): number {
+
+        // get queue size
+        const size = this.getQueueSize();
 
         // use the queue to dispatch this messages
         this.dispatchMessages(this.queue);
 
         // empty the queue
         this.queue = [];
+
+        return size;
     }
 
     /**
@@ -60,6 +66,14 @@ export class MessageBus {
     public getQueueSize(): number {
 
         return this.queue.length;
+    }
+
+    /**
+     * observe the message bus for new messages
+     */
+    public observe(): Observable<Message> {
+
+        return this.messageObservable;
     }
 
     /**
