@@ -11,8 +11,9 @@ export interface AnimationableEntity<S = string> extends RenderableEntity {
      * add the given animation to the entity using the given name
      * @param animationName the unique name for this animation
      * @param sprite the animation sprite file
+     * @param fps the speed of the animation
      */
-    addAnimation(animationName: S, sprite: SpriteResource): ThisType<AnimationableEntity<S>>;
+    addAnimation(animationName: S, sprite: SpriteResource, fps: number): ThisType<AnimationableEntity<S>>;
 
     /**
      * plays the given animation on the entity

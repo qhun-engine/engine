@@ -38,31 +38,46 @@ export function QhunGame(options: Partial<QhunGameOptions> = {}): ClassDecorator
 
         // await bootstraping
         bootstrap.bootstrapEngine().then(engine => {
-            engine.start();
+
             // engine bootstrap done
             logger.printText("Engine bootstrap finished", ConsoleLoggerPrefix.Bootstrap);
-            logger.printGrey("Creating main game class ...", ConsoleLoggerPrefix.Bootstrap);
+            logger.printGrey("Loading game ...");
 
-            // construct main game class
-            const gameClass = class QhunGameImpl extends (Injectable()(target) as T) { };
-            const gameInstance: any = new gameClass();
+            // load game phase
+            bootstrap.loadingGame().then(() => {
 
-            // print game class created performance
-            logger.printText("Main game class created", ConsoleLoggerPrefix.Bootstrap);
+                logger.printGrey("Creating main game class ...", ConsoleLoggerPrefix.Bootstrap);
 
-            // exposing instance?
-            if (options.exposeGameInstance) {
-                (window as any).game = gameInstance;
+                // construct main game class
+                const gameClass = class QhunGameImpl extends (Injectable()(target) as T) { };
+                const gameInstance: any = new gameClass();
 
-                logger.printGrey("Exposing main game class to window [window.game]", ConsoleLoggerPrefix.Bootstrap);
-                logger.log(gameInstance);
-            }
+                // print game class created performance
+                logger.printText("Main game class created", ConsoleLoggerPrefix.Bootstrap);
 
-            // print total performance
-            logger.fillLine();
-            const red = options.fps === "auto" ? 1000 : 500;
-            const yellow = options.fps === "auto" ? 600 : 250;
-            logger.printTotalText("Bootstrap phase complete", ConsoleLoggerPrefix.Bootstrap, red, yellow);
+                // exposing instance?
+                if (options.exposeGameInstance) {
+                    (window as any).game = gameInstance;
+
+                    logger.printGrey("Exposing main game class to window [window.game]", ConsoleLoggerPrefix.Bootstrap);
+                    logger.log(gameInstance);
+                }
+
+                // start the engine
+                logger.printGrey("Starting the engine ...");
+                engine.start();
+
+                // print total performance
+                logger.fillLine();
+                const red = options.fps === "auto" ? 1000 : 500;
+                const yellow = options.fps === "auto" ? 600 : 250;
+                logger.printTotalText("Bootstrap phase complete", ConsoleLoggerPrefix.Bootstrap, red, yellow);
+
+            }, error => {
+
+                console.error("Error while loading the game.");
+                console.error(error);
+            });
 
         }, error => {
 

@@ -74,6 +74,14 @@ export class Engine {
     }
 
     /**
+     * get the main canvas object
+     */
+    public getCanvasObject(): HTMLCanvasElement {
+
+        return this.canvasObject;
+    }
+
+    /**
      * set the game options
      * @param options the options to set
      */

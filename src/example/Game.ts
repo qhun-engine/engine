@@ -18,24 +18,17 @@ class Game {
         private engine: Engine
     ) {
 
-        this.rm.loadSprite("assets/fighter.png", "assets/fighter.json").then(anim => {
+        const man = new MainEntity();
+        man.setPosition(Vector.from(engine.getCanvasObject().width / 2, engine.getCanvasObject().height / 2));
 
-            const man = new MainEntity();
-            man.setTexture(anim.getAnimationImages()[0]);
-            man.setPosition(Vector.from(50, 50));
-            man.addAnimation("idle", anim);
+        const scene = new MainScene();
+        scene.addEntity(man);
+        sm.switchScene(scene);
 
-            const scene = new MainScene();
-            scene.addEntity(man);
-            sm.switchScene(scene);
+        man.playAnimation("idle");
 
-            const animCtrl = man.playAnimation("idle");
-            (window as any).anim = animCtrl;
-            animCtrl.setSpeed(60);
-
-            setInterval(() => {
-                man.setRotation(man.getRotation() + .01);
-            }, 10);
-        });
+        setInterval(() => {
+            man.setRotation(man.getRotation() + .01);
+        }, 10);
     }
 }

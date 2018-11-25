@@ -6,16 +6,26 @@ import { Inject } from "../engine/di/Inject";
 import { AnimationManager } from "../engine/animation/AnimationManager";
 import { SpriteResource } from "../engine/resource/sprite/SpriteResource";
 import { AnimationStateControl } from "../engine/animation/AnimationStateControl";
+import { DeclareAnimation } from "../engine/resource/decorator/DeclareAnimation";
 
+@DeclareAnimation([{
+    name: "idle",
+    animation: "assets/fighter.json",
+    image: "assets/fighter.png",
+    fps: 60
+}, {
+    name: "idle2",
+    animation: "assets/fighter.json",
+    image: "assets/fighter.png",
+    fps: 60
+}])
 export class MainEntity implements RenderableEntity, AnimationableEntity {
 
     @Inject()
     private animationManager!: AnimationManager;
 
     private animations: {
-        [name: string]: {
-            sprite: SpriteResource
-        }
+        [name: string]: { sprite: SpriteResource, fps: number }
     } = {};
 
     protected visible: boolean = true;
@@ -119,10 +129,11 @@ export class MainEntity implements RenderableEntity, AnimationableEntity {
      * add the given animation to the entity using the given name
      * @param animationName the unique name for this animation
      * @param sprite the animation sprite file
+     * @param fps the speed of the animation
      */
-    public addAnimation(animationName: string, sprite: SpriteResource): this {
+    public addAnimation(animationName: string, sprite: SpriteResource, fps: number = 1): this {
 
-        this.animations[animationName] = { sprite };
+        this.animations[animationName] = { sprite, fps };
         return this;
     }
 
@@ -132,7 +143,7 @@ export class MainEntity implements RenderableEntity, AnimationableEntity {
      */
     public playAnimation(animationName: string): AnimationStateControl {
 
-        return this.animationManager.playEntityAnimation(this, this.animations[animationName].sprite);
+        return this.animationManager.playEntityAnimation(this, this.animations[animationName].sprite, this.animations[animationName].fps);
     }
 
     /**

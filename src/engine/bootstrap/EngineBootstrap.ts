@@ -8,6 +8,7 @@ import { RenderContextFactory } from "../render/RenderContextFactory";
 import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 import { MessageBus } from "../message/MessageBus";
 import { EngineBootstrapFinishedMessage } from "../message/internal/state/EngineBootstrapFinishedMessage";
+import { ResourceManager } from "../resource/ResourceManager";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -30,6 +31,9 @@ export class EngineBootstrap {
 
     @Inject()
     private messageBus!: MessageBus;
+
+    @Inject()
+    private resourceManager!: ResourceManager;
 
     /**
      * the canvas element
@@ -72,6 +76,20 @@ export class EngineBootstrap {
 
         // return constructed engine
         return this.engine;
+    }
+
+    /**
+     * loading the game
+     */
+    public async loadingGame(): Promise<void> {
+
+        // info print
+        this.logger.printGrey("Awaiting asset loading ...");
+
+        await this.resourceManager.loadDeclaredResources();
+
+        // print
+        this.logger.printText("Loaded declared assets", ConsoleLoggerPrefix.Asset, 10000, 50000);
     }
 
     /**

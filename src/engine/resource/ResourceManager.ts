@@ -8,6 +8,9 @@ import { ImageResource } from "./sprite/ImageResource";
 import { JsonTextResource } from "./text/JsonTextResource";
 import { SpriteAnimation } from "./sprite/SpriteAnimation";
 import { ClassConstructor } from "../constraint/ClassConstructor";
+import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
+import { Engine } from "../Engine";
+import { DeclareAnimationMetadata } from "./decorator/DeclareAnimationMetadata";
 
 /**
  * The resource manager stores resources, group resources and load resources when
@@ -100,6 +103,37 @@ export class ResourceManager {
             // return complete sprite
             return result[0];
         });
+    }
+
+    /**
+     * load all via metadata declared resources
+     * @internal
+     */
+    public async loadDeclaredResources(): Promise<void> {
+
+        // get all declarations
+        const declarations = Reflect.getMetadata(ReflectionMetadata.DeclareAnimationRepository, Engine) as ClassConstructor[] || [];
+        const promiseLoadStack: Promise<void>[] = [];
+
+        // iterate over these declarations
+        declarations.forEach(dec => {
+
+            // get @DeclareAnimation metadata
+            const declaredAnimations: DeclareAnimationMetadata[] = Reflect.getMetadata(ReflectionMetadata.DeclareAnimation, dec) || [];
+
+            // load the sprite resource
+            declaredAnimations.forEach((anim, index) => {
+                promiseLoadStack.push(this.loadSprite(anim.image, anim.animation).then(sprite => {
+
+                    // write the sprite back to meta
+                    const current = Reflect.getMetadata(ReflectionMetadata.DeclareAnimation, dec) as DeclareAnimationMetadata[];
+                    current[index].sprite = sprite;
+                    Reflect.defineMetadata(ReflectionMetadata.DeclareAnimationRepository, Engine, current);
+                }));
+            });
+        });
+
+        return Promise.all(promiseLoadStack).then(() => { /* void cast */ });
     }
 
 }
