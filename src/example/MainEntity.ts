@@ -13,13 +13,17 @@ export class MainEntity implements RenderableEntity, AnimationableEntity {
     private animationManager!: AnimationManager;
 
     private animations: {
-        [name: string]: SpriteResource
+        [name: string]: {
+            sprite: SpriteResource
+        }
     } = {};
 
     protected visible: boolean = true;
     protected resource!: ImageResource;
     protected position: Vector = Vector.ZERO;
-    protected anchor: Vector = Vector.ZERO;
+    protected anchor: Vector = Vector.HALF;
+    protected size: Vector = Vector.ZERO;
+    protected rotation: number = 0;
 
     /**
      * set this entity visible or unvisible for the `RenderContext`
@@ -44,6 +48,20 @@ export class MainEntity implements RenderableEntity, AnimationableEntity {
      * @param texture the texture for this entity
      */
     public setTexture(texture: ImageResource): this {
+
+        this.resource = texture;
+
+        // update size
+        this.size = Vector.from(texture.getData().width, texture.getData().height);
+
+        return this;
+    }
+
+    /**
+     * set the texture for this entity
+     * @param texture the texture for this entity
+     */
+    public setRenderableTexture(texture: ImageResource): this {
 
         this.resource = texture;
         return this;
@@ -104,7 +122,7 @@ export class MainEntity implements RenderableEntity, AnimationableEntity {
      */
     public addAnimation(animationName: string, sprite: SpriteResource): this {
 
-        this.animations[animationName] = sprite;
+        this.animations[animationName] = { sprite };
         return this;
     }
 
@@ -114,7 +132,7 @@ export class MainEntity implements RenderableEntity, AnimationableEntity {
      */
     public playAnimation(animationName: string): AnimationStateControl {
 
-        return this.animationManager.playEntityAnimation(this, this.animations[animationName]);
+        return this.animationManager.playEntityAnimation(this, this.animations[animationName].sprite);
     }
 
     /**
@@ -123,5 +141,39 @@ export class MainEntity implements RenderableEntity, AnimationableEntity {
     public stopAnimation(): void {
 
         // noop
+    }
+
+    /**
+     * get the size of the entity
+     */
+    public getSize(): Vector {
+        return this.size;
+    }
+
+    /**
+     * set the new size of the entity
+     * @param size the new size
+     */
+    public setSize(size: Vector): this {
+        this.size = size;
+        return this;
+    }
+
+    /**
+     * get the current rotation in radians
+     */
+    public getRotation(): number {
+
+        return this.rotation;
+    }
+
+    /**
+     * set the new rotation in radians
+     * @param rotation the new rotation in radians
+     */
+    public setRotation(rotation: number): this {
+
+        this.rotation = rotation;
+        return this;
     }
 }

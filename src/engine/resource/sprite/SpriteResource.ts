@@ -29,7 +29,6 @@ export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> exten
 
         // save images
         this.animationImages = result.map(r => r.image);
-
     }
 
     /**

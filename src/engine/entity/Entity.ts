@@ -27,4 +27,26 @@ export interface Entity extends Destroyable {
      * @param anchor the new anchor point
      */
     setAnchor(anchor: Vector): ThisType<Entity>;
+
+    /**
+     * get the size of the entity
+     */
+    getSize(): Vector;
+
+    /**
+     * set the new size of the entity
+     * @param size the new size
+     */
+    setSize(size: Vector): ThisType<Entity>;
+
+    /**
+     * get the current rotation in radians
+     */
+    getRotation(): number;
+
+    /**
+     * set the new rotation in radians
+     * @param rotation the new rotation in radians
+     */
+    setRotation(rotation: number): ThisType<Entity>;
 }

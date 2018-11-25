@@ -24,6 +24,13 @@ export interface RenderableEntity extends Entity {
     setTexture(texture: ImageResource): ThisType<RenderableEntity>;
 
     /**
+     * set the texture for this entity
+     * @param texture the texture for this entity
+     * @internal
+     */
+    setRenderableTexture(texture: ImageResource): ThisType<RenderableEntity>;
+
+    /**
      * get the current texture of the entity
      */
     getTexture(): ImageResource;

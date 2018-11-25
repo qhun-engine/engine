@@ -7,17 +7,17 @@ import { Destroyable } from "../constraint/Destroyable";
  */
 export class AnimationStateControl implements Destroyable {
 
-    public currentIndex: number = 0;
-    public availableAnimations: number = this.animationImages.length - 1;
-    public currentImageVisibleTime: number = 0;
+    private currentIndex: number = 0;
+    private availableAnimations: number = this.animationImages.length - 1;
+    private currentImageVisibleTime: number = 0;
 
-    public paused: boolean = false;
-    public destroyed: boolean = false;
+    private paused: boolean = false;
+    private destroyed: boolean = false;
 
     constructor(
-        public entity: AnimationableEntity,
-        public animationImages: ImageResource[],
-        public fps: number
+        private entity: AnimationableEntity,
+        private animationImages: ImageResource[],
+        private fps: number
     ) { }
 
     /**

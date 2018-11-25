@@ -3,6 +3,7 @@ import { AnimationStateControl } from "./AnimationStateControl";
 import { Injectable } from "../di/Injectable";
 import { SpriteResource } from "../resource/sprite/SpriteResource";
 import { Draw } from "../util/decorators/Draw";
+import { Vector } from "../math/Vector";
 
 /**
  * responsable for controling animation states on entities
@@ -68,7 +69,7 @@ export class AnimationManager {
                     data.index += 1;
                 }
 
-                anim.entity.setTexture(anim.animationImages[data.index]);
+                data.entity.setRenderableTexture(data.images[data.index]);
             }
         });
     }

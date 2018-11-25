@@ -13,6 +13,11 @@ export class Vector implements Clonable<Vector> {
     public static readonly ONE: Vector = new Vector(1, 1);
 
     /**
+     * a vector with (.5, .5)
+     */
+    public static readonly HALF: Vector = new Vector(.5, .5);
+
+    /**
      * a vector that points up (0, -1)
      */
     public static readonly UP: Vector = new Vector(0, -1);
