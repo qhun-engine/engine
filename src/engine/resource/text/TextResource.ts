@@ -1,3 +1,3 @@
 import { BaseResource } from "../BaseResource";
 
-export class TextResource extends BaseResource { }
+export class TextResource<T = string> extends BaseResource<T> { }
