@@ -11,16 +11,13 @@ import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
  * The entry point of your game where the magic happens. Put this decorator onto your main class
  * @param options @todo write options
  */
-export function QhunGame(options: Partial<QhunGameOptions> = {
-    exposeGameInstance: false,
-    canvasId: "qhunGameCanvas",
-    renderer: "auto"
-}): ClassDecorator {
+export function QhunGame(options: Partial<QhunGameOptions> = {}): ClassDecorator {
 
     // apply default values
     options.exposeGameInstance = typeof options.exposeGameInstance === "boolean" ? options.exposeGameInstance : false;
     options.canvasId = options.canvasId ? options.canvasId : "qhunGameCanvas";
     options.renderer = options.renderer ? options.renderer : "auto";
+    options.fps = options.fps ? options.fps : "auto";
 
     // get performance debug logger
     const logger = Injector.getInstance().instantiateClass(ConsolePerformanceLogger);
@@ -40,8 +37,8 @@ export function QhunGame(options: Partial<QhunGameOptions> = {
         logger.printGrey("Awaiting engine bootstrap ...", ConsoleLoggerPrefix.Bootstrap);
 
         // await bootstraping
-        bootstrap.bootstrapEngine().then(() => {
-
+        bootstrap.bootstrapEngine().then(engine => {
+            engine.start();
             // engine bootstrap done
             logger.printText("Engine bootstrap finished", ConsoleLoggerPrefix.Bootstrap);
             logger.printGrey("Creating main game class ...", ConsoleLoggerPrefix.Bootstrap);
@@ -63,7 +60,9 @@ export function QhunGame(options: Partial<QhunGameOptions> = {
 
             // print total performance
             logger.fillLine();
-            logger.printTotalText("Bootstrap phase complete", ConsoleLoggerPrefix.Bootstrap);
+            const red = options.fps === "auto" ? 1000 : 500;
+            const yellow = options.fps === "auto" ? 600 : 250;
+            logger.printTotalText("Bootstrap phase complete", ConsoleLoggerPrefix.Bootstrap, red, yellow);
 
         }, error => {
 

@@ -1,7 +1,5 @@
 import { QhunGame } from "../engine/bootstrap/QhunGame";
-import { MessageBus } from "../engine/message/MessageBus";
-import { SceneManager } from "../engine/scene/SceneManager";
-import { SceneSwitchedMessage } from "../engine/message/event/scene/SceneSwitchedMessage";
+import { Engine } from "../engine/Engine";
 
 @QhunGame({
     exposeGameInstance: true
@@ -9,13 +7,11 @@ import { SceneSwitchedMessage } from "../engine/message/event/scene/SceneSwitche
 class Game {
 
     constructor(
-        public mb: MessageBus,
-        public sm: SceneManager
+        public e: Engine
     ) {
 
-        const scene: any = { testScene: true, loadScene: () => new Promise(resolve => resolve()), isLoaded: () => false };
-        this.sm.switchScene(scene);
-
-        this.mb.observe().filter(m => m instanceof SceneSwitchedMessage).subscribe(m => console.log(m));
+        setInterval(() => {
+            console.log(this.e.getFPS());
+        }, 500);
     }
 }

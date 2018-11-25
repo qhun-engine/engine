@@ -21,4 +21,11 @@ export interface QhunGameOptions {
      * @default "auto"
      */
     renderer: "auto" | "canvas" | "webgl";
+
+    /**
+     * the target fps rate. when a number is given, the engine will try to run at the given
+     * frames per second rate. auto will try to detect the refresh rate of the user's monitor to
+     * run at that refresh rate speed. max will not try to restrict the fps
+     */
+    fps: number | "auto" | "max";
 }

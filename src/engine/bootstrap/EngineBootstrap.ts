@@ -45,10 +45,13 @@ export class EngineBootstrap {
      * bootstraps the engine and prepare everything in order to
      * create the main game class
      */
-    public async bootstrapEngine(): Promise<void> {
+    public async bootstrapEngine(): Promise<Engine> {
 
         // wait for document ready event
         await this.waitForDocumentReadyEvent();
+
+        // set options
+        await this.engine.setGameOptions(this.options);
 
         // print dom ready performance
         this.logger.printText("DOM ready event fired", ConsoleLoggerPrefix.Bootstrap);
@@ -59,6 +62,8 @@ export class EngineBootstrap {
         // construct context renderer
         await this.constructRenderContext();
 
+        // return constructed engine
+        return this.engine;
     }
 
     /**

@@ -14,14 +14,14 @@ export class ConsolePerformanceLogger extends ConsoleLogger {
      * @param text the text to print
      * @param prefix optional prefix
      */
-    public printText(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None): void {
+    public printText(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None, red: number = 50, yellow: number = 25): void {
 
         // get current performance offset
         const current = performance.now();
         const offsetMs = Math.floor(current - this.roundTime);
 
         // get the color
-        const style = this.getPerformanceStyle(offsetMs);
+        const style = this.getPerformanceStyle(offsetMs, red, yellow);
 
         // print the text
         console.log(`${prefix}${text} %c[+${offsetMs}ms]`, style);
@@ -35,14 +35,14 @@ export class ConsolePerformanceLogger extends ConsoleLogger {
      * @param text the text to print
      * @param prefix optional prefix
      */
-    public printTotalText(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None): void {
+    public printTotalText(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None, red: number = 500, yellow: number = 250): void {
 
         // get current performance offset
         const current = performance.now();
         const offsetMs = Math.floor(current - this.total);
 
         // get the color
-        const style = this.getPerformanceStyle(offsetMs, 500, 250);
+        const style = this.getPerformanceStyle(offsetMs, red, yellow);
 
         // print the text
         console.log(`${prefix}${text} %c[${offsetMs}ms]`, style);

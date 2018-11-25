@@ -44,7 +44,7 @@ export class Router {
             const controllerMetadata: ControllerMetadataStructure = Reflect.getMetadata(ReflectionMetadata.Controller, controller);
 
             // get controller instance
-            const controllerInstance = injector.instantiateClass(controller);
+            const controllerInstance = injector.instantiateClass(controller as any);
 
             // get request mapping metadata
             const requestMappingMetadata: RequestMappingStructure = Reflect.getMetadata(ReflectionMetadata.RequestMapping, controllerInstance);
