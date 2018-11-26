@@ -1,16 +1,15 @@
 import { QhunGame } from "../engine/bootstrap/QhunGame";
 import { SceneManager } from "../engine/scene/SceneManager";
 import { ResourceManager } from "../engine/resource/ResourceManager";
-import { MainEntity } from "./MainEntity";
-import { MainScene } from "./MainScene";
 import { Engine } from "../engine/Engine";
-import { Vector } from "../engine/math/Vector";
+import { MainWorld } from "./MainWorld";
+import { MainScene } from "./MainScene";
 
 @QhunGame({
     exposeGameInstance: true,
     renderer: "canvas",
     debugMode: true,
-    fps: 100
+    fps: 20
 })
 class Game {
 
@@ -20,17 +19,22 @@ class Game {
         private engine: Engine
     ) {
 
-        const man = new MainEntity();
-        man.setPosition(Vector.from(engine.getCanvasObject().width / 2, engine.getCanvasObject().height / 2));
+        Promise.all([
+            this.rm.loadTileMap("assets/tilemap.png", "assets/tilemap.json"),
+            this.rm.loadTileWorld("assets/tileworld.json")
+        ]).then(resources => {
 
-        const scene = new MainScene();
-        scene.addEntity(man);
-        sm.switchScene(scene);
+            // build world and scene
+            const world = new MainWorld(resources[0], resources[1]);
+            const scene = new MainScene();
 
-        man.playAnimation("idle");
+            // add to scene
+            scene.setTileWorld(world);
 
-        /*setInterval(() => {
-            man.setRotation(man.getRotation() + .01);
-        }, 10);*/
+            // switch to scene
+            this.sm.switchScene(scene);
+
+            (window as any).world = world;
+        });
     }
 }

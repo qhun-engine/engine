@@ -2,13 +2,14 @@ import { Injectable } from "../../di/Injectable";
 import { SpriteResource } from "./SpriteResource";
 import { DimensionSize, DimensionPosition } from "../../animation/Dimension";
 import { ImageResource } from "./ImageResource";
+import { TileMapResource } from "../tileset/TileMapResource";
 
 interface SpriteDecoupleResult extends DimensionSize {
 
     /**
-     * name of the picture
+     * name/number of the picture
      */
-    name: string;
+    name: string | number;
 
     /**
      * the final image element for rendering
@@ -56,6 +57,53 @@ export class SpriteImageExtractor {
                 } as SpriteDecoupleResult;
             }));
         });
+
+        return Promise.all(convertPromiseStack);
+    }
+
+    /**
+     * extracts all images from the tile sheet
+     * @param tilemap the tile to get the data from
+     */
+    public async extractImagesFromTileSheet(tilemap: TileMapResource): Promise<SpriteDecoupleResult[]> {
+
+        const images: HTMLImageElement[] = [];
+        const convertPromiseStack: Promise<SpriteDecoupleResult>[] = [];
+
+        // iterate over every possible sub file
+        const metadata = tilemap.getTileMapMetadata();
+
+        // get the coordinates for every tile
+        let currentX: number = metadata.margin;
+        let currentY: number = metadata.margin;
+        for (let i = 0; i < metadata.tilecount; i++) {
+
+            // check y adjust
+            if (i % metadata.columns === 0 && i > 0) {
+
+                // adjust y
+                currentY += metadata.tileheight + metadata.spacing;
+
+                // reset x
+                currentX = metadata.margin;
+            }
+
+            // get that image
+            convertPromiseStack.push(this.extractImage({
+                x: currentX,
+                y: currentY,
+                w: metadata.tilewidth,
+                h: metadata.tileheight
+            }, tilemap.getData()).then(imageData => {
+                return {
+                    name: i,
+                    image: (new ImageResource()).setData(imageData)
+                } as SpriteDecoupleResult;
+            }));
+
+            // increase the currentX with the next spacing
+            currentX += metadata.tilewidth + metadata.spacing;
+        }
 
         return Promise.all(convertPromiseStack);
     }

@@ -42,7 +42,7 @@ export class Vector implements Clonable<Vector> {
      * @param x x part of the vector
      * @param y y part of the vector
      */
-    public static from(x: number, y: number): Vector {
+    public static from(x: number, y: number = x): Vector {
 
         return new Vector(x, y);
     }

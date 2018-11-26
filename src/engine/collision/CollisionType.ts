@@ -1,4 +1,7 @@
 /**
  * different available collision types
  */
-export enum CollisionType { }
+export enum CollisionType {
+
+    Rectangle
+}

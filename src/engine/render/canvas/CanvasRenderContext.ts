@@ -4,6 +4,7 @@ import { BaseRenderContext } from "../BaseRenderContext";
 import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
+import { TileWorld } from "../../resource/tileset/TileWorld";
 
 /**
  * the canvas rendering context
@@ -60,6 +61,45 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
 
             // reset transform matrix
             this.context.setTransform(1, 0, 0, 1, 0, 0);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public drawTileWorld(world: TileWorld): void {
+
+        // get world size
+        const size = world.getWorldSize();
+        const tileDimension = world.getTileDimension();
+        const layers = world.getWorldLayerCount();
+
+        const scale = Vector.from(1.2);
+        const scaledDimension = tileDimension.multiply(scale);
+
+        // iterate over every y tile
+        for (let y = 0; y < size.y; y++) {
+
+            // iterate over every x tile
+            for (let x = 0; x < size.x; x++) {
+
+                // draw the image at the given position
+                const positionVector = Vector.from(x, y);
+                const drawPositionVector = positionVector.multiply(tileDimension).multiply(scale);
+
+                // iterate over the layers
+                for (let layer = 0; layer < layers; layer++) {
+
+                    // get and draw the tile
+                    const tileNumber = world.getTileAtPosition(positionVector, layer);
+                    const image = world.getTileByNumber(tileNumber || -1);
+
+                    // image check
+                    if (image !== undefined) {
+                        this.context.drawImage(image.getData(), drawPositionVector.x, drawPositionVector.y, scaledDimension.x, scaledDimension.y);
+                    }
+                }
+            }
         }
     }
 

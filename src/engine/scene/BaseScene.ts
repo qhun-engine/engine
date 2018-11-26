@@ -1,5 +1,6 @@
 import { Scene } from "./Scene";
 import { Entity } from "../entity/Entity";
+import { TileWorld } from "../resource/tileset/TileWorld";
 
 /**
  * a simple scene object wich implements the boilerplate part of the Scene interface
@@ -15,6 +16,11 @@ export abstract class BaseScene implements Scene {
      * the stack of currently existing entities in this scene
      */
     protected entities: Entity[] = [];
+
+    /**
+     * the current tilemap based world for the scene
+     */
+    protected tileWorld!: TileWorld;
 
     /**
      * @inheritdoc
@@ -61,5 +67,22 @@ export abstract class BaseScene implements Scene {
     public getEntities(): Entity[] {
 
         return this.entities;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setTileWorld(world: TileWorld): this {
+
+        this.tileWorld = world;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getTileWorld(): TileWorld | undefined {
+
+        return this.tileWorld;
     }
 }

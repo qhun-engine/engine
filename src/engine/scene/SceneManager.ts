@@ -99,6 +99,12 @@ export class SceneManager implements Updateable, Drawable {
             return;
         }
 
+        // draw world if available
+        const world = this.activeScene.getTileWorld();
+        if (world) {
+            renderer.drawTileWorld(world);
+        }
+
         // iterate over the entities and draw them
         this.activeScene.getEntities()
             .filter(entity => renderer.isEntityRenderable(entity))

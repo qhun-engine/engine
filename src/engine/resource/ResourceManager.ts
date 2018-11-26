@@ -11,6 +11,9 @@ import { ClassConstructor } from "../constraint/ClassConstructor";
 import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
 import { Engine } from "../Engine";
 import { DeclareAnimationMetadata } from "./decorator/DeclareAnimationMetadata";
+import { TileMapResource } from "./tileset/TileMapResource";
+import { TileMapMetadata } from "./tileset/TileMapMetadata";
+import { TileWorldResource } from "./tileset/TileWorldResource";
 
 /**
  * The resource manager stores resources, group resources and load resources when
@@ -75,7 +78,7 @@ export class ResourceManager {
     }
 
     /**
-     * load the given text resource into the game
+     * load the given sprite resource into the game
      * @param imageUrl the url of the image
      * @param animationDataUrl the url of the animation data
      * @param resource optionally a resource class
@@ -103,6 +106,54 @@ export class ResourceManager {
             // return complete sprite
             return result[0];
         });
+    }
+
+    /**
+     * load the given tilemap resource into the game
+     * @param imageUrl the url of the image
+     * @param tilemapMetadataUrl the url of the tilemap data
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadTileMap<T extends TileMapResource>(
+        imageUrl: string,
+        tilemapMetadataUrl: string,
+        resource: ClassConstructor<T> = TileMapResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
+
+        // load image and json data
+        return Promise.all([
+            this.loadImage(imageUrl, resource, options),
+            this.loadText<JsonTextResource<TileMapMetadata>>(tilemapMetadataUrl, JsonTextResource, options)
+        ]).then(async (result) => {
+
+            // add animation data
+            result[0].setTileMapMetadata(result[1].getData());
+
+            // extract sprite data
+            await result[0].prepareTiles();
+
+            // return complete sprite
+            return result[0];
+        });
+    }
+
+    /**
+     * load the given tile world resource into the game
+     * @param worldDataUrl the url of the world json data
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadTileWorld<T extends TileWorldResource>(
+        worldDataUrl: string,
+        resource: ClassConstructor<T> = TileWorldResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
+
+        return this.resourceLoader.loadResource<T>(worldDataUrl, resource, Object.assign(options || {}, {
+            type: "text"
+        }));
     }
 
     /**

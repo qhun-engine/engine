@@ -47,7 +47,7 @@ export class GameLoop {
     private fpsMeter = new FPSMeter(document.body, {
         decimals: 1, graph: 1, theme: "dark", left: "5px",
         maxFps: (this.options.fps as number), smoothing: 20,
-        interval: 100
+        interval: 100, bottom: "5px", top: "auto", position: "absolute"
     });
 
     constructor(
