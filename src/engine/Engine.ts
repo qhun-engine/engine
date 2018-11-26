@@ -3,9 +3,7 @@ import { RenderContext } from "./render/RenderContext";
 import { QhunGameOptions } from "./bootstrap/QhunGameOptions";
 import { ConsolePerformanceLogger } from "./debug/ConsolePerformanceLogger";
 import { ConsoleLoggerPrefix } from "./debug/ConsoleLoggerPrefix";
-import { SceneManager } from "./scene/SceneManager";
-import { MessageBus } from "./message/MessageBus";
-import { Vector } from "./math/Vector";
+import { GameLoop } from "./GameLoop";
 
 @Injectable()
 export class Engine {
@@ -25,36 +23,28 @@ export class Engine {
      */
     private gameOptions!: QhunGameOptions;
 
-    private now!: number;
-    private then!: number;
-    private interval!: number;
-    private delta!: number;
-    private targetFps!: number;
-    private fps: number = 0;
-    private oldTime: number = 0;
-    private timePerFrame: number = 0;
-
-    private engineUsageStack: number[] = [];
-    private fpsStack: number[] = [];
+    /**
+     * the game loop instance
+     */
+    private gameLoop!: GameLoop;
 
     /**
      * life cycle hooks into the engine
      */
     private lifeCycleHooks: {
-        draw: ((delta: number, renderContent: RenderContext, engine: Engine) => void)[],
-        update: ((delta: number, engine: Engine) => void)[]
+        draw: ((...args: any[]) => void)[],
+        update: ((...args: any[]) => void)[]
     } = { draw: [], update: [] };
 
     constructor(
-        private logger: ConsolePerformanceLogger,
-        private sceneManager: SceneManager,
-        private messageBus: MessageBus
+        private logger: ConsolePerformanceLogger
     ) {
 
         // get animation frame function
         window.requestAnimationFrame = window.requestAnimationFrame ||
-            ((window as any).mozRequestAnimationFrame) ||
-            (window as any).webkitRequestAnimationFrame;
+            (window as any).mozRequestAnimationFrame ||
+            (window as any).webkitRequestAnimationFrame ||
+            (window as any).msRequestAnimationFrame;
     }
 
     /**
@@ -102,11 +92,17 @@ export class Engine {
      */
     public start(): void {
 
-        // set initial timings
-        this.then = performance.now();
+        // create game loop
+        this.gameLoop = new GameLoop(
+            this,
+            this.gameOptions,
+            this.renderContent,
+            this.lifeCycleUpdate.bind(this),
+            this.lifeCycleDraw.bind(this)
+        );
 
-        // start looping
-        requestAnimationFrame(this.gameLoop.bind(this));
+        // start the loop
+        this.gameLoop.start();
     }
 
     /**
@@ -114,7 +110,8 @@ export class Engine {
      */
     public getFPS(): number {
 
-        return this.fps;
+        // return this.fps;
+        return 0;
     }
 
     /**
@@ -123,7 +120,7 @@ export class Engine {
      */
     public getEngineUsage(): number {
 
-        // 0 check
+        /*// 0 check
         if (this.timePerFrame === 0) {
             return 0;
         }
@@ -132,7 +129,8 @@ export class Engine {
         const timeRenderFps = (1 / this.targetFps) * 1000;
 
         // get pct
-        return this.timePerFrame * 100 / timeRenderFps;
+        return this.timePerFrame * 100 / timeRenderFps;*/
+        return 0;
     }
 
     public addLifeCycleHook(phase: "draw", method: (delta: number, renderContent: RenderContext, engine: Engine) => void): void;
@@ -144,77 +142,14 @@ export class Engine {
         }
     }
 
-    /**
-     * the main game look where everything will come together
-     */
-    private gameLoop(time: number): void {
+    private lifeCycleUpdate(...args: any[]): void {
 
-        // setup next game loop cycle
-        requestAnimationFrame(this.gameLoop.bind(this));
-
-        // calculate frame time delta
-        this.now = performance.now();
-        this.delta = this.now - this.then;
-
-        // game update?
-        if (this.delta > this.interval) {
-
-            // update then and timeNeedForFrame
-            this.then = this.now - (this.delta % this.interval);
-            const tmpDelta = time - this.oldTime;
-            this.fps = 1000 / (time - this.oldTime);
-            this.oldTime = time;
-
-            // handle other things!
-            this.messageBus.dispatch();
-
-            // handle user input
-            this.messageBus.dispatch();
-
-            // handle business logic
-            this.lifeCycleHooks.update.forEach(handler => handler(tmpDelta, this));
-            this.sceneManager.update(tmpDelta, this);
-            this.messageBus.dispatch();
-
-            // handle rendering the world
-            this.renderContent.before();
-            this.lifeCycleHooks.draw.forEach(handler => handler(tmpDelta, this.renderContent, this));
-            this.sceneManager.draw(tmpDelta, this.renderContent, this);
-            this.printDebugInformation();
-            this.messageBus.dispatch();
-
-            // calculate time per frame
-            this.timePerFrame = performance.now() - this.now;
-        }
+        this.lifeCycleHooks.update.forEach(handler => handler(...args));
     }
 
-    /**
-     * prints debug information if enabled
-     */
-    private printDebugInformation(): void {
+    private lifeCycleDraw(...args: any[]): void {
 
-        if (this.gameOptions.debugMode) {
-
-            this.engineUsageStack.unshift(Math.floor(this.getEngineUsage()));
-            this.fpsStack.unshift(Math.floor(this.getFPS()));
-
-            if (this.engineUsageStack.length > 250) {
-
-                // remove oldest element
-                this.engineUsageStack.pop();
-                this.fpsStack.pop();
-
-                // calc average
-                const avgEngine = Math.floor(
-                    this.engineUsageStack.reduce((accumulator, currentValue) => accumulator + currentValue) / this.engineUsageStack.length
-                );
-                const avgFps = Math.floor(
-                    this.fpsStack.reduce((accumulator, currentValue) => accumulator + currentValue) / this.engineUsageStack.length
-                );
-
-                this.renderContent.drawText(`FPS: ${avgFps} - Engine Usage: ${avgEngine}%`, Vector.from(10, 20));
-            }
-        }
+        this.lifeCycleHooks.draw.forEach(handler => handler(...args));
     }
 
     /**
@@ -241,8 +176,7 @@ export class Engine {
         }
 
         // update interval
-        this.interval = 1000 / targetFps;
-        this.targetFps = targetFps;
+        this.gameOptions.fps = targetFps;
 
         // another performance print
         this.logger.printText(`Engine will run at ${targetFps} FPS`, ConsoleLoggerPrefix.Bootstrap, 500, 250);

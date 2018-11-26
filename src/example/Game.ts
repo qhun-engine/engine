@@ -9,7 +9,8 @@ import { Vector } from "../engine/math/Vector";
 @QhunGame({
     exposeGameInstance: true,
     renderer: "canvas",
-    debugMode: true
+    debugMode: true,
+    fps: 100
 })
 class Game {
 
@@ -28,8 +29,8 @@ class Game {
 
         man.playAnimation("idle");
 
-        setInterval(() => {
+        /*setInterval(() => {
             man.setRotation(man.getRotation() + .01);
-        }, 10);
+        }, 10);*/
     }
 }

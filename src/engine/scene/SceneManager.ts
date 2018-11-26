@@ -85,14 +85,14 @@ export class SceneManager implements Updateable, Drawable {
     /**
      * @inheritdoc
      */
-    public update(delta: number, engine: Engine): void {
+    public update(delta: number, timeDelta: number, engine: Engine): void {
         // noop
     }
 
     /**
      * @inheritdoc
      */
-    public draw(delta: number, renderer: RenderContext, engine: Engine): void {
+    public draw(delta: number, timeDelta: number, renderer: RenderContext, engine: Engine): void {
 
         // dont draw if there is no active scene
         if (!this.activeScene) {

@@ -47,6 +47,14 @@ export class AnimationStateControl implements Destroyable {
     }
 
     /**
+     * is the animation paused?
+     */
+    public isPaused(): boolean {
+
+        return this.paused;
+    }
+
+    /**
      * set internal animation state data
      * @internal
      */

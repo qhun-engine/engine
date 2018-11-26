@@ -3,7 +3,6 @@ import { AnimationStateControl } from "./AnimationStateControl";
 import { Injectable } from "../di/Injectable";
 import { SpriteResource } from "../resource/sprite/SpriteResource";
 import { Draw } from "../util/decorators/Draw";
-import { Vector } from "../math/Vector";
 
 /**
  * responsable for controling animation states on entities
@@ -30,7 +29,7 @@ export class AnimationManager {
     }
 
     @Draw()
-    public updateAnimations(delta: number): void {
+    public updateAnimations(delta: number, timeDelta: number): void {
 
         // destroy old animations
         this.animationStorage = this.animationStorage.filter(anim => !anim.getAnimationInternalData().destroyed);
@@ -38,22 +37,34 @@ export class AnimationManager {
         // handle every animation in the storage
         this.animationStorage.forEach(anim => {
 
-            const data = anim.getAnimationInternalData();
-
             // dont go with paused animations
-            if (data.paused) {
+            if (anim.isPaused()) {
                 return;
             }
 
             // check if next image should be visible
-            anim.increaseVisibleTime(delta);
+            anim.increaseVisibleTime(timeDelta);
 
-            // get animation image life time
-            // 1 fps means 1 image per ingame time second
-            const animImageLifeTime = 1 / data.fps * 1000;
+            // get current and next index
+            const data = anim.getAnimationInternalData();
+            const currentIndex = data.index;
+            const nextIndex = this.getNextAnimationIndex(data);
+
+            // if the index is different then show the new image
+            if (nextIndex !== currentIndex) {
+
+                // reset visible time
+                anim.resetVisibleTime();
+
+                // set new index
+                anim.setAnimationImageIndex(nextIndex);
+
+                // show next image
+                data.entity.setRenderableTexture(data.images[nextIndex]);
+            }
 
             // next frame ready to draw?
-            if (data.currentVisibleTime >= animImageLifeTime) {
+            /*if (data.currentVisibleTime >= animImageLifeTime) {
 
                 // reset currentImageVisibleTime
                 anim.resetVisibleTime();
@@ -70,7 +81,39 @@ export class AnimationManager {
                 }
 
                 data.entity.setRenderableTexture(data.images[data.index]);
-            }
+            }*/
         });
+    }
+
+    /**
+     * get the next visible entity texture
+     * @param data the data for this animation
+     */
+    private getNextAnimationIndex(data: ReturnType<AnimationStateControl["getAnimationInternalData"]>): number {
+
+        // get animation image life time per image
+        // eg. 16.67ms at 60 fps
+        const animImageLifeTime = 1000 / data.fps;
+
+        // get current data
+        const currentLifeTime = data.currentVisibleTime;
+        let currentIndex = data.index;
+
+        // index should be increased if the animationLifeTime is exeeded. it it is exeeded multiple times
+        // the index should go up for every nth exeed
+        const lifeTimeDelta = currentLifeTime / animImageLifeTime;
+        const incrementor = Math.floor(lifeTimeDelta);
+
+        // increase index
+        currentIndex += incrementor;
+
+        // check available image bounds
+        while (currentIndex > data.available) {
+
+            // set the index to the offset
+            currentIndex = currentIndex - data.available;
+        }
+
+        return currentIndex;
     }
 }

@@ -12,12 +12,7 @@ import { DeclareAnimation } from "../engine/resource/decorator/DeclareAnimation"
     name: "idle",
     animation: "assets/fighter.json",
     image: "assets/fighter.png",
-    fps: 60
-}, {
-    name: "idle2",
-    animation: "assets/fighter.json",
-    image: "assets/fighter.png",
-    fps: 60
+    fps: 45
 }])
 export class MainEntity implements RenderableEntity, AnimationableEntity {
 
