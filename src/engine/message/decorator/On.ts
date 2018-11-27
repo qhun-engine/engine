@@ -32,7 +32,7 @@ export function On(messageClass: ClassConstructor<Message>, observe: boolean = t
             .subscribe(message => {
 
                 // check if the class is a singleton instance, if not, the metadata request would fail
-                if (metadataRegistry.exists(ReflectionMetadata.Singleton, target.constructor as ClassConstructor)) {
+                if (!metadataRegistry.exists(ReflectionMetadata.Singleton, target.constructor as ClassConstructor)) {
 
                     // no singleton class
                     let errorMessage: string = "You can not use @On, @Once on a class that is not a @Singleton class. ";
