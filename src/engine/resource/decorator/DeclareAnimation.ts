@@ -1,51 +1,52 @@
-import { DeclareAnimationOptions } from "./DeclareAnimationOptions";
-import { ReflectionMetadata } from "../../constraint/ReflectionMetadata";
+import { Injector } from "../../di/Injector";
+import { ResourceLoader } from "../ResourceLoader";
 import { AfterConstructionHook } from "../../util/decorators/AfterConstructionHook";
+import { ResourceError } from "../../exception/ResourceError";
 import { AnimationableEntity } from "../../entity/AnimationableEntity";
-import { Engine } from "../../Engine";
-import { ClassConstructor } from "../../constraint/ClassConstructor";
-import { DeclareAnimationMetadata } from "./DeclareAnimationMetadata";
 import { SpriteResource } from "../sprite/SpriteResource";
-import "reflect-metadata";
 
 /**
- * a class level decorator for entity classes that directly registers this animation for this entity
+ * declares that this `AnimationableEntity` should have the given sprite.
+ * @param animationName the animation name to add
+ * @param animationImageUrl the image url of the sprite
+ * @param animationDataUrl the metadata url of the animation
+ * @param fps the speed of the animation in fps
  */
-export function DeclareAnimation(options: DeclareAnimationOptions[]): ClassDecorator {
+export function DeclareAnimation(animationName: string, animationImageUrl: string, animationDataUrl: string, fps: number): ClassDecorator {
 
     // tslint:disable-next-line ban-types
     return <T extends Function>(target: T) => {
 
-        // declare all animations on the entities metadata
-        const animations: DeclareAnimationMetadata[] = [];
-        options.forEach(option => {
-            animations.push({
-                image: option.image,
-                animation: option.animation,
-                name: option.name,
-                fps: option.fps
-            });
+        // get resource loader to declare the sprite
+        const loader = Injector.getInstance().instantiateClass(ResourceLoader);
+
+        // declare the resource result
+        let resourceResult: SpriteResource;
+
+        // declare this resource!
+        loader.declare(loader.loadSprite, animationImageUrl, animationDataUrl).then(resource => {
+
+            // set the resource of the entity
+            resourceResult = resource;
         });
-        Reflect.defineMetadata(ReflectionMetadata.DeclareAnimation, animations, target);
 
-        // add this target to the storage repository
-        const current = Reflect.getMetadata(ReflectionMetadata.DeclareAnimationRepository, Engine) as ClassConstructor[] || [];
-        const index = current.indexOf(target as any);
-        if (index === -1) {
-            current.push(target as any);
-            Reflect.defineMetadata(ReflectionMetadata.DeclareAnimationRepository, current, Engine);
-        }
+        // overwrite class ctor
+        return AfterConstructionHook((entity: AnimationableEntity) => {
 
-        // hook into the construction of the entity
-        return AfterConstructionHook((entityClass: AnimationableEntity) => {
+            // check for resource result
+            if (!resourceResult) {
 
-            // ger declared metadata with filled sprite data
-            const loadedData = Reflect.getMetadata(ReflectionMetadata.DeclareAnimation, target) as DeclareAnimationMetadata[] || [];
+                // prepare error message
+                let errorMessage: string = "This entity has been constructed before the sprite resource has been available! ";
+                errorMessage += `Entity was ${entity.constructor.name}. Make sure that the resource at ${animationImageUrl} and ${animationDataUrl} exists!`;
 
-            // add the animation
-            loadedData.forEach(anim => {
-                entityClass.addAnimation(anim.name, anim.sprite as SpriteResource, anim.fps);
-            });
+                // throw error
+                throw new ResourceError(errorMessage);
+            }
+
+            // set the animation
+            entity.addAnimation(animationName, resourceResult, fps);
+
         })(target);
     };
 }

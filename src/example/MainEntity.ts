@@ -1,12 +1,7 @@
-import { DeclareAnimation } from "../engine/resource/decorator/DeclareAnimation";
 import { ActorEntity } from "../engine/entity/impl/ActorEntity";
+import { DeclareAnimation } from "../engine/resource/decorator/DeclareAnimation";
 
-@DeclareAnimation([{
-    name: "idle",
-    animation: "assets/fighter.json",
-    image: "assets/fighter.png",
-    fps: 45
-}])
+@DeclareAnimation("idle", "assets/fighter.png", "assets/fighter.json", 12)
 export class MainEntity extends ActorEntity {
 
 }

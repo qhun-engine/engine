@@ -9,6 +9,7 @@ import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 import { MessageBus } from "../message/MessageBus";
 import { EngineBootstrapFinishedMessage } from "../message/internal/state/EngineBootstrapFinishedMessage";
 import { ResourceManager } from "../resource/ResourceManager";
+import { EngineReadyMessage } from "../message/internal/state/EngineReadyMessage";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -49,6 +50,15 @@ export class EngineBootstrap {
     constructor(
         private options: QhunGameOptions
     ) { }
+
+    /**
+     * the final bootstrap method
+     */
+    public engineReady(): void {
+
+        // send engine ready message
+        this.messageBus.send(new EngineReadyMessage());
+    }
 
     /**
      * bootstraps the engine and prepare everything in order to

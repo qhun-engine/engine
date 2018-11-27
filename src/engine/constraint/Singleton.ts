@@ -30,7 +30,7 @@ export function Singleton(): ClassDecorator {
             constructor(...args: any[]) {
                 if (target.__singletonHasBeenCreated) {
 
-                    throw new Error(`The singleton class cannot be instantiated twice! Class name was ${target.constructor.name}.`);
+                    throw new Error(`The singleton class cannot be instantiated twice! Class name was ${target.name}.`);
                 }
 
                 // set singleton property

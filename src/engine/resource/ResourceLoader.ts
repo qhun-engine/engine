@@ -1,117 +1,184 @@
-import { Resource } from "./Resource";
 import { Injectable } from "../di/Injectable";
-import { ClassConstructor } from "../constraint/ClassConstructor";
+import { SoundResource } from "./sound/SoundResource";
+import { TextResource } from "./text/TextResource";
 import { ResourceOptions } from "./ResourceRequestOptions";
+import { SpriteResource } from "./sprite/SpriteResource";
+import { ImageResource } from "./sprite/ImageResource";
+import { JsonTextResource } from "./text/JsonTextResource";
+import { SpriteAnimation } from "./sprite/SpriteAnimation";
+import { ClassConstructor } from "../constraint/ClassConstructor";
+import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
+import { Engine } from "../Engine";
+import { TileMapResource } from "./tileset/TileMapResource";
+import { TileMapMetadata } from "./tileset/TileMapMetadata";
+import { TileWorldResource } from "./tileset/TileWorldResource";
+import { ResourceLoaderUtility } from "./ResourceLoaderUtility";
+import { Resource } from "./Resource";
+import { ResourceManager } from "./ResourceManager";
 
 /**
- * Is responsable for loading resources from sync or async sources
+ * The resource loader uses a declarative loading system. Declare your game resources here
+ * and the loader will load them in the game asset loading phase.
  */
 @Injectable()
 export class ResourceLoader {
 
     /**
-     * loads a resource from a sync or async source. a synchronous source will result in an immediately resolved promise
-     * @param url the url to load the resource from
-     * @param resource the resource constructor
-     * @param type the type of the resource
+     * the loader utility class
      */
-    public async loadResource<R extends Resource = Resource>(
+    private loaderUtil: ResourceLoaderUtility;
+
+    constructor(
+        private resourceManager: ResourceManager
+    ) {
+
+        // construct the loader util
+        this.loaderUtil = new ResourceLoaderUtility();
+    }
+
+    /**
+     * declare your game assets to load them when the engine enters the asset loading phase
+     * @param loader the loader function
+     * @param params the paramters of the loader function
+     */
+    public declare<F extends (...args: any[]) => Promise<Resource>>(loader: F, ...params: Parameters<F>): ReturnType<F> {
+
+        // add to declaration
+        return new Promise<ReturnType<F>>((resolve, reject) => {
+            this.resourceManager.addDeclaredResourceLoader({
+                resolve, reject,
+                loader: loader.bind(this, ...params)
+            });
+        }) as ReturnType<F>;
+    }
+
+    /**
+     * load the given soundfile into the game
+     * @param url the url of the sound file
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadSound<T extends SoundResource>(
         url: string,
-        resource: ClassConstructor<R>,
-        options: ResourceOptions = {
-            ignoreCache: false,
+        resource: ClassConstructor<T> = SoundResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
+
+        return this.loaderUtil.loadResource<T>(url, resource, Object.assign(options || {}, {
+            type: "arraybuffer"
+        }));
+    }
+
+    /**
+     * load the given text resource into the game
+     * @param url the url of the text resource
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadText<T extends TextResource<any>>(
+        url: string,
+        resource: ClassConstructor<T> = TextResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
+
+        return this.loaderUtil.loadResource<T>(url, resource, Object.assign(options || {}, {
             type: "text"
-        }
-    ): Promise<R> {
+        }));
+    }
 
-        // wrap with a promise
-        return new Promise<R>((resolve, reject) => {
+    /**
+     * load the given text resource into the game
+     * @param url the url of the image resource
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadImage<T extends ImageResource>(
+        url: string,
+        resource: ClassConstructor<T> = ImageResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
 
-            try {
+        return this.loaderUtil.loadResource<T>(url, resource, Object.assign(options || {}, {
+            type: "blob"
+        }));
+    }
 
-                // apply default option values
-                options.ignoreCache = typeof options.ignoreCache === "boolean" ? options.ignoreCache : false;
-                options.type = typeof options.type === "string" ? options.type : "text";
+    /**
+     * load the given sprite resource into the game
+     * @param imageUrl the url of the image
+     * @param animationDataUrl the url of the animation data
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadSprite<T extends SpriteResource>(
+        imageUrl: string,
+        animationDataUrl: string,
+        resource: ClassConstructor<T> = SpriteResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
 
-                // construct a xhr request
-                const request = new XMLHttpRequest();
-                request.open("GET", `${url}${options.ignoreCache ? this.getIgnoreCacheSuffix(url) : ""}`);
-                request.responseType = options.type;
+        // load image and json data
+        return Promise.all([
+            this.loadImage(imageUrl, resource, options),
+            this.loadText<JsonTextResource<SpriteAnimation>>(animationDataUrl, JsonTextResource, options)
+        ]).then(async (result) => {
 
-                // handle errors
-                request.onerror = reject;
+            // add animation data
+            result[0].setAnimationData(result[1].getData());
 
-                // handle load event
-                request.onload = () => {
+            // extract sprite data
+            await result[0].prepareSpriteAnimationImages();
 
-                    try {
-
-                        // check status, must be 0 or 200 like
-                        if (request.status === 0 || (request.status >= 200 && request.status <= 299)) {
-
-                            // check for a valid response
-                            const response = request.response;
-                            if (response) {
-
-                                // parse response
-                                this.getResourceFromHttpResponse(response, resource).then(ri => resolve(ri), reject);
-                                return;
-                            } else {
-
-                                reject(`Server answered with status ${request.status} (${request.statusText}) but there is no payload to continue with.`);
-                            }
-                        }
-
-                        // tslint:disable-next-line max-line-length
-                        reject(`Server did not respond with a good status code. Status code was ${request.status} (${request.statusText}). No resource data available`);
-
-                    } catch (e) {
-
-                        reject(e);
-                    }
-                };
-
-                // finally send the http request
-                request.send();
-
-            } catch (e) {
-
-                reject(e);
-            }
+            // return complete sprite
+            return result[0];
         });
     }
 
     /**
-     * get the actual resource from the http response
-     * @param httpResponse the current http response object
-     * @param resource the resource to construct
+     * load the given tilemap resource into the game
+     * @param imageUrl the url of the image
+     * @param tilemapMetadataUrl the url of the tilemap data
+     * @param resource optionally a resource class
+     * @param options optional options for the request
      */
-    private async getResourceFromHttpResponse<R extends Resource = Resource>(httpResponse: any, resource: ClassConstructor<R>): Promise<R> {
+    public async loadTileMap<T extends TileMapResource>(
+        imageUrl: string,
+        tilemapMetadataUrl: string,
+        resource: ClassConstructor<T> = TileMapResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
 
-        const resourceInstance = new resource();
+        // load image and json data
+        return Promise.all([
+            this.loadImage(imageUrl, resource, options),
+            this.loadText<JsonTextResource<TileMapMetadata>>(tilemapMetadataUrl, JsonTextResource, options)
+        ]).then(async (result) => {
 
-        // check if data should be processed
-        if (typeof resourceInstance.process === "function") {
-            httpResponse = await resourceInstance.process(httpResponse);
-        }
+            // add animation data
+            result[0].setTileMapMetadata(result[1].getData());
 
-        // set content
-        resourceInstance.setData(httpResponse);
+            // extract sprite data
+            await result[0].prepareTiles();
 
-        return resourceInstance;
+            // return complete sprite
+            return result[0];
+        });
     }
 
     /**
-     * builds the ignore cache suffix
+     * load the given tile world resource into the game
+     * @param worldDataUrl the url of the world json data
+     * @param resource optionally a resource class
+     * @param options optional options for the request
      */
-    private getIgnoreCacheSuffix(url: string): string {
+    public async loadTileWorld<T extends TileWorldResource>(
+        worldDataUrl: string,
+        resource: ClassConstructor<T> = TileWorldResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
 
-        // if the current url contains query string params, append with &
-        // otherwise append with ?
-        const appendChar = /\?\w*=\w*/.test(url) ? "&" : "?";
-
-        // use current date as nonce
-        return `${appendChar}__ignoreCache=${new Date().getTime()}`;
+        return this.loaderUtil.loadResource<T>(worldDataUrl, resource, Object.assign(options || {}, {
+            type: "text"
+        }));
     }
-
 }
