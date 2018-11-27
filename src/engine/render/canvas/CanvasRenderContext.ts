@@ -114,4 +114,16 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
         this.context.fillStyle = "black";
         this.context.fillText(text, position.x, position.y);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public drawImageAtPosition(image: ImageResource, position: Vector, dimension?: Vector): void {
+
+        if (dimension) {
+            this.context.drawImage(image.getData(), position.x, position.y, dimension.x, dimension.y);
+        } else {
+            this.context.drawImage(image.getData(), position.x, position.y);
+        }
+    }
 }

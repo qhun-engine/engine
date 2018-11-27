@@ -4,6 +4,7 @@ import { Singleton } from "../../constraint/Singleton";
 import { RenderableEntity } from "../../entity/RenderableEntity";
 import { Vector } from "../../math/Vector";
 import { TileWorld } from "../../resource/tileset/TileWorld";
+import { ImageResource } from "../../resource/sprite/ImageResource";
 
 /**
  * the webgl render context
@@ -34,6 +35,14 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
      * @inheritdoc
      */
     public drawText(text: string, position: Vector): void {
+
+        // @todo: implement
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public drawImageAtPosition(image: ImageResource, position: Vector, dimension?: Vector): void {
 
         // @todo: implement
     }

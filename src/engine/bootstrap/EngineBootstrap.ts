@@ -10,6 +10,8 @@ import { MessageBus } from "../message/MessageBus";
 import { EngineBootstrapFinishedMessage } from "../message/internal/state/EngineBootstrapFinishedMessage";
 import { ResourceManager } from "../resource/ResourceManager";
 import { EngineReadyMessage } from "../message/internal/state/EngineReadyMessage";
+import { VisibleLoader } from "./VisibleLoader";
+import { ResourceLoader } from "../resource/ResourceLoader";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -36,10 +38,18 @@ export class EngineBootstrap {
     @Inject()
     private resourceManager!: ResourceManager;
 
+    @Inject()
+    private resourceLoader!: ResourceLoader;
+
     /**
      * the canvas element
      */
     private canvas!: HTMLCanvasElement;
+
+    /**
+     * the visible loading screen
+     */
+    private visibleLoader!: VisibleLoader;
 
     /**
      * the renderer context factory to get the rendering engine
@@ -80,6 +90,9 @@ export class EngineBootstrap {
 
         // construct context renderer
         await this.constructRenderContext();
+
+        // show loading screen
+        this.visibleLoader.startLoadingScreen();
 
         // send bootstrap finished message
         this.messageBus.sendImmediately(new EngineBootstrapFinishedMessage(this.engine));
@@ -147,11 +160,14 @@ export class EngineBootstrap {
      */
     private async constructRenderContext(): Promise<void> {
 
-        // get engine
-        const engine = this.renderContextFactory.createRenderContext(this.canvas, this.options.renderer);
+        // get rendering context
+        const renderContext = this.renderContextFactory.createRenderContext(this.canvas, this.options.renderer);
+
+        // start the visible loading screen
+        this.visibleLoader = new VisibleLoader(renderContext, this.canvas, this.resourceLoader);
 
         // store engine
-        this.engine.setRenderContext(engine);
+        this.engine.setRenderContext(renderContext);
     }
 
 }
