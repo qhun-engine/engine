@@ -6,6 +6,11 @@ import { Subscribable } from "./Subscribable";
 import { Subscription } from "./Subscription";
 import { Observer } from "./Observer";
 
+/**
+ * The observable is like a `Promise` with multiple resolves over a certain amount of time.
+ * You can observe a state and get change notifications, can query wich changes should pass and
+ * call whatever function you like on the result of the event stream
+ */
 export class Observable<T> implements Subscribable<T> {
 
     private internalSubscribe!: (this: Observable<T>, subscriber: Subscriber<T>) => Unsubscribable;
@@ -28,6 +33,12 @@ export class Observable<T> implements Subscribable<T> {
         });
     }
 
+    /**
+     * subscribe to the given `Observable` and pass your observer function to receive updates
+     * @param observer the observer or callback function with the next data
+     * @param error callback function for error cases
+     * @param complete callback function if the observer has marked the event stream as beeing complete
+     */
     public subscribe(
         observer: Observer<T> | ((data: T) => void) | undefined,
         error?: (error: T | Error) => void,
@@ -45,6 +56,10 @@ export class Observable<T> implements Subscribable<T> {
         return subscriber;
     }
 
+    /**
+     * filter next results out of your data stream with the given predicate function
+     * @param predicate the predicate function
+     */
     public filter(predicate: (data: T) => boolean): Observable<T> {
 
         const inObservable = this;
@@ -71,6 +86,10 @@ export class Observable<T> implements Subscribable<T> {
         return outObservable;
     }
 
+    /**
+     * Observes the event stream as long as your given notifier observable is not complete or errored
+     * @param notifier the notifier observable
+     */
     public takeUntil(notifier: Observable<T>): Observable<T> {
 
         const inObservable = this;

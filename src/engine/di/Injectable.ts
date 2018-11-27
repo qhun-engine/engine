@@ -3,7 +3,7 @@ import { ClassConstructor } from "../constraint/ClassConstructor";
 import { Singleton } from "../constraint/Singleton";
 import { Injector } from "./Injector";
 import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
-import "reflect-metadata";
+import { MetadataRegistryService } from "../util/MetadataRegistryService";
 
 /**
  * a class level decorator to tell the injection system that this class is
@@ -20,8 +20,9 @@ export function Injectable(options: InjectableOptions = { singleton: true }): Cl
             originClass = Singleton()(target) as ClassConstructor;
         }
 
-        // add reflection class id
-        Reflect.defineMetadata(ReflectionMetadata.Injectable, Math.random().toString(36).substr(2, 9), target);
+        // add reflection class id and marker
+        const metadataRegistry = MetadataRegistryService.getInstance();
+        metadataRegistry.setValue(ReflectionMetadata.Injectable, target, Math.random().toString(36).substr(2, 9));
 
         // get the injector
         const injector = Injector.getInstance();

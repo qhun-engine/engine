@@ -166,6 +166,9 @@ export class GameLoop {
      */
     private updatePhase(delta: number, timeDelta: number): void {
 
+        // dispatch messages
+        this.messageBus.dispatch();
+
         // execute life cycle hooks
         this.updateHook(delta, timeDelta, this.engine);
     }

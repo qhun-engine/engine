@@ -1,11 +1,22 @@
-export enum ReflectionMetadata {
+export declare type ReflectionMetadataTypes = {
 
-    Singleton = "engine:marker:singleton",
-    Injectable = "engine:marker:injectable",
+    Singleton: boolean,
+    Injectable: string,
 
-    DeclareAnimation = "engine:declare:animation",
-    DeclareAnimationRepository = "engine:storage:animationDeclaration",
+    SingletonInstance: object,
 
-    Controller = "server:controller:prefix",
-    RequestMapping = "server:controller:requestMapping"
-}
+    Controller: string,
+    RequestMapping: string
+};
+
+export declare type ReflectionMetadata = (keyof ReflectionMetadataTypes) | string;
+export const ReflectionMetadata: { [P in keyof ReflectionMetadataTypes]: ReflectionMetadata | string } = {
+
+    Singleton: "engine:marker:singleton",
+    Injectable: "engine:marker:injectable",
+
+    SingletonInstance: "engine:concrete:singletonInstance",
+
+    Controller: "server:controller:prefix",
+    RequestMapping: "server:controller:requestMapping"
+};

@@ -1,6 +1,6 @@
 import { ClassConstructor } from "./ClassConstructor";
 import { ReflectionMetadata } from "./ReflectionMetadata";
-import "reflect-metadata";
+import { MetadataRegistryService } from "../util/MetadataRegistryService";
 
 interface SingletonClass<T extends ClassConstructor> extends ClassConstructor<T> {
 
@@ -19,7 +19,8 @@ export function Singleton(): ClassDecorator {
     return <ClassDecorator>(<Target extends SingletonClass<any>>(target: Target) => {
 
         // add singleton marker
-        Reflect.defineMetadata(ReflectionMetadata.Singleton, true, target);
+        const metaRegistry = MetadataRegistryService.getInstance();
+        metaRegistry.setValue(ReflectionMetadata.Singleton, target, true);
 
         // return singleton implementation
         return class SingletonImpl extends target {
@@ -38,6 +39,13 @@ export function Singleton(): ClassDecorator {
 
                 // construct target
                 super(...args);
+
+                // check for metadata instance add
+                if (!metaRegistry.exists(ReflectionMetadata.SingletonInstance, target)) {
+
+                    // declare the instance
+                    metaRegistry.setValue(ReflectionMetadata.SingletonInstance, target, this);
+                }
             }
         };
     });
