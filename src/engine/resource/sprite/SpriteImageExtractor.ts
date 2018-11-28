@@ -1,8 +1,8 @@
 import { Injectable } from "../../di/Injectable";
 import { SpriteResource } from "./SpriteResource";
-import { DimensionSize, DimensionPosition } from "../../animation/Dimension";
+import { DimensionSize, DimensionPosition } from "../../constraint/Dimension";
 import { ImageResource } from "./ImageResource";
-import { TileMapResource } from "../tileset/TileMapResource";
+import { ImageCropService } from "../util/ImageCropService";
 
 interface SpriteDecoupleResult extends DimensionSize {
 
@@ -34,6 +34,10 @@ export class SpriteImageExtractor {
      */
     private ctx: CanvasRenderingContext2D = (this.canvas.getContext("2d") as CanvasRenderingContext2D);
 
+    constructor(
+        private cropService: ImageCropService
+    ) { }
+
     /**
      * extracts all images from the sprite sheet using the given metadata
      * @param sprite the sprite to get the data from
@@ -50,84 +54,14 @@ export class SpriteImageExtractor {
             const frameData = frames[frameName];
 
             // convert this frame into an image
-            convertPromiseStack.push(this.extractImage(frameData.frame, sprite.getData()).then(imageData => {
+            convertPromiseStack.push(this.cropService.extractFromImage(sprite.getData(), frameData.frame).then(imageData => {
                 return {
                     name: frameName,
-                    image: (new ImageResource()).setData(imageData)
+                    image: (new ImageResource("@internal:canvas", "@internal:canvas")).setData(imageData)
                 } as SpriteDecoupleResult;
             }));
         });
 
         return Promise.all(convertPromiseStack);
-    }
-
-    /**
-     * extracts all images from the tile sheet
-     * @param tilemap the tile to get the data from
-     */
-    public async extractImagesFromTileSheet(tilemap: TileMapResource): Promise<SpriteDecoupleResult[]> {
-
-        const images: HTMLImageElement[] = [];
-        const convertPromiseStack: Promise<SpriteDecoupleResult>[] = [];
-
-        // iterate over every possible sub file
-        const metadata = tilemap.getTileMapMetadata();
-
-        // get the coordinates for every tile
-        let currentX: number = metadata.margin;
-        let currentY: number = metadata.margin;
-        for (let i = 0; i < metadata.tilecount; i++) {
-
-            // check y adjust
-            if (i % metadata.columns === 0 && i > 0) {
-
-                // adjust y
-                currentY += metadata.tileheight + metadata.spacing;
-
-                // reset x
-                currentX = metadata.margin;
-            }
-
-            // get that image
-            convertPromiseStack.push(this.extractImage({
-                x: currentX,
-                y: currentY,
-                w: metadata.tilewidth,
-                h: metadata.tileheight
-            }, tilemap.getData()).then(imageData => {
-                return {
-                    name: i,
-                    image: (new ImageResource()).setData(imageData)
-                } as SpriteDecoupleResult;
-            }));
-
-            // increase the currentX with the next spacing
-            currentX += metadata.tilewidth + metadata.spacing;
-        }
-
-        return Promise.all(convertPromiseStack);
-    }
-
-    /**
-     * extracts an image from the given position with given size from the origin image
-     * @param predicate the position and size
-     * @param origin the original sprite sheet image
-     */
-    private async extractImage(predicate: DimensionSize & DimensionPosition, origin: HTMLImageElement): Promise<HTMLImageElement> {
-
-        // update canvas size
-        this.canvas.width = predicate.w;
-        this.canvas.height = predicate.h;
-
-        // clear
-        this.ctx.clearRect(0, 0, predicate.w, predicate.h);
-
-        // draw image with correct position to put the predicate in the visible area of the canvas
-        this.ctx.drawImage(origin, -predicate.x, -predicate.y);
-
-        // create new image
-        const image = new Image();
-        image.src = this.canvas.toDataURL("image/png");
-        return image;
     }
 }

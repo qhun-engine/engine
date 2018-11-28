@@ -10,6 +10,8 @@ import { Entity } from "../engine/entity/Entity";
 import { Vector } from "../engine/math/Vector";
 import { Random } from "../engine/math/Random";
 import { Renderable } from "../engine/constraint/Renderable";
+import { ResourceLoader } from "../engine/resource/ResourceLoader";
+import { XmlTextResource } from "../engine/resource/text/XmlTestResource";
 
 @QhunGame({
     exposeGameInstance: true,
@@ -22,8 +24,20 @@ class Game {
     constructor(
         private sceneMan: SceneManager,
         private animation: AnimationManager,
-        private t: TransitionContainer
-    ) { }
+        private t: TransitionContainer,
+        private resourceLoader: ResourceLoader
+    ) {
+
+        this.resourceLoader.declare(this.resourceLoader.loadText, "assets/world/mainWorld.tmx", XmlTextResource).then(world => {
+
+            console.log(world);
+        });
+    }
+
+    private xmlTest(): void {
+
+        // noop
+    }
 
     @Once(EngineReadyMessage)
     private startGame(): void {

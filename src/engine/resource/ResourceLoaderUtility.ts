@@ -54,7 +54,7 @@ export class ResourceLoaderUtility {
                             if (response) {
 
                                 // parse response
-                                this.getResourceFromHttpResponse(response, resource).then(ri => resolve(ri), reject);
+                                this.getResourceFromHttpResponse([url, request.responseURL], response, resource).then(ri => resolve(ri), reject);
                                 return;
                             } else {
 
@@ -83,12 +83,18 @@ export class ResourceLoaderUtility {
 
     /**
      * get the actual resource from the http response
+     * @param requestResponseUrl the request and response url of the resource
      * @param httpResponse the current http response object
      * @param resource the resource to construct
      */
-    private async getResourceFromHttpResponse<R extends Resource = Resource>(httpResponse: any, resource: ClassConstructor<R>): Promise<R> {
+    private async getResourceFromHttpResponse<R extends Resource = Resource>(
+        requestResponseUrl: [string, string],
+        httpResponse: any,
+        resource: ClassConstructor<R>
+    ): Promise<R> {
 
-        const resourceInstance = new resource();
+        // build the resource
+        const resourceInstance = new resource(requestResponseUrl[0], requestResponseUrl[1]);
 
         // check if data should be processed
         if (typeof resourceInstance.process === "function") {

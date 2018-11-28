@@ -14,7 +14,7 @@ export interface DimensionSize {
 export interface DimensionPosition {
 
     /**
-     * s coordinate
+     * x coordinate
      */
     x: number;
 

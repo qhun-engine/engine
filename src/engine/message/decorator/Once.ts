@@ -8,9 +8,10 @@ import { On } from "./On";
  * for the correct messages, so children of a certain parent class will also pass! This method is only called
  * once - when a capable message type passes
  * @param messageClass the message class to expect
+ * @param predicate an aditional filter function that is passed into the event stream
  */
-export function Once(messageClass: ClassConstructor<Message>): MethodDecorator {
+export function Once<M extends Message>(messageClass: ClassConstructor<M>, predicate: (message: M) => boolean = () => true): MethodDecorator {
 
     // utilize the on decorator and pass the dont observe boolean
-    return On(messageClass, false);
+    return On(messageClass, false, predicate);
 }

@@ -15,8 +15,13 @@ const metadataRegistry = MetadataRegistryService.getInstance();
  * for the correct messages, so children of a certain parent class will also pass!
  * @param messageClass the message class to expect
  * @param observe observes the `MessageBus` for this message type and dont stop after the first message
+ * @param predicate an aditional filter function that is passed into the event stream
  */
-export function On(messageClass: ClassConstructor<Message>, observe: boolean = true): MethodDecorator {
+export function On<M extends Message>(
+    messageClass: ClassConstructor<M>,
+    observe: boolean = true,
+    predicate: (message: M) => boolean = () => true
+): MethodDecorator {
 
     // tslint:disable-next-line ban-types
     return <MethodDecorator>(<T extends Function>(target: object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) => {
@@ -27,7 +32,7 @@ export function On(messageClass: ClassConstructor<Message>, observe: boolean = t
             // observe the message bus
             .observe()
             // let only pass the correct kind of messages
-            .filter(message => message instanceof messageClass)
+            .filter(message => message instanceof messageClass && predicate(message as M))
             // tell me when one message is available
             .subscribe(message => {
 

@@ -69,7 +69,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
      */
     public drawTileWorld(world: TileWorld): void {
 
-        // get world size
+    /*    // get world size
         const size = world.getWorldSize();
         const tileDimension = world.getTileDimension();
         const layers = world.getWorldLayerCount();
@@ -100,7 +100,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
                     }
                 }
             }
-        }
+        }*/
     }
 
     /**

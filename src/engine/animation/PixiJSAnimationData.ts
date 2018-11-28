@@ -1,4 +1,4 @@
-import { DimensionSize, DimensionPosition } from "./Dimension";
+import { DimensionSize, DimensionPosition } from "../constraint/Dimension";
 
 export interface PixiJSAnimationData {
 

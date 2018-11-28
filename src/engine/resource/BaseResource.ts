@@ -10,6 +10,11 @@ export abstract class BaseResource<T = any> implements Resource<T> {
      */
     protected data!: T;
 
+    constructor(
+        protected requestUrl: string,
+        protected responseUrl: string
+    ) { }
+
     /**
      * get the raw resource data
      */

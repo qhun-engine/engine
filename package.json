@@ -38,6 +38,7 @@
     "event-stream": "3.3.4"
   },
   "dependencies": {
+    "fast-xml-parser": "^3.12.9",
     "reflect-metadata": "^0.1.12"
   }
 }

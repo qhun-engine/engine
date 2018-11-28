@@ -1,4 +1,4 @@
-import { DimensionSize, DimensionPosition } from "../../animation/Dimension";
+import { DimensionSize, DimensionPosition } from "../../constraint/Dimension";
 
 export interface SpriteAnimation {
 
