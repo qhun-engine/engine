@@ -1,7 +1,9 @@
 import { ClassConstructor } from "../constraint/ClassConstructor";
 import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
 import { Observable, Observer, Subscription } from "../async/rx";
+import { MetadataRegistryService } from "../util/MetadataRegistryService";
 import "reflect-metadata";
+import { InjectorError } from "../exception/InjectorError";
 
 export class Injector {
 
@@ -61,6 +63,12 @@ export class Injector {
      */
     public instantiateClass<T extends object>(target: ClassConstructor<T>): T {
 
+        // must be declared as injectable
+        if (!MetadataRegistryService.getInstance().exists(ReflectionMetadata.Injectable, target)) {
+
+            throw new InjectorError(`${target.name} should be instantiated via the dependency injection but this class is not marked as beeing injectable.`);
+        }
+
         // check if this target has been cached
         const cached = this.getFromCache(target);
         if (cached) {
@@ -85,7 +93,7 @@ export class Injector {
 
         // next observable
         if (this.injectionObserver) {
-            console.log("NEXT", instance);
+
             this.injectionObserver.next(instance);
         } else {
             this.injectionQueue.push(instance);
@@ -129,7 +137,9 @@ export class Injector {
      */
     private getCacheIndex(target: ClassConstructor): string {
 
-        return Reflect.getMetadata(ReflectionMetadata.Injectable, target);
+        // index can be found at target or its prototype constructor
+        return Reflect.getMetadata(ReflectionMetadata.Injectable, target) ||
+            Reflect.getMetadata(ReflectionMetadata.Injectable, target.prototype.constructor);
     }
 
     /**

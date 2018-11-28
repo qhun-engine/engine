@@ -1,6 +1,5 @@
 import { Injector } from "../../di/Injector";
 import { Engine } from "../../Engine";
-import { AfterConstructionHook } from "./AfterConstructionHook";
 import { MetadataRegistryService } from "../MetadataRegistryService";
 import { ReflectionMetadata } from "../../constraint/ReflectionMetadata";
 

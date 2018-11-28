@@ -20,7 +20,7 @@ export function Injectable(options: InjectableOptions = { singleton: true }): Cl
             originClass = Singleton()(target) as ClassConstructor;
         }
 
-        // add reflection class id and marker
+        // add reflection class id
         const metadataRegistry = MetadataRegistryService.getInstance();
         metadataRegistry.setValue(ReflectionMetadata.Injectable, target, Math.random().toString(36).substr(2, 9));
 

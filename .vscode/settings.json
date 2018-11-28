@@ -1,0 +1,22 @@
+{
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "fileHeaderComment.parameter":{
+        "*":{
+            "commentbegin": "/*",
+            "commentprefix": " *",
+            "commentend": " */",
+            "project": "qhun-transpiler",
+            "company": "Oliver Leve <dev@qhun.de>"
+        }
+    },
+    "fileHeaderComment.template": {
+        "*":[
+            "${commentbegin}",
+            "${commentprefix} Copyright (c) ${year} ${company}",
+            "${commentprefix}",
+            "${commentprefix} This file is part of ${project}.",
+            "${commentprefix} MIT license. See LISENSE file for details.",
+            "${commentend}"
+        ]
+    }
+}

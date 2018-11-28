@@ -57,7 +57,7 @@ export class AnimationManager {
         renderable.__declaredAnimations = renderable.__declaredAnimations || {};
 
         // add animation
-        renderable.__declaredAnimations[animation.name] = animation as Animation;
+        renderable.__declaredAnimations[animation.name] = Object.assign({}, animation) as Animation;
     }
 
     /**

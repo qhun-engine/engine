@@ -20,6 +20,10 @@ export function DeclareAnimation(animation: SpriteAnimation<[string, string] | S
     // tslint:disable-next-line ban-types
     return <T extends Function>(target: T) => {
 
+        // it is important to copy the animation object that every instantiated object
+        // can be animated for its own
+        animation = Object.assign({}, animation);
+
         if (isSpriteAnimation(animation)) {
 
             // check if the declared animation is a tuple type
@@ -31,7 +35,7 @@ export function DeclareAnimation(animation: SpriteAnimation<[string, string] | S
 
                     // overwrite the existing tuple and
                     // save the sprite resource
-                    animation.animate = resource;
+                    (animation as SpriteAnimation).animate = resource;
                 });
             }
 
