@@ -85,6 +85,7 @@ export class Injector {
 
         // next observable
         if (this.injectionObserver) {
+            console.log("NEXT", instance);
             this.injectionObserver.next(instance);
         } else {
             this.injectionQueue.push(instance);

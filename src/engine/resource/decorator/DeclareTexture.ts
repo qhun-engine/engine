@@ -2,11 +2,11 @@ import { Injector } from "../../di/Injector";
 import { ResourceLoader } from "../ResourceLoader";
 import { ImageResource } from "../sprite/ImageResource";
 import { AfterConstructionHook } from "../../util/decorators/AfterConstructionHook";
-import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ResourceError } from "../../exception/ResourceError";
+import { Renderable } from "../../constraint/Renderable";
 
 /**
- * declares that this `RenderableEntity` should have the given texture.
+ * declares that this `Renderable` should have the given texture.
  * @param textureUrl the texture url
  */
 export function DeclareTexture(textureUrl: string): ClassDecorator {
@@ -28,7 +28,7 @@ export function DeclareTexture(textureUrl: string): ClassDecorator {
         });
 
         // overwrite class ctor
-        return AfterConstructionHook((entity: RenderableEntity) => {
+        return AfterConstructionHook((entity: Renderable) => {
 
             // check for resource result
             if (!resourceResult) {

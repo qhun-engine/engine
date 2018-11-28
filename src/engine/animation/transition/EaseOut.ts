@@ -1,11 +1,13 @@
-import { Transition } from "./Transition";
 import { Injectable } from "../../di/Injectable";
+import { TransitionInBound } from "./TransitionInBound";
 
 /**
  * implements a transition ease out calculation
  */
 @Injectable()
-export class EaseOut implements Transition {
+export class EaseOut implements TransitionInBound {
+
+    public inBound: true = true;
 
     public calculate(x: number): number {
 

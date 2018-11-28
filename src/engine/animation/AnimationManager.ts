@@ -1,8 +1,25 @@
-import { AnimationableEntity } from "../entity/AnimationableEntity";
-import { AnimationStateControl } from "./AnimationStateControl";
 import { Injectable } from "../di/Injectable";
 import { SpriteResource } from "../resource/sprite/SpriteResource";
-import { Draw } from "../util/decorators/Draw";
+import { Renderable } from "../constraint/Renderable";
+import { Animation, SpriteAnimation, CallbackAnimation } from "./Animation";
+import { Animator } from "./Animator";
+import { Linear } from "./transition/Linear";
+import { AnimationError } from "../exception/AnimationError";
+import { Injector } from "../di/Injector";
+import { MetadataRegistryService } from "../util/MetadataRegistryService";
+import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
+import { ClassConstructor } from "../constraint/ClassConstructor";
+import { Transition } from "./transition/Transition";
+
+interface AnimatedRenderable extends Renderable {
+
+    /**
+     * all currently declared animations of this renderable object
+     */
+    __declaredAnimations?: {
+        [animationName: string]: Animation<Renderable>
+    };
+}
 
 /**
  * responsable for controling animation states on entities
@@ -10,110 +27,114 @@ import { Draw } from "../util/decorators/Draw";
 @Injectable()
 export class AnimationManager {
 
-    private animationStorage: AnimationStateControl[] = [];
+    /**
+     * the animator instance
+     */
+    private animator: Animator = new Animator();
 
     /**
-     * plays the given animation on the given entity
-     * @param entity the entity on wich the animation should be played
-     * @param sprite the sprite resource used for animations
-     * @param fps the speed of the animation
+     * the injector
      */
-    public playEntityAnimation(entity: AnimationableEntity, sprite: SpriteResource, fps: number = 1): AnimationStateControl {
+    private injector: Injector = Injector.getInstance();
 
-        // add to storage
-        const stateControl = new AnimationStateControl(entity, sprite.getAnimationImages(), fps);
+    /**
+     * the metadata registry
+     */
+    private metadataRegistry: MetadataRegistryService = MetadataRegistryService.getInstance();
 
-        // push the control to the animation storage
-        this.animationStorage.push(stateControl);
-        return stateControl;
-    }
+    constructor(
+        private linearTransition: Linear
+    ) { }
 
-    @Draw()
-    public updateAnimations(delta: number, timeDelta: number): void {
+    /**
+     * declare the given animation on the renderable object
+     * @param renderable the object that should be animated
+     * @param animation the animation metadata
+     */
+    public addAnimation<R extends AnimatedRenderable>(renderable: R, animation: SpriteAnimation | CallbackAnimation<R>): void {
 
-        // destroy old animations
-        this.animationStorage = this.animationStorage.filter(anim => !anim.getAnimationInternalData().destroyed);
+        // init if nessesary
+        renderable.__declaredAnimations = renderable.__declaredAnimations || {};
 
-        // handle every animation in the storage
-        this.animationStorage.forEach(anim => {
-
-            // dont go with paused animations
-            if (anim.isPaused()) {
-                return;
-            }
-
-            // check if next image should be visible
-            anim.increaseVisibleTime(timeDelta);
-
-            // get current and next index
-            const data = anim.getAnimationInternalData();
-            const currentIndex = data.index;
-            const nextIndex = this.getNextAnimationIndex(data);
-
-            // if the index is different then show the new image
-            if (nextIndex !== currentIndex) {
-
-                // reset visible time
-                anim.resetVisibleTime();
-
-                // set new index
-                anim.setAnimationImageIndex(nextIndex);
-
-                // show next image
-                data.entity.setRenderableTexture(data.images[nextIndex]);
-            }
-
-            // next frame ready to draw?
-            /*if (data.currentVisibleTime >= animImageLifeTime) {
-
-                // reset currentImageVisibleTime
-                anim.resetVisibleTime();
-
-                // check index
-                if (data.index + 1 > data.available) {
-                    anim.setAnimationImageIndex(0);
-                    data.index = 0;
-                } else {
-
-                    // increase index
-                    anim.setAnimationImageIndex(data.index + 1);
-                    data.index += 1;
-                }
-
-                data.entity.setRenderableTexture(data.images[data.index]);
-            }*/
-        });
+        // add animation
+        renderable.__declaredAnimations[animation.name] = animation as Animation;
     }
 
     /**
-     * get the next visible entity texture
-     * @param data the data for this animation
+     * starts the named animation for the given object.
+     * @param renderable the renderable object
+     * @param animation the animation name or animation callback to play
      */
-    private getNextAnimationIndex(data: ReturnType<AnimationStateControl["getAnimationInternalData"]>): number {
+    public startAnimation<R extends AnimatedRenderable>(renderable: R, animation: string | CallbackAnimation<R>): any {
 
-        // get animation image life time per image
-        // eg. 16.67ms at 60 fps
-        const animImageLifeTime = 1000 / data.fps;
+        // declare playable animation
+        let playableAnimation: Animation<R>;
 
-        // get current data
-        const currentLifeTime = data.currentVisibleTime;
-        let currentIndex = data.index;
-
-        // index should be increased if the animationLifeTime is exeeded. it it is exeeded multiple times
-        // the index should go up for every nth exeed
-        const lifeTimeDelta = currentLifeTime / animImageLifeTime;
-        const incrementor = Math.floor(lifeTimeDelta);
-
-        // increase index
-        currentIndex += incrementor;
-
-        // check available image bounds
-        while (currentIndex > data.available) {
-
-            // set the index to the offset
-            currentIndex = currentIndex - data.available;
+        // get the animation data
+        if (typeof animation === "string") {
+            playableAnimation = (renderable as Required<AnimatedRenderable>).__declaredAnimations[animation];
+        } else {
+            playableAnimation = animation;
         }
 
-        return currentIndex;
+        // valid check
+        if (!playableAnimation) {
+
+            throw new AnimationError(`Animation ${typeof animation === "string" ? `with the name ${playableAnimation}` : ""} does not exist on ${renderable}`);
+        }
+
+        // add default / verify transition
+        try {
+            if (playableAnimation.transition) {
+
+                // if this is a class constructor, get it!
+                if (
+                    typeof playableAnimation.transition === "function" &&
+                    this.metadataRegistry.exists(ReflectionMetadata.Injectable, playableAnimation.transition)
+                ) {
+
+                    // get it using the injector
+                    playableAnimation.transition = this.injector.instantiateClass<Transition>(playableAnimation.transition as ClassConstructor<Transition>);
+                } else if (typeof playableAnimation.transition === "function") {
+
+                    // instantiate it
+                    playableAnimation.transition = new playableAnimation.transition();
+                }
+            } else {
+                playableAnimation.transition = this.linearTransition;
+            }
+
+        } catch (e) {
+
+            throw new AnimationError(`Your given transition object/class/function is invalid! Error was: ${e}`);
+        }
+
+        // set transition function
+        playableAnimation.transition = playableAnimation.transition ? playableAnimation.transition : this.linearTransition;
+
+        // play the stored animation
+        this.animator.startAnimation(renderable, playableAnimation);
     }
+
+    /**
+     * stops the given animation on the object
+     * @param renderable the renderable object
+     * @param animationName the animation name to stop
+     */
+    public stopAnimation(renderable: Renderable, animationName: string): void {
+
+        // stop this animation
+        // get the animation data
+        const animation = (renderable as Required<AnimatedRenderable>).__declaredAnimations[animationName];
+
+        // valid check
+        if (!animation) {
+
+            throw new AnimationError(`Animation with the name ${animationName} does not exist on ${renderable}`);
+        }
+
+        // play the stored animation
+        this.animator.stopAnimation(renderable, animation);
+    }
+
 }

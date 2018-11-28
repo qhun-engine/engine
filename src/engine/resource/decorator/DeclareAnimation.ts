@@ -2,50 +2,56 @@ import { Injector } from "../../di/Injector";
 import { ResourceLoader } from "../ResourceLoader";
 import { AfterConstructionHook } from "../../util/decorators/AfterConstructionHook";
 import { ResourceError } from "../../exception/ResourceError";
-import { AnimationableEntity } from "../../entity/AnimationableEntity";
 import { SpriteResource } from "../sprite/SpriteResource";
+import { Renderable } from "../../constraint/Renderable";
+import { Animation, SpriteAnimation, CallbackAnimation, isSpriteAnimation } from "../../animation/Animation";
+import { AnimationManager } from "../../animation/AnimationManager";
+
+// get resource loader to declare the sprite
+const loader = Injector.getInstance().instantiateClass(ResourceLoader);
+const animationManager = Injector.getInstance().instantiateClass(AnimationManager);
 
 /**
- * declares that this `AnimationableEntity` should have the given sprite.
- * @param animationName the animation name to add
- * @param animationImageUrl the image url of the sprite
- * @param animationDataUrl the metadata url of the animation
- * @param fps the speed of the animation in fps
+ * declares that this `Renderable` object should have the given animation.
+ * @param animation the animation options
  */
-export function DeclareAnimation(animationName: string, animationImageUrl: string, animationDataUrl: string, fps: number): ClassDecorator {
+export function DeclareAnimation(animation: SpriteAnimation<[string, string] | SpriteResource> | CallbackAnimation): ClassDecorator {
 
     // tslint:disable-next-line ban-types
     return <T extends Function>(target: T) => {
 
-        // get resource loader to declare the sprite
-        const loader = Injector.getInstance().instantiateClass(ResourceLoader);
+        if (isSpriteAnimation(animation)) {
 
-        // declare the resource result
-        let resourceResult: SpriteResource;
+            // check if the declared animation is a tuple type
+            // if so, the asset must be declared in the asset loading process
+            if (Array.isArray(animation.animate)) {
 
-        // declare this resource!
-        loader.declare(loader.loadSprite, animationImageUrl, animationDataUrl).then(resource => {
+                // declare this resource!
+                loader.declare(loader.loadSprite, animation.animate[0], animation.animate[1]).then(resource => {
 
-            // set the resource of the entity
-            resourceResult = resource;
-        });
+                    // overwrite the existing tuple and
+                    // save the sprite resource
+                    animation.animate = resource;
+                });
+            }
+
+        }
 
         // overwrite class ctor
-        return AfterConstructionHook((entity: AnimationableEntity) => {
+        return AfterConstructionHook((entity: Renderable) => {
 
             // check for resource result
-            if (!resourceResult) {
+            if (isSpriteAnimation(animation) && !(animation.animate instanceof SpriteResource)) {
 
                 // prepare error message
-                let errorMessage: string = "This entity has been constructed before the sprite resource has been available! ";
-                errorMessage += `Entity was ${entity.constructor.name}. Make sure that the resource at ${animationImageUrl} and ${animationDataUrl} exists!`;
+                const errorMessage = `This entity has been constructed before the sprite resource has been available! Entity was ${entity.constructor.name}.`;
 
                 // throw error
                 throw new ResourceError(errorMessage);
             }
 
-            // set the animation
-            entity.addAnimation(animationName, resourceResult, fps);
+            // add the animation
+            animationManager.addAnimation(entity, animation as Animation);
 
         })(target);
     };

@@ -2,6 +2,7 @@ import { EaseIn } from "./EaseIn";
 import { EaseOut } from "./EaseOut";
 import { EaseInOut } from "./EaseInOut";
 import { Linear } from "./Linear";
+import { EaseInElastic } from "./EaseInElastic";
 import { Injectable } from "../../di/Injectable";
 
 /**
@@ -14,7 +15,8 @@ export class TransitionContainer {
         private easeIn: EaseIn,
         private easeOut: EaseOut,
         private easeInOut: EaseInOut,
-        private linear: Linear
+        private linear: Linear,
+        private easeInElastic: EaseInElastic
     ) { }
 
     public getEaseIn(): EaseIn {
@@ -31,5 +33,9 @@ export class TransitionContainer {
 
     public getLinear(): Linear {
         return this.linear;
+    }
+
+    public getEaseInElastic(): EaseInElastic {
+        return this.easeInElastic;
     }
 }

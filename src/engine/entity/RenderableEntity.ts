@@ -1,10 +1,11 @@
 import { Entity } from "./Entity";
 import { ImageResource } from "../resource/sprite/ImageResource";
+import { Renderable } from "../constraint/Renderable";
 
 /**
  * an entity that can be rendered using a `RenderContext`
  */
-export interface RenderableEntity extends Entity {
+export interface RenderableEntity extends Entity, Renderable {
 
     /**
      * set this entity visible or unvisible for the `RenderContext`
@@ -16,23 +17,5 @@ export interface RenderableEntity extends Entity {
      * check if this entity is visible for the `RenderContext`
      */
     isVisible(): boolean;
-
-    /**
-     * set the texture for this entity
-     * @param texture the texture for this entity
-     */
-    setTexture(texture: ImageResource): ThisType<RenderableEntity>;
-
-    /**
-     * set the texture for this entity
-     * @param texture the texture for this entity
-     * @internal
-     */
-    setRenderableTexture(texture: ImageResource): ThisType<RenderableEntity>;
-
-    /**
-     * get the current texture of the entity
-     */
-    getTexture(): ImageResource;
 
 }

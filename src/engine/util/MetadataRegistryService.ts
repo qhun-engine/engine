@@ -1,6 +1,7 @@
 import { ClassConstructor } from "../constraint/ClassConstructor";
 import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
 import "reflect-metadata";
+import { Observer, Observable, Subscription } from "../async/rx";
 
 export class MetadataRegistryService {
 
@@ -8,6 +9,24 @@ export class MetadataRegistryService {
      * the private instance
      */
     private static instance: MetadataRegistryService;
+
+    /**
+     * the metadata observable
+     */
+    private metadataObserver!: Observer<[ClassConstructor, string, any]>;
+    private metadataObservable = new Observable<[ClassConstructor, string, any]>(observer => {
+        this.metadataObserver = observer;
+
+        // dispatch all activity from the queue
+        this.dispatchMetadataQueue();
+
+        return new Subscription();
+    });
+
+    /**
+     * all metadata activity that took place before observable was ready
+     */
+    private metadataQueue: [ClassConstructor, string, any][] = [];
 
     /**
      * get the instance
@@ -19,6 +38,14 @@ export class MetadataRegistryService {
         }
 
         return MetadataRegistryService.instance;
+    }
+
+    /**
+     * observe the metadata adding
+     */
+    public observe<V = any>(): Observable<[ClassConstructor, string, V]> {
+
+        return this.metadataObservable;
     }
 
     /**
@@ -40,6 +67,13 @@ export class MetadataRegistryService {
 
             // save metadata
             Reflect.defineMetadata(metadataKey, currentStack, target);
+
+            // next observable
+            if (this.metadataObserver) {
+                this.metadataObserver.next([target, metadataKey, value]);
+            } else {
+                this.metadataQueue.push([target, metadataKey, value]);
+            }
         }
     }
 
@@ -53,6 +87,13 @@ export class MetadataRegistryService {
 
         // just define/overwrite
         Reflect.defineMetadata(metadataKey, value, target);
+
+        // next observable
+        if (this.metadataObserver) {
+            this.metadataObserver.next([target, metadataKey, value]);
+        } else {
+            this.metadataQueue.push([target, metadataKey, value]);
+        }
     }
 
     /**
@@ -88,5 +129,18 @@ export class MetadataRegistryService {
 
         // make the test
         return currentStack.indexOf(value) === -1;
+    }
+
+    /**
+     * dispatch metadata activity to the observable when ready
+     */
+    private dispatchMetadataQueue(): void {
+
+        this.metadataQueue.forEach(data => {
+            this.metadataObserver.next(data);
+        });
+
+        // queue is not nessesary anymore
+        delete this.metadataQueue;
     }
 }

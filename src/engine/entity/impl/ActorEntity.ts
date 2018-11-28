@@ -1,4 +1,3 @@
-import { AnimationableEntity } from "../AnimationableEntity";
 import { CollidableEntity } from "../CollidableEntity";
 import { RenderableEntity } from "../RenderableEntity";
 import { AnimationManager } from "../../animation/AnimationManager";
@@ -6,13 +5,12 @@ import { SpriteResource } from "../../resource/sprite/SpriteResource";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
 import { Inject } from "../../di/Inject";
-import { AnimationStateControl } from "../../animation/AnimationStateControl";
 import { CollisionType } from "../../collision/CollisionType";
 
 /**
  * an entity class that implements renderability, animations, collisions
  */
-export abstract class ActorEntity implements AnimationableEntity, CollidableEntity, RenderableEntity {
+export abstract class ActorEntity implements CollidableEntity, RenderableEntity {
 
     @Inject()
     private animationManager!: AnimationManager;
@@ -87,10 +85,6 @@ export abstract class ActorEntity implements AnimationableEntity, CollidableEnti
     public setTexture(texture: ImageResource): this {
 
         this.resource = texture;
-
-        // update size
-        this.size = Vector.from(texture.getData().width, texture.getData().height);
-
         return this;
     }
 
@@ -149,31 +143,6 @@ export abstract class ActorEntity implements AnimationableEntity, CollidableEnti
      * @inheritdoc
      */
     public destroy(): void {
-        // noop
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public addAnimation(animationName: string, sprite: SpriteResource, fps: number = 1): this {
-
-        this.animations[animationName] = { sprite, fps };
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public playAnimation(animationName: string): AnimationStateControl {
-
-        return this.animationManager.playEntityAnimation(this, this.animations[animationName].sprite, this.animations[animationName].fps);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public stopAnimation(): void {
-
         // noop
     }
 
