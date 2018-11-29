@@ -12,6 +12,7 @@ import { Random } from "../engine/math/Random";
 import { Renderable } from "../engine/constraint/Renderable";
 import { ResourceLoader } from "../engine/resource/ResourceLoader";
 import { XmlTextResource } from "../engine/resource/text/XmlTestResource";
+import { Threaded } from "../engine/therad/Threaded";
 
 @QhunGame({
     exposeGameInstance: true,
@@ -34,9 +35,19 @@ class Game {
         });
     }
 
-    private xmlTest(): void {
+    @Threaded()
+    private async xmlTest(x: number): Promise<any> {
 
-        // noop
+        const fibonacci = (num: number) => {
+            let result = 0;
+            if (num < 2) {
+                result = num;
+            } else {
+                result = fibonacci(num - 1) + fibonacci(num - 2);
+            }
+            return result;
+        };
+        return fibonacci(x);
     }
 
     @Once(EngineReadyMessage)
@@ -53,6 +64,10 @@ class Game {
             ));
             entities.push(fighter);
         }
+
+        this.xmlTest(45).then(e => {
+            console.log(e);
+        });
 
         const scene = new MainScene();
         scene.addEntity(...entities);

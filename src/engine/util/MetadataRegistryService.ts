@@ -132,6 +132,18 @@ export class MetadataRegistryService {
     }
 
     /**
+     * get the parameters declared on the given method
+     * @param target the target object
+     * @param method the method name or symbol
+     */
+    public getMethodParameters(target: object, method: string | symbol): any[] {
+
+        const parameters = Reflect.getMetadata("design:paramtypes", target, method) || [];
+        console.log(parameters);
+        return parameters;
+    }
+
+    /**
      * dispatch metadata activity to the observable when ready
      */
     private dispatchMetadataQueue(): void {
