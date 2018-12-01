@@ -87,6 +87,14 @@ export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlText
     /**
      * @inheritdoc
      */
+    public getResource(): TileworldResource {
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public async process(data: T): Promise<T> {
 
         // get the loader via manual injection because of circular dependency problem it
@@ -111,12 +119,18 @@ export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlText
         ));
 
         // extract layer data
+        if (!Array.isArray(tmx.map.layer)) {
+            tmx.map.layer = [tmx.map.layer];
+        }
         tmx.map.layer.forEach((layer, layerNumber) => {
 
             // build x and y coordinate for this tile
             let currentX = 0;
             let currentY = 0;
 
+            if (!Array.isArray(layer.data.tile)) {
+                layer.data.tile = [layer.data.tile];
+            }
             layer.data.tile.forEach((tile, i) => {
 
                 // check y adjust

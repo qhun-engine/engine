@@ -6,6 +6,7 @@ import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
 import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
 import { TileworldPerspective } from "../../resource/tileset/TileworldPerspective";
+import { TilePerspectiveRendering } from "../util/TileRendering";
 
 /**
  * the canvas rendering context
@@ -68,17 +69,39 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: RenderableTileWorld): void {
+    public drawTileWorld(world: RenderableTileWorld, renderer: TilePerspectiveRendering): void {
 
-        const perspective = world.getTileWorldPerspective();
-        if (perspective === TileworldPerspective.ORTHOGONAL) {
+        // draw the given tileworld
+        const layers = world.getLayerCount();
+        const size = world.getWorldSize();
+        const tileSize = world.getTileDimension();
 
-            // draw using orthogonal algorithm
-            return this.drawOrthogonalTileworld(world);
-        } else if (perspective === TileworldPerspective.ISOMETRIC) {
+        // get static offset for the given perspective
+        const staticOffset = renderer.getOffset(size.w, size.h, tileSize.w, tileSize.h);
 
-            // draw using isometric algorithm
-            return this.drawIsometricTileworld(world);
+        // iterate over all tiles that should be drawn
+        for (let l = 0; l < layers; l++) {
+            for (let y = 0; y < size.h; y++) {
+                for (let x = 0; x < size.w; x++) {
+
+                    // get the image for this coordinate
+                    const tileImage = world.getTileImageByCoordinate(l, x, y);
+
+                    // draw if image is available
+                    if (tileImage) {
+
+                        // calculate the drawing position based on the perspective
+                        const drawingPosition = renderer
+                            // translate to perspective
+                            .getDrawingCoordinate(x, y, tileSize.w, tileSize.h)
+                            // add static offset
+                            .add(staticOffset);
+
+                        // draw the image at the calculated position
+                        this.context.drawImage(tileImage, drawingPosition.x, drawingPosition.y);
+                    }
+                }
+            }
         }
     }
 
@@ -103,96 +126,6 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
             this.context.drawImage(image.getData(), position.x, position.y, dimension.x, dimension.y);
         } else {
             this.context.drawImage(image.getData(), position.x, position.y);
-        }
-    }
-
-    /**
-     * draws the given world using an orthogonal rendering approach
-     * @param world the world to draw
-     */
-    private drawOrthogonalTileworld(world: RenderableTileWorld): void {
-
-        // draw the given tileworld
-        const layers = world.getLayerCount();
-        const size = world.getWorldSize();
-        const tileSize = world.getTileDimension();
-
-        // iterate over all tiles that should be drawn
-        let drawX = 0;
-        let drawY = 0;
-        for (let l = 0; l < layers; l++) {
-            for (let y = 0; y < size.h; y++) {
-                for (let x = 0; x < size.w; x++) {
-
-                    // get the image for this coordinate
-                    const tileImage = world.getTileImageByCoordinate(l, x, y);
-
-                    // draw if image is available
-                    if (tileImage) {
-                        this.context.drawImage(tileImage, drawX, drawY);
-                    }
-
-                    // increase drawX
-                    drawX += tileSize.w;
-                }
-
-                // increase drawY
-                drawY += tileSize.h;
-
-                // reset drawx
-                drawX = 0;
-            }
-
-            // reset both
-            drawY = 0;
-            drawX = 0;
-        }
-    }
-
-    /**
-     * draws the given world using an isometric rendering approach
-     * @param world the world to draw
-     */
-    private drawIsometricTileworld(world: RenderableTileWorld): void {
-
-        // draw the given tileworld using diamond approach
-        const layers = world.getLayerCount();
-        const size = world.getWorldSize();
-        const tileSize = world.getTileDimension();
-
-        // iterate over layers bottom to top
-        let drawX = size.w - 1;
-        let drawY = 0;
-        for (let l = 0; l < layers; l++) {
-
-            // top to bottom approach for y axis
-            for (let y = 0; y < size.h; y++) {
-
-                // right to left approach for x axis
-                for (let x = size.w - 1; x >= 0; x--) {
-
-                    // get the image for this coordinate
-                    const tileImage = world.getTileImageByCoordinate(l, x, y);
-
-                    // draw if image is available
-                    if (tileImage) {
-                        this.context.drawImage(tileImage, drawX, drawY);
-                    }
-
-                    // decrese drawX
-                    drawX -= tileSize.w;
-                }
-
-                // increase drawY
-                drawY += tileSize.h;
-
-                // reset drawx
-                drawX = size.w - 1;
-            }
-
-            // reset both
-            drawY = 0;
-            drawX = size.w - 1;
         }
     }
 }

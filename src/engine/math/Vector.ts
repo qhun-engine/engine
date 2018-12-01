@@ -1,6 +1,7 @@
 import { Clonable } from "../constraint/Clonable";
+import { DimensionPosition } from "../constraint/Dimension";
 
-export class Vector implements Clonable<Vector> {
+export class Vector implements Clonable<Vector>, DimensionPosition {
 
     /**
      * zero based vector
@@ -69,7 +70,7 @@ export class Vector implements Clonable<Vector> {
      * adds the given vector to the current.
      * @param vector the vector to add
      */
-    public add(vector: Vector): Vector {
+    public add(vector: Vector | DimensionPosition): Vector {
 
         return new Vector(this.x + vector.x, this.y + vector.y);
     }
@@ -78,7 +79,7 @@ export class Vector implements Clonable<Vector> {
      * substracts the given vector from the current
      * @param vector the vector to substract
      */
-    public substract(vector: Vector): Vector {
+    public substract(vector: Vector | DimensionPosition): Vector {
 
         return new Vector(this.x - vector.x, this.y - vector.y);
     }
@@ -87,7 +88,7 @@ export class Vector implements Clonable<Vector> {
      * divides the given vector from the current
      * @param vector the vector to divide
      */
-    public divide(vector: Vector): Vector {
+    public divide(vector: Vector | DimensionPosition): Vector {
 
         return new Vector(this.x / vector.x, this.y / vector.y);
     }
@@ -96,7 +97,7 @@ export class Vector implements Clonable<Vector> {
      * multiply the current vector by given vector
      * @param vector the vector to multiply
      */
-    public multiply(vector: Vector): Vector {
+    public multiply(vector: Vector | DimensionPosition): Vector {
 
         return new Vector(this.x * vector.x, this.y * vector.y);
     }
@@ -199,6 +200,11 @@ export class Vector implements Clonable<Vector> {
 
     public clone(): Vector {
         return new Vector(this.x, this.y);
+    }
+
+    public toString(): string {
+
+        return `${Vector.name}[${this.x}, ${this.y}]`;
     }
 
 }

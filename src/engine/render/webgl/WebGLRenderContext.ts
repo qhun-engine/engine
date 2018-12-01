@@ -5,6 +5,7 @@ import { RenderableEntity } from "../../entity/RenderableEntity";
 import { Vector } from "../../math/Vector";
 import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
 import { ImageResource } from "../../resource/sprite/ImageResource";
+import { TilePerspectiveRendering } from "../util/TileRendering";
 
 /**
  * the webgl render context
@@ -27,7 +28,7 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: RenderableTileWorld): void {
+    public drawTileWorld(world: RenderableTileWorld, renderer: TilePerspectiveRendering): void {
         // @todo: implement
     }
 

@@ -1,14 +1,9 @@
 import { QhunGame } from "../engine/bootstrap/QhunGame";
 import { EngineReadyMessage } from "../engine/message/internal/state/EngineReadyMessage";
 import { Once } from "../engine/message/decorator/Once";
-import { MainEntity } from "./MainEntity";
 import { MainScene } from "./MainScene";
 import { SceneManager } from "../engine/scene/SceneManager";
-import { AnimationManager } from "../engine/animation/AnimationManager";
-import { TransitionContainer } from "../engine/animation/transition/TransitionContainer";
-import { ResourceLoader } from "../engine/resource/ResourceLoader";
-import { TileworldChunkedResource } from "../engine/resource/tileset/TileworldChunkedResource";
-import { MainWorld } from "./MainWorld";
+import { IsometricWorld } from "./world/IsometricWorld";
 
 @QhunGame({
     exposeGameInstance: true,
@@ -19,22 +14,27 @@ import { MainWorld } from "./MainWorld";
 class Game {
 
     constructor(
-        private sceneMan: SceneManager,
-        private animation: AnimationManager,
-        private t: TransitionContainer,
-        private resourceLoader: ResourceLoader
+        private sceneMan: SceneManager
     ) {
 
         // noop
     }
 
+    /*//@Once(EngineReadyMessage)
+    private startOrthogonal(): void {
+
+        const world = new OrthogonalWorld();
+        const scene = new MainScene().setTileworld(world);
+
+        this.sceneMan.switchScene(scene);
+    }*/
+
     @Once(EngineReadyMessage)
-    private startGame(): void {
+    private startIsometric(): void {
 
-        const world = new MainWorld();
-        const scene = new MainScene();
+        const world = new IsometricWorld();
+        const scene = new MainScene().setTileworld(world);
 
-        scene.setTileworld(world);
         this.sceneMan.switchScene(scene);
     }
 }

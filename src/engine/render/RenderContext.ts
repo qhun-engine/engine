@@ -3,6 +3,7 @@ import { Entity } from "../entity/Entity";
 import { Vector } from "../math/Vector";
 import { RenderableTileWorld } from "../resource/tileset/RenderableTileWorld";
 import { ImageResource } from "../resource/sprite/ImageResource";
+import { TilePerspectiveRendering } from "./util/TileRendering";
 
 /**
  * an abstraction layer for webgl and canvas context based rendering
@@ -23,8 +24,9 @@ export interface RenderContext {
     /**
      * draws the tilemap based world
      * @param world the tile world to draw
+     * @param renderer the perspective renderer
      */
-    drawTileWorld(world: RenderableTileWorld): void;
+    drawTileWorld(world: RenderableTileWorld, renderer: TilePerspectiveRendering): void;
 
     /**
      * draws the given text onto the given position

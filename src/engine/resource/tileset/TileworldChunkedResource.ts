@@ -5,6 +5,10 @@ import { DimensionSize } from "../../constraint/Dimension";
 import { Inject } from "../../di/Inject";
 import { ImageChunkService } from "../util/ImageChunkService";
 import { LayeredWorldProperties } from "./LayeredWorldProperties";
+import { TilePerspectiveRenderingFactory } from "../../render/util/TileRenderingFactory";
+import { Injector } from "../../di/Injector";
+import { TileworldPerspective } from "./TileworldPerspective";
+import { ResourceError } from "../../exception/ResourceError";
 
 /**
  * a chunked tile world wraped by a resource context
@@ -75,11 +79,22 @@ export class TileworldChunkedResource<T extends XmlTextResource<TMXTileworld> = 
     /**
      * @inheritdoc
      */
-    @Inject(ImageChunkService)
-    public async process(data: T, chunkService?: ImageChunkService): Promise<T> {
+    public async process(data: T): Promise<T> {
 
         // await parent process
         this.setData(await super.process(data));
+
+        // currently only orthogonal world resources are chunkable
+        // check this first
+        if (this.data.getData().map.__orientation !== TileworldPerspective.ORTHOGONAL) {
+
+            throw new ResourceError(`${this.data.getData().map.__orientation} perspectives are currently not chunkable!`);
+        }
+
+        // get injections
+        const injector = Injector.getInstance();
+        const chunkService = injector.instantiateClass(ImageChunkService);
+        const rendererFactory = injector.instantiateClass(TilePerspectiveRenderingFactory);
 
         // take all layers and chunk them
         this.world.forEach((layer, layerNumber) => {
@@ -97,6 +112,9 @@ export class TileworldChunkedResource<T extends XmlTextResource<TMXTileworld> = 
                 });
             });
         });
+
+        // prepare a rendering engine for the chunk process
+        const renderer = rendererFactory!.createByPerspective(this.data.getData().map.__orientation);
 
         // now get all chunk images
         const chunkPromiseStack: Promise<void>[] = [];
@@ -122,6 +140,8 @@ export class TileworldChunkedResource<T extends XmlTextResource<TMXTileworld> = 
                             }
                         }),
                         this.chunkSize,
+                        // the renderer for the correct perspective
+                        renderer,
                         // tell the chunk service the concrete dimension of one tile because the image may be
                         // empty because of no available tile
                         { w: this.data.getData().map.__tilewidth, h: this.data.getData().map.__tileheight }

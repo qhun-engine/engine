@@ -9,6 +9,8 @@ import { Drawable } from "../constraint/Drawable";
 import { Engine } from "../Engine";
 import { RenderContext } from "../render/RenderContext";
 import { RenderableEntity } from "../entity/RenderableEntity";
+import { TilePerspectiveRendering } from "../render/util/TileRendering";
+import { TilePerspectiveRenderingFactory } from "../render/util/TileRenderingFactory";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
@@ -27,8 +29,15 @@ export class SceneManager implements Updateable, Drawable {
      */
     private previousScene!: Scene;
 
+    /**
+     * if a tile world is added, this perspective renderer is needed
+     * to draw the world in the correct perspective
+     */
+    private currentTileRenderer!: TilePerspectiveRendering;
+
     constructor(
-        private messageBus: MessageBus
+        private messageBus: MessageBus,
+        private tilePerspectiveRenderingFactory: TilePerspectiveRenderingFactory
     ) { }
 
     /**
@@ -67,6 +76,16 @@ export class SceneManager implements Updateable, Drawable {
             await this.loadScene(scene);
         }
 
+        // get the world if any exists
+        const tileWorld = scene.getTileworld();
+        if (tileWorld) {
+
+            // get the perspective renderer
+            // @todo: refactor this unessesary long getter chaining!
+            const perspective = tileWorld.getRenderableWorld().getResource().getData().getData().map.__orientation;
+            this.currentTileRenderer = this.tilePerspectiveRenderingFactory.createByPerspective(perspective);
+        }
+
         // set as active
         this.previousScene = this.activeScene;
         this.activeScene = scene;
@@ -102,7 +121,7 @@ export class SceneManager implements Updateable, Drawable {
         // draw world if available
         const world = this.activeScene.getTileworld();
         if (world) {
-            renderer.drawTileWorld(world.getRenderableWorld());
+            renderer.drawTileWorld(world.getRenderableWorld(), this.currentTileRenderer);
         }
 
         // iterate over the entities and draw them

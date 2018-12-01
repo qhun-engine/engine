@@ -1,5 +1,6 @@
 import { DimensionSize } from "../../constraint/Dimension";
 import { TileworldPerspective } from "./TileworldPerspective";
+import { TileworldResource } from "./TileworldResource";
 
 export interface RenderableTileWorld {
 
@@ -30,4 +31,9 @@ export interface RenderableTileWorld {
      * @param y the y offset in tiles
      */
     getTileImageByCoordinate(layer: number, x: number, y: number): HTMLImageElement;
+
+    /**
+     * get the corresponding tileworld resource
+     */
+    getResource(): TileworldResource;
 }

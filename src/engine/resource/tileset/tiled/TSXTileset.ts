@@ -74,7 +74,7 @@ export interface TSXTileset {
         /**
          * declares the image used with this tileset
          */
-        image: {
+        image?: {
 
             /**
              * height of the image in px
@@ -101,6 +101,27 @@ export interface TSXTileset {
              * the gid of the tile
              */
             __id: number,
+
+            /**
+             * a tile that contains a single image
+             */
+            image?: {
+
+                /**
+                 * height of the image in px
+                 */
+                __height: number,
+
+                /**
+                 * the filename of the image
+                 */
+                __source: string,
+
+                /**
+                 * width of the image in px
+                 */
+                _width: number
+            },
 
             /**
              * xml wrapper object for properties

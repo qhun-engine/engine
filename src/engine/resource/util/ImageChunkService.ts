@@ -1,6 +1,8 @@
 import { Injectable } from "../../di/Injectable";
 import { DimensionSize } from "../../constraint/Dimension";
 import { ResourceError } from "../../exception/ResourceError";
+import { TilePerspectiveRendering } from "../../render/util/TileRendering";
+import { Vector } from "../../math/Vector";
 
 @Injectable()
 export class ImageChunkService {
@@ -19,13 +21,19 @@ export class ImageChunkService {
      * chunk all given images into one larger image. all images must have the same size
      * @param images all images that should be chunked
      * @param chunkSize the chunk or column size
+     * @param renderer the renderer used to calculate drawing positions
      * @param imageSize the size of one image or auto (auto will get the size from the first image)
      */
-    public chunkImages(images: HTMLImageElement[], chunkSize: number, imageSize: DimensionSize | "auto" = "auto"): Promise<HTMLImageElement> {
+    public chunkImages(
+        images: HTMLImageElement[],
+        chunkSize: number,
+        renderer: TilePerspectiveRendering,
+        imageSize: DimensionSize | "auto" = "auto"
+    ): Promise<HTMLImageElement> {
 
         // get image dimension for the drawing process
-        let imageDim = imageSize;
-        if (imageDim === "auto") {
+        let imageDim: DimensionSize = imageSize as DimensionSize;
+        if (imageSize === "auto") {
             const imageToGetSizeFrom = images[0];
             if (!imageToGetSizeFrom) {
                 throw new ResourceError(`Images can not be chunked because the image to get the size from is undefined!`);
@@ -41,27 +49,46 @@ export class ImageChunkService {
         this.canvas.height = imageDim.h * chunkSize;
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // iterate over the images
-        let currentX = 0;
-        let currentY = 0;
+        // sort the data
+        const yxData: HTMLImageElement[][] = [];
+
+        let currentY: number = 0;
+        let currentX: number = 0;
         images.forEach((image, index) => {
 
-            // check y adjust
+            // check y increment
             if (index % chunkSize === 0 && index > 0) {
-
-                // adjust y
-                currentY += (imageDim as DimensionSize).h;
-                // reset x
+                currentY += 1;
                 currentX = 0;
             }
 
-            // draw the image if available
-            if (image) {
-                this.context.drawImage(image, currentX, currentY);
-            }
+            // initialize x
+            yxData[currentY] = yxData[currentY] || [];
 
-            // increase the currentX
-            currentX += (imageDim as DimensionSize).w;
+            // add data
+            yxData[currentY][currentX] = image;
+
+            // increase x
+            currentX += 1;
+        });
+
+        // get static offset for the given perspective
+        const staticOffset = renderer.getOffset(yxData[0].length, yxData.length, imageDim.w, imageDim.h);
+
+        // now iterate over the rows and cols
+        yxData.forEach((column, y) => {
+            renderer.sortXAxis(column).forEach((image, x) => {
+
+                // calculate the drawing position based on the perspective
+                const drawingPosition = renderer
+                    // translate to perspective
+                    .getDrawingCoordinate(x, y, imageDim.w, imageDim.h)
+                    // add static offset
+                    .add(staticOffset);
+
+                // draw image at new coordinates
+                this.context.drawImage(image, drawingPosition.x, drawingPosition.y);
+            });
         });
 
         // save this data

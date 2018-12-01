@@ -7,6 +7,8 @@ import { ImageResource } from "../sprite/ImageResource";
 import { DimensionPosition, DimensionSize } from "../../constraint/Dimension";
 import { ImageCropService } from "../util/ImageCropService";
 import { Injector } from "../../di/Injector";
+import { ResourceError } from "../../exception/ResourceError";
+import { AsyncDataService } from "../../util/AsyncDataService";
 
 /**
  * a tile set wraped by a resource context
@@ -53,18 +55,73 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
     /**
      * @inheritdoc
      */
-    @Inject(ImageCropService)
-    public async process(data: T, imageCropService?: ImageCropService): Promise<T> {
+    public async process(data: T): Promise<T> {
+
+        // get tsx data
+        const tsx = data.getData();
+
+        // test if the tileset contains one sprite sheet or multiple tile images
+        if (tsx.tileset.image) {
+
+            // one sprite sheet image, extract all tile images
+            await this.processTilesetImagesFromSpriteSheet(data);
+        } else if (tsx.tileset.tile && tsx.tileset.tile[0].image) {
+
+            // get every tile image from its origin
+            await this.processTilesetImagesFromMultipleOrigins(data);
+        } else {
+
+            throw new ResourceError(`This tileset resource does not contain any information about tile images!`);
+        }
+
+        // extract properties from the tileset if available
+        if (tsx.tileset.tile && tsx.tileset.tile[0].properties && tsx.tileset.tile[0].properties.property) {
+
+            // iterate over all properties
+            tsx.tileset.tile.forEach(propertiesWrapper => {
+
+                // initialize if empty
+                this.tileProperties[propertiesWrapper.__id] = this.tileProperties[propertiesWrapper.__id] || [];
+
+                // set every property as array
+                let propData = propertiesWrapper.properties.property;
+                if (!Array.isArray(propData)) {
+                    propData = [propData];
+                }
+
+                // add these properties
+                this.tileProperties[propertiesWrapper.__id].push(...propData.map(prop => {
+
+                    // cast to internal property
+                    return {
+                        name: prop.__name,
+                        value: prop.__value
+                    };
+                }));
+            });
+        }
+
+        // return the data without any changes
+        return data;
+    }
+
+    /**
+     * extracts the images from one large sprite sheet file
+     * @param data the processed data
+     */
+    private async processTilesetImagesFromSpriteSheet(data: T): Promise<void> {
 
         // get the loader via manual injection because of circular dependency problem it
         // can not be injected automaticly
-        const loader = Injector.getInstance().instantiateClass(ResourceLoader);
+        const injector = Injector.getInstance();
+        const loader = injector.instantiateClass(ResourceLoader);
+        const imageCropService = injector.instantiateClass(ImageCropService);
 
         // get tsx data
         const tsx = data.getData();
 
         // first load the tileset image
-        const url = data.getRequestUrl().replace(`${tsx.tileset.__name}.tsx`, tsx.tileset.image.__source);
+        const url = data.getRequestUrl().replace(`${tsx.tileset.__name}.tsx`, tsx.tileset.image!.__source);
         this.tilesetImage = await loader!.loadImage(url);
 
         // build the rectangles for the extraction process
@@ -94,35 +151,37 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
 
         // await image processing
         this.tiles = await imageCropService!.extractMultipleFromImage(this.tilesetImage.getData(), rectangleStack);
+    }
 
-        // extract properties from the tileset if available
-        if (tsx.tileset.tile) {
+    /**
+     * get every single tile image from its origin and save it to the class context
+     * @param data the processed data
+     */
+    private async processTilesetImagesFromMultipleOrigins(data: T): Promise<void> {
 
-            // iterate over all properties
-            tsx.tileset.tile.forEach(propertiesWrapper => {
+        // get di services
+        const injector = Injector.getInstance();
+        const asyncData = injector.instantiateClass(AsyncDataService);
+        const loader = injector.instantiateClass(ResourceLoader);
 
-                // initialize if empty
-                this.tileProperties[propertiesWrapper.__id] = this.tileProperties[propertiesWrapper.__id] || [];
+        // get tsx data
+        const tsx = data.getData();
 
-                // set every property as array
-                let propData = propertiesWrapper.properties.property;
-                if (!Array.isArray(propData)) {
-                    propData = [propData];
-                }
+        // iterate over the tiles and get its origin
+        this.tiles = await asyncData.asyncMap(tsx.tileset.tile!, async tile => {
 
-                // add these properties
-                this.tileProperties[propertiesWrapper.__id].push(...propData.map(prop => {
+            // does this tile have an image?
+            if (tile.image) {
 
-                    // cast to internal property
-                    return {
-                        name: prop.__name,
-                        value: prop.__value
-                    };
-                }));
-            });
-        }
+                // get url of the image
+                const url = data.getRequestUrl().replace(`${tsx.tileset.__name}.tsx`, tile.image.__source);
+                return loader.loadImage(url).then(image => image.getData());
+            } else {
 
-        // return the data without any changes
-        return data;
+                // no image available but the tile id is nessesary, use an empty image
+                return new Image();
+            }
+
+        });
     }
 }
