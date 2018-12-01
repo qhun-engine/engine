@@ -10,7 +10,7 @@ import "reflect-metadata";
 export function Inject(...dependencies: ClassConstructor[]): MethodDecorator & PropertyDecorator {
 
     return <T extends { [index: string]: any }>(target: object, propertyKey: string | symbol, descriptor?: TypedPropertyDescriptor<T>) => {
-        console.log(dependencies);
+
         // get the type of the dependency if it is a property decorator
         if (dependencies.length === 0 && !descriptor) {
 

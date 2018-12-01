@@ -4,14 +4,14 @@ import { XmlTextResource } from "../text/XmlTextResource";
 import { TilesetResource } from "./TilesetResource";
 import { Injector } from "../../di/Injector";
 import { ResourceLoader } from "../ResourceLoader";
-import { TileWorld } from "./TileWorld";
+import { RenderableTileWorld } from "./RenderableTileWorld";
 import { DimensionSize } from "../../constraint/Dimension";
 import { LayeredWorldProperties } from "./LayeredWorldProperties";
 
 /**
  * a tile world wraped by a resource context
  */
-export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlTextResource<TMXTileworld>> extends BaseResource<T> implements TileWorld {
+export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlTextResource<TMXTileworld>> extends BaseResource<T> implements RenderableTileWorld {
 
     /**
      * world data with specific tile gid
@@ -48,6 +48,22 @@ export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlText
             w: this.data.getData().map.__width,
             h: this.data.getData().map.__height
         };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getLayerCount(): number {
+
+        return this.world.length;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getTileDimension(): DimensionSize {
+
+        return { w: this.data.getData().map.__tilewidth, h: this.data.getData().map.__tileheight };
     }
 
     /**

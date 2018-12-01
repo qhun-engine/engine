@@ -1,4 +1,6 @@
-export declare type ResourceOptions = {
+import { Resource } from "./Resource";
+
+export declare type ResourceOptions<R extends Resource> = {
 
     /**
      * the type of the resource
@@ -8,5 +10,10 @@ export declare type ResourceOptions = {
     /**
      * ignores http cache by appending a nonce value to the url
      */
-    ignoreCache?: boolean
+    ignoreCache?: boolean,
+
+    /**
+     * a callback to make changes to the resource before the process function is triggered
+     */
+    beforeProcessCallback?: (resourceInstance: R) => void
 };

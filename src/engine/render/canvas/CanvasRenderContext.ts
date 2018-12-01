@@ -4,7 +4,7 @@ import { BaseRenderContext } from "../BaseRenderContext";
 import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
-import { TileWorld } from "../../resource/tileset/TileWorld";
+import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
 
 /**
  * the canvas rendering context
@@ -67,40 +67,43 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: TileWorld): void {
+    public drawTileWorld(world: RenderableTileWorld): void {
 
-    /*    // get world size
+        // draw the given tileworld
+        const layers = world.getLayerCount();
         const size = world.getWorldSize();
-        const tileDimension = world.getTileDimension();
-        const layers = world.getWorldLayerCount();
+        const tileSize = world.getTileDimension();
 
-        const scale = Vector.from(1.2);
-        const scaledDimension = tileDimension.multiply(scale);
+        // iterate over all tiles that should be drawn
+        let drawX = 0;
+        let drawY = 0;
+        for (let l = 0; l < layers; l++) {
+            for (let y = 0; y < size.h; y++) {
+                for (let x = 0; x < size.w; x++) {
 
-        // iterate over every y tile
-        for (let y = 0; y < size.y; y++) {
+                    // get the image for this coordinate
+                    const tileImage = world.getTileImageByCoordinate(l, x, y);
 
-            // iterate over every x tile
-            for (let x = 0; x < size.x; x++) {
-
-                // draw the image at the given position
-                const positionVector = Vector.from(x, y);
-                const drawPositionVector = positionVector.multiply(tileDimension).multiply(scale);
-
-                // iterate over the layers
-                for (let layer = 0; layer < layers; layer++) {
-
-                    // get and draw the tile
-                    const tileNumber = world.getTileAtPosition(positionVector, layer);
-                    const image = world.getTileByNumber(tileNumber || -1);
-
-                    // image check
-                    if (image !== undefined) {
-                        this.context.drawImage(image.getData(), drawPositionVector.x, drawPositionVector.y, scaledDimension.x, scaledDimension.y);
+                    // draw if image is available
+                    if (tileImage) {
+                        this.context.drawImage(tileImage, drawX, drawY);
                     }
+
+                    // increase drawX
+                    drawX += tileSize.w;
                 }
+
+                // increase drawY
+                drawY += tileSize.h;
+
+                // reset drawx
+                drawX = 0;
             }
-        }*/
+
+            // reset both
+            drawY = 0;
+            drawX = 0;
+        }
     }
 
     /**

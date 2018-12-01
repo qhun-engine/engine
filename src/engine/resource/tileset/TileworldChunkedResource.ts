@@ -14,7 +14,7 @@ export class TileworldChunkedResource<T extends XmlTextResource<TMXTileworld> = 
     /**
      * the chunk size in tiles
      */
-    protected chunkSize: number = 10;
+    protected chunkSize: number = 1;
 
     /**
      * the world in chunked format
@@ -25,6 +25,17 @@ export class TileworldChunkedResource<T extends XmlTextResource<TMXTileworld> = 
      * stores layered chunk images
      */
     protected generatedChunks: LayeredWorldProperties<HTMLImageElement> = [];
+
+    /**
+     * set the chunk size. only effective if called before process!
+     * @param chunkSize the new chunk size
+     * @internal
+     */
+    public setChunkSize(chunkSize: number): this {
+
+        this.chunkSize = chunkSize;
+        return this;
+    }
 
     /**
      * @inheritdoc
@@ -39,6 +50,26 @@ export class TileworldChunkedResource<T extends XmlTextResource<TMXTileworld> = 
             w: Math.ceil(unchunkedSize.w / this.chunkSize),
             h: Math.ceil(unchunkedSize.h / this.chunkSize)
         };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getTileDimension(): DimensionSize {
+
+        return {
+            w: this.data.getData().map.__tilewidth * this.chunkSize,
+            h: this.data.getData().map.__tileheight * this.chunkSize
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getTileImageByCoordinate(layer: number, x: number, y: number): HTMLImageElement {
+
+        // first get the tile number
+        return this.generatedChunks[layer].xy[x][y];
     }
 
     /**

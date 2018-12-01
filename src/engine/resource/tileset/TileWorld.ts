@@ -1,17 +1,9 @@
-import { DimensionSize } from "../../constraint/Dimension";
+import { RenderableTileWorld } from "./RenderableTileWorld";
 
-export interface TileWorld {
-
-    /**
-     * get the size of the world in tiles
-     */
-    getWorldSize(): DimensionSize;
+export interface Tileworld {
 
     /**
-     * get the tile image from the tileset by specifing the position of the tile
-     * @param layer the layer number
-     * @param x the x offset in tiles
-     * @param y the y offset in tiles
+     * get the renderable tileworld for this instance
      */
-    getTileImageByCoordinate(layer: number, x: number, y: number): HTMLImageElement;
+    getRenderableWorld(): RenderableTileWorld;
 }

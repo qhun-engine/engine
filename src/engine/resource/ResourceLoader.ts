@@ -61,7 +61,7 @@ export class ResourceLoader {
     public async loadSound<T extends SoundResource>(
         url: string,
         resource: ClassConstructor<T> = SoundResource as ClassConstructor<T>,
-        options?: ResourceOptions
+        options?: ResourceOptions<T>
     ): Promise<T> {
 
         return this.loaderUtil.loadResource<T>(url, resource, Object.assign(options || {}, {
@@ -78,7 +78,7 @@ export class ResourceLoader {
     public async loadText<T extends TextResource<any>>(
         url: string,
         resource: ClassConstructor<T> = TextResource as ClassConstructor<T>,
-        options?: ResourceOptions
+        options?: ResourceOptions<T>
     ): Promise<T> {
 
         return this.loaderUtil.loadResource<T>(url, resource, Object.assign(options || {}, {
@@ -95,7 +95,7 @@ export class ResourceLoader {
     public async loadImage<T extends ImageResource>(
         url: string,
         resource: ClassConstructor<T> = ImageResource as ClassConstructor<T>,
-        options?: ResourceOptions
+        options?: ResourceOptions<T>
     ): Promise<T> {
 
         return this.loaderUtil.loadResource<T>(url, resource, Object.assign(options || {}, {
@@ -114,13 +114,13 @@ export class ResourceLoader {
         imageUrl: string,
         animationDataUrl: string,
         resource: ClassConstructor<T> = SpriteResource as ClassConstructor<T>,
-        options?: ResourceOptions
+        options?: ResourceOptions<T>
     ): Promise<T> {
 
         // load image and json data
         return Promise.all([
             this.loadImage(imageUrl, resource, options),
-            this.loadText<JsonTextResource<SpriteAnimation>>(animationDataUrl, JsonTextResource, options)
+            this.loadText<JsonTextResource<SpriteAnimation>>(animationDataUrl, JsonTextResource, options as ResourceOptions<any>)
         ]).then(async (result) => {
 
             // add animation data
@@ -144,11 +144,11 @@ export class ResourceLoader {
     public async loadTileset<T extends TilesetResource>(
         resourceUrl: string,
         resource: ClassConstructor<T> = TilesetResource as ClassConstructor<T>,
-        options?: ResourceOptions
+        options?: ResourceOptions<T>
     ): Promise<T> {
 
         // load resource data as xml
-        const xmlData = await this.loadText<XmlTextResource<TSXTileset>>(resourceUrl, XmlTextResource, options);
+        const xmlData = await this.loadText<XmlTextResource<TSXTileset>>(resourceUrl, XmlTextResource, options as ResourceOptions<any>);
 
         // construct the tileset
         const tileset = new resource(xmlData.getRequestUrl(), xmlData.getResponseUrl());
@@ -170,14 +170,19 @@ export class ResourceLoader {
     public async loadTileworld<T extends TileworldResource>(
         resourceUrl: string,
         resource: ClassConstructor<T> = TileworldResource as ClassConstructor<T>,
-        options?: ResourceOptions
+        options?: ResourceOptions<T>
     ): Promise<T> {
 
         // load resource data as xml
-        const xmlData = await this.loadText<XmlTextResource<TMXTileworld>>(resourceUrl, XmlTextResource, options);
+        const xmlData = await this.loadText<XmlTextResource<TMXTileworld>>(resourceUrl, XmlTextResource, options as ResourceOptions<any>);
 
         // construct the tileset
         const tileworld = new resource(xmlData.getRequestUrl(), xmlData.getResponseUrl());
+
+        // execute possible callback
+        if (options && typeof options.beforeProcessCallback === "function") {
+            options.beforeProcessCallback(tileworld);
+        }
 
         // process the tileset data
         tileworld.setData(await tileworld.process(xmlData));

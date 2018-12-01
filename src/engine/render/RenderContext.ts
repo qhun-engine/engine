@@ -1,7 +1,7 @@
 import { RenderableEntity } from "../entity/RenderableEntity";
 import { Entity } from "../entity/Entity";
 import { Vector } from "../math/Vector";
-import { TileWorld } from "../resource/tileset/TileWorld";
+import { RenderableTileWorld } from "../resource/tileset/RenderableTileWorld";
 import { ImageResource } from "../resource/sprite/ImageResource";
 
 /**
@@ -24,7 +24,7 @@ export interface RenderContext {
      * draws the tilemap based world
      * @param world the tile world to draw
      */
-    drawTileWorld(world: TileWorld): void;
+    drawTileWorld(world: RenderableTileWorld): void;
 
     /**
      * draws the given text onto the given position

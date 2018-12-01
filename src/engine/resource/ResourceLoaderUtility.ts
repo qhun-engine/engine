@@ -18,7 +18,7 @@ export class ResourceLoaderUtility {
     public async loadResource<R extends Resource = Resource>(
         url: string,
         resource: ClassConstructor<R>,
-        options: ResourceOptions = {
+        options: ResourceOptions<R> = {
             ignoreCache: false,
             type: "text"
         }
@@ -54,7 +54,7 @@ export class ResourceLoaderUtility {
                             if (response) {
 
                                 // parse response
-                                this.getResourceFromHttpResponse([url, request.responseURL], response, resource).then(ri => resolve(ri), reject);
+                                this.getResourceFromHttpResponse([url, request.responseURL], response, resource, options).then(ri => resolve(ri), reject);
                                 return;
                             } else {
 
@@ -86,15 +86,24 @@ export class ResourceLoaderUtility {
      * @param requestResponseUrl the request and response url of the resource
      * @param httpResponse the current http response object
      * @param resource the resource to construct
+     * @param options the resoruce options
      */
     private async getResourceFromHttpResponse<R extends Resource = Resource>(
         requestResponseUrl: [string, string],
         httpResponse: any,
-        resource: ClassConstructor<R>
+        resource: ClassConstructor<R>,
+        options: ResourceOptions<R>
     ): Promise<R> {
 
         // build the resource
         const resourceInstance = new resource(requestResponseUrl[0], requestResponseUrl[1]);
+
+        // check for before process callback
+        if (options.beforeProcessCallback && typeof options.beforeProcessCallback === "function") {
+
+            // execute that callback
+            options.beforeProcessCallback(resourceInstance);
+        }
 
         // check if data should be processed
         if (typeof resourceInstance.process === "function") {
