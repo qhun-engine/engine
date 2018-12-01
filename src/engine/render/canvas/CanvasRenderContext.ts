@@ -5,6 +5,7 @@ import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
 import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
+import { TileworldPerspective } from "../../resource/tileset/TileworldPerspective";
 
 /**
  * the canvas rendering context
@@ -69,6 +70,48 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
      */
     public drawTileWorld(world: RenderableTileWorld): void {
 
+        const perspective = world.getTileWorldPerspective();
+        if (perspective === TileworldPerspective.ORTHOGONAL) {
+
+            // draw using orthogonal algorithm
+            return this.drawOrthogonalTileworld(world);
+        } else if (perspective === TileworldPerspective.ISOMETRIC) {
+
+            // draw using isometric algorithm
+            return this.drawIsometricTileworld(world);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public drawText(text: string, position: Vector): void {
+
+        this.context.transform(1, 0, 0, 1, 0, 0);
+
+        this.context.font = "12px Arial";
+        this.context.fillStyle = "black";
+        this.context.fillText(text, position.x, position.y);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public drawImageAtPosition(image: ImageResource, position: Vector, dimension?: Vector): void {
+
+        if (dimension) {
+            this.context.drawImage(image.getData(), position.x, position.y, dimension.x, dimension.y);
+        } else {
+            this.context.drawImage(image.getData(), position.x, position.y);
+        }
+    }
+
+    /**
+     * draws the given world using an orthogonal rendering approach
+     * @param world the world to draw
+     */
+    private drawOrthogonalTileworld(world: RenderableTileWorld): void {
+
         // draw the given tileworld
         const layers = world.getLayerCount();
         const size = world.getWorldSize();
@@ -107,26 +150,49 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
     }
 
     /**
-     * @inheritdoc
+     * draws the given world using an isometric rendering approach
+     * @param world the world to draw
      */
-    public drawText(text: string, position: Vector): void {
+    private drawIsometricTileworld(world: RenderableTileWorld): void {
 
-        this.context.transform(1, 0, 0, 1, 0, 0);
+        // draw the given tileworld using diamond approach
+        const layers = world.getLayerCount();
+        const size = world.getWorldSize();
+        const tileSize = world.getTileDimension();
 
-        this.context.font = "12px Arial";
-        this.context.fillStyle = "black";
-        this.context.fillText(text, position.x, position.y);
-    }
+        // iterate over layers bottom to top
+        let drawX = size.w - 1;
+        let drawY = 0;
+        for (let l = 0; l < layers; l++) {
 
-    /**
-     * @inheritdoc
-     */
-    public drawImageAtPosition(image: ImageResource, position: Vector, dimension?: Vector): void {
+            // top to bottom approach for y axis
+            for (let y = 0; y < size.h; y++) {
 
-        if (dimension) {
-            this.context.drawImage(image.getData(), position.x, position.y, dimension.x, dimension.y);
-        } else {
-            this.context.drawImage(image.getData(), position.x, position.y);
+                // right to left approach for x axis
+                for (let x = size.w - 1; x >= 0; x--) {
+
+                    // get the image for this coordinate
+                    const tileImage = world.getTileImageByCoordinate(l, x, y);
+
+                    // draw if image is available
+                    if (tileImage) {
+                        this.context.drawImage(tileImage, drawX, drawY);
+                    }
+
+                    // decrese drawX
+                    drawX -= tileSize.w;
+                }
+
+                // increase drawY
+                drawY += tileSize.h;
+
+                // reset drawx
+                drawX = size.w - 1;
+            }
+
+            // reset both
+            drawY = 0;
+            drawX = size.w - 1;
         }
     }
 }

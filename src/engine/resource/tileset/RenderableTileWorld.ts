@@ -1,6 +1,12 @@
 import { DimensionSize } from "../../constraint/Dimension";
+import { TileworldPerspective } from "./TileworldPerspective";
 
 export interface RenderableTileWorld {
+
+    /**
+     * get the rendering perspective
+     */
+    getTileWorldPerspective(): TileworldPerspective;
 
     /**
      * get the size of the world in tiles

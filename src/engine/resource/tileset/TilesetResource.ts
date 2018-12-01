@@ -95,28 +95,32 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
         // await image processing
         this.tiles = await imageCropService!.extractMultipleFromImage(this.tilesetImage.getData(), rectangleStack);
 
-        // extract properties from the tileset
-        tsx.tileset.tile.forEach(propertiesWrapper => {
+        // extract properties from the tileset if available
+        if (tsx.tileset.tile) {
 
-            // initialize if empty
-            this.tileProperties[propertiesWrapper.__id] = this.tileProperties[propertiesWrapper.__id] || [];
+            // iterate over all properties
+            tsx.tileset.tile.forEach(propertiesWrapper => {
 
-            // set every property as array
-            let propData = propertiesWrapper.properties.property;
-            if (!Array.isArray(propData)) {
-                propData = [propData];
-            }
+                // initialize if empty
+                this.tileProperties[propertiesWrapper.__id] = this.tileProperties[propertiesWrapper.__id] || [];
 
-            // add these properties
-            this.tileProperties[propertiesWrapper.__id].push(...propData.map(prop => {
+                // set every property as array
+                let propData = propertiesWrapper.properties.property;
+                if (!Array.isArray(propData)) {
+                    propData = [propData];
+                }
 
-                // cast to internal property
-                return {
-                    name: prop.__name,
-                    value: prop.__value
-                };
-            }));
-        });
+                // add these properties
+                this.tileProperties[propertiesWrapper.__id].push(...propData.map(prop => {
+
+                    // cast to internal property
+                    return {
+                        name: prop.__name,
+                        value: prop.__value
+                    };
+                }));
+            });
+        }
 
         // return the data without any changes
         return data;

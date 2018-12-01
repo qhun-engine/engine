@@ -7,6 +7,7 @@ import { ResourceLoader } from "../ResourceLoader";
 import { RenderableTileWorld } from "./RenderableTileWorld";
 import { DimensionSize } from "../../constraint/Dimension";
 import { LayeredWorldProperties } from "./LayeredWorldProperties";
+import { TileworldPerspective } from "./TileworldPerspective";
 
 /**
  * a tile world wraped by a resource context
@@ -73,6 +74,14 @@ export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlText
 
         // first get the tile number
         return this.generatedWorld[layer].xy[x][y];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getTileWorldPerspective(): TileworldPerspective {
+
+        return this.data.getData().map.__orientation;
     }
 
     /**

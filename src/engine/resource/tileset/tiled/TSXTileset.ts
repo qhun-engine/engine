@@ -95,7 +95,7 @@ export interface TSXTileset {
         /**
          * contains information about tile properties
          */
-        tile: {
+        tile?: {
 
             /**
              * the gid of the tile
