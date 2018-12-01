@@ -2,8 +2,9 @@ import { SpriteAnimation } from "./SpriteAnimation";
 import { ImageResource } from "./ImageResource";
 import { Inject } from "../../di/Inject";
 import { SpriteImageExtractor } from "./SpriteImageExtractor";
+import { NeedPreperation } from "../../constraint/NeedPreperation";
 
-export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> extends ImageResource<T> {
+export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> extends ImageResource<T> implements NeedPreperation {
 
     @Inject()
     private spriteImageExtractor!: SpriteImageExtractor;
@@ -22,7 +23,7 @@ export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> exten
      * take the sprite sheet and animation data to extract all available
      * sub images of the sprite sheet and stores them in this object
      */
-    public async prepareSpriteAnimationImages(): Promise<void> {
+    public async prepare(): Promise<void> {
 
         // decouple sprite images
         const result = await this.spriteImageExtractor.extractImagesFromSpriteSheet(this);

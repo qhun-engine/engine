@@ -11,8 +11,8 @@ import { Vector } from "../engine/math/Vector";
 import { Random } from "../engine/math/Random";
 import { Renderable } from "../engine/constraint/Renderable";
 import { ResourceLoader } from "../engine/resource/ResourceLoader";
-import { XmlTextResource } from "../engine/resource/text/XmlTestResource";
-import { Threaded } from "../engine/therad/Threaded";
+import { XmlTextResource } from "../engine/resource/text/XmlTextResource";
+import { TileworldChunkedResource } from "../engine/resource/tileset/TileworldChunkedResource";
 
 @QhunGame({
     exposeGameInstance: true,
@@ -29,56 +29,15 @@ class Game {
         private resourceLoader: ResourceLoader
     ) {
 
-        this.resourceLoader.declare(this.resourceLoader.loadText, "assets/world/mainWorld.tmx", XmlTextResource).then(world => {
+        this.resourceLoader.declare(this.resourceLoader.loadTileworld, "assets/world/mainWorld.tmx", TileworldChunkedResource).then(world => {
 
             console.log(world);
         });
     }
 
-    @Threaded()
-    private async xmlTest(x: number): Promise<any> {
-
-        const fibonacci = (num: number) => {
-            let result = 0;
-            if (num < 2) {
-                result = num;
-            } else {
-                result = fibonacci(num - 1) + fibonacci(num - 2);
-            }
-            return result;
-        };
-        return fibonacci(x);
-    }
-
     @Once(EngineReadyMessage)
     private startGame(): void {
 
-        const rand = new Random();
-        const entities: (Renderable & Entity)[] = [];
-        for (let i = 0; i < 2; i++) {
-
-            const fighter = new MainEntity();
-            fighter.setPosition(Vector.from(
-                rand.getBetween(0, 800),
-                rand.getBetween(0, 800)
-            ));
-            entities.push(fighter);
-        }
-
-        this.xmlTest(45).then(e => {
-            console.log(e);
-        });
-
-        const scene = new MainScene();
-        scene.addEntity(...entities);
-
-        entities.forEach(entity => {
-            setTimeout(() => {
-
-                this.animation.startAnimation(entity, "idle");
-            }, rand.getBetween(0, 1000));
-        });
-
-        this.sceneMan.switchScene(scene);
+        console.log("READY!");
     }
 }

@@ -40,7 +40,23 @@ export abstract class BaseResource<T = any> implements Resource<T> {
     }
 
     /**
+     * get the url where the resource was requested from
+     */
+    public getRequestUrl(): string {
+
+        return this.requestUrl;
+    }
+
+    /**
+     * get the full response url for this resource
+     */
+    public getResponseUrl(): string {
+
+        return this.responseUrl;
+    }
+
+    /**
      * @inheritdoc
      */
-    public process?(data: any): Promise<T>;
+    public process?(data: any, ...args: any[]): Promise<T>;
 }

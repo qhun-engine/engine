@@ -7,11 +7,14 @@ import { ImageResource } from "./sprite/ImageResource";
 import { JsonTextResource } from "./text/JsonTextResource";
 import { SpriteAnimation } from "./sprite/SpriteAnimation";
 import { ClassConstructor } from "../constraint/ClassConstructor";
-import { ReflectionMetadata } from "../constraint/ReflectionMetadata";
-import { Engine } from "../Engine";
 import { ResourceLoaderUtility } from "./ResourceLoaderUtility";
 import { Resource } from "./Resource";
 import { ResourceManager } from "./ResourceManager";
+import { TilesetResource } from "./tileset/TilesetResource";
+import { XmlTextResource } from "./text/XmlTextResource";
+import { TSXTileset } from "./tileset/tiled/TSXTileset";
+import { TileworldResource } from "./tileset/TileworldResource";
+import { TMXTileworld } from "./tileset/tiled/TMXTileworld";
 
 /**
  * The resource loader uses a declarative loading system. Declare your game resources here
@@ -124,10 +127,62 @@ export class ResourceLoader {
             result[0].setAnimationData(result[1].getData());
 
             // extract sprite data
-            await result[0].prepareSpriteAnimationImages();
+            await result[0].prepare();
 
             // return complete sprite
             return result[0];
         });
+    }
+
+    /**
+     * load the given tileset resource into the game
+     * @param imageUrl the url of the image
+     * @param animationDataUrl the url of the animation data
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadTileset<T extends TilesetResource>(
+        resourceUrl: string,
+        resource: ClassConstructor<T> = TilesetResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
+
+        // load resource data as xml
+        const xmlData = await this.loadText<XmlTextResource<TSXTileset>>(resourceUrl, XmlTextResource, options);
+
+        // construct the tileset
+        const tileset = new resource(xmlData.getRequestUrl(), xmlData.getResponseUrl());
+
+        // process the tileset data
+        tileset.setData(await tileset.process(xmlData));
+
+        // return the complete tileset
+        return tileset as T;
+    }
+
+    /**
+     * load the given tileworld resource into the game
+     * @param imageUrl the url of the image
+     * @param animationDataUrl the url of the animation data
+     * @param resource optionally a resource class
+     * @param options optional options for the request
+     */
+    public async loadTileworld<T extends TileworldResource>(
+        resourceUrl: string,
+        resource: ClassConstructor<T> = TileworldResource as ClassConstructor<T>,
+        options?: ResourceOptions
+    ): Promise<T> {
+
+        // load resource data as xml
+        const xmlData = await this.loadText<XmlTextResource<TMXTileworld>>(resourceUrl, XmlTextResource, options);
+
+        // construct the tileset
+        const tileworld = new resource(xmlData.getRequestUrl(), xmlData.getResponseUrl());
+
+        // process the tileset data
+        tileworld.setData(await tileworld.process(xmlData));
+
+        // return the complete tileset
+        return tileworld as T;
     }
 }

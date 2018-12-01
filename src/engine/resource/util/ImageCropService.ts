@@ -46,6 +46,18 @@ export class ImageCropService {
     }
 
     /**
+     * extracts the given rectangles from the origin image
+     * @param originalImage the original image
+     * @param rectangles the rectangles to get the new image of
+     */
+    public async extractMultipleFromImage(originalImage: HTMLImageElement, rectangles: (DimensionPosition & DimensionSize)[]): Promise<HTMLImageElement[]> {
+
+        return Promise.all(rectangles.map(
+            rect => this.extractFromImage(originalImage, rect)
+        ));
+    }
+
+    /**
      * prepares the internal canvas to be ready for the given data
      * @param width the new width
      * @param height the new height

@@ -7,12 +7,12 @@ import "reflect-metadata";
  * is requested
  * @param dependency the target class you want to inject
  */
-export function Inject(dependency?: ClassConstructor): PropertyDecorator & ParameterDecorator {
+export function Inject(...dependencies: ClassConstructor[]): MethodDecorator & PropertyDecorator {
 
-    return <T extends { [index: string]: any }>(target: T, propertyKey: string | symbol, parameterIndex?: number) => {
-
-        // get the type of the dependency
-        if (!dependency) {
+    return <T extends { [index: string]: any }>(target: object, propertyKey: string | symbol, descriptor?: TypedPropertyDescriptor<T>) => {
+        console.log(dependencies);
+        // get the type of the dependency if it is a property decorator
+        if (dependencies.length === 0 && !descriptor) {
 
             // resolve the type
             const token = Reflect.getMetadata("design:type", target, propertyKey);
@@ -25,18 +25,41 @@ export function Inject(dependency?: ClassConstructor): PropertyDecorator & Param
             }
 
             // cast to class constructor
-            dependency = token as ClassConstructor;
+            dependencies.push(token as ClassConstructor);
         }
 
         // get the injector
         const injector = Injector.getInstance();
+        const resolvedDependencies = dependencies.filter(token => !!token).map(token => injector.instantiateClass(token));
 
-        // property decorator logic
-        if (parameterIndex === undefined) {
+        // test for property decorator first
+        if (!descriptor) {
 
-            // set property value via injector
-            target[propertyKey as keyof T] = injector.instantiateClass(dependency);
+            // set the property on the target
+            (target as T)[propertyKey as keyof T] = resolvedDependencies.length === 1 ? resolvedDependencies[0] : resolvedDependencies;
+
+        } else {
+
+            // must be method decorator
+            // change descriptor to get the injected parameters
+            const origDescriptor = descriptor.value as T;
+
+            // replace descriptor
+            // tslint:disable-next-line
+            descriptor.value = (function (this: object, ...args: any[]) {
+
+                // add given arguments to resolved dependencies
+                resolvedDependencies.unshift(...args);
+
+                // call original function
+                // tslint:disable-next-line
+                return (origDescriptor as any as Function).apply(this, resolvedDependencies);
+
+            }) as any;
+
+            // return the new descriptor
+            return descriptor;
         }
-
     };
+
 }

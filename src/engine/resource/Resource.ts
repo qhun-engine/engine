@@ -22,6 +22,8 @@ export interface Resource<T = any> {
     /**
      * converts the given data from the backend request into T
      * @param data the data to convert to T
+     * @param args use these optional arguments for dependency injection
+     * @internal
      */
-    process?(data: any): Promise<T>;
+    process?(data: T, ...args: any[]): Promise<T>;
 }
