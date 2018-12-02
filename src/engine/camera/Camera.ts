@@ -6,6 +6,8 @@ import { CameraFollowStrategy } from "./follow/CameraFollowStrategy";
 import { HasPosition } from "../constraint/HasPosition";
 import { HasVelocity } from "../constraint/HasVelocity";
 import { Followable } from "./follow/Followable";
+import { InputPoint } from "../input/generic/InputPoint";
+import { Ray } from "../math/Ray";
 
 /**
  * indicates that this class can be used to decide what is on the screen and what is not, that this
@@ -73,4 +75,11 @@ export interface Camera extends HasPosition, HasVelocity {
      * @param strategy the following strategy
      */
     follow<T extends Followable>(object: T, strategy?: CameraFollowStrategy<T>): ThisType<Camera>;
+
+    /**
+     * cast the given input point on the viewport to a ray that will hit
+     * the underlying world position keeping the perspective in mind
+     * @param point the point to cast the ray with
+     */
+    screenToRay(point: InputPoint): Ray;
 }

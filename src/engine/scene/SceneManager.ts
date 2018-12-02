@@ -12,6 +12,7 @@ import { RenderableEntity } from "../entity/RenderableEntity";
 import { TilePerspectiveRendering } from "../render/util/TileRendering";
 import { TilePerspectiveRenderingFactory } from "../render/util/TileRenderingFactory";
 import { Vector } from "../math/Vector";
+import { EntityTypeGuardUtil } from "../entity/util/EntityTypeGuardUtil";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
@@ -34,11 +35,12 @@ export class SceneManager implements Updateable, Drawable {
      * if a tile world is added, this perspective renderer is needed
      * to draw the world in the correct perspective
      */
-    private currentTileRenderer!: TilePerspectiveRendering;
+    private perspectiveRenderer!: TilePerspectiveRendering;
 
     constructor(
         private messageBus: MessageBus,
-        private tilePerspectiveRenderingFactory: TilePerspectiveRenderingFactory
+        private tilePerspectiveRenderingFactory: TilePerspectiveRenderingFactory,
+        private entityTypeGuard: EntityTypeGuardUtil
     ) { }
 
     /**
@@ -84,7 +86,7 @@ export class SceneManager implements Updateable, Drawable {
             // get the perspective renderer
             // @todo: refactor this unessesary long getter chaining!
             const perspective = tileWorld.getRenderableWorld().getResource().getData().getData().map.__orientation;
-            this.currentTileRenderer = this.tilePerspectiveRenderingFactory.createByPerspective(perspective);
+            this.perspectiveRenderer = this.tilePerspectiveRenderingFactory.createByPerspective(perspective);
         }
 
         // set as active
@@ -112,14 +114,28 @@ export class SceneManager implements Updateable, Drawable {
             return;
         }
 
-        // apply entities velocity to position
-        const deltaVector = Vector.from(delta / 1000);
-        this.activeScene.getEntities().forEach(entity => {
+        // get delta per second
+        const deltaSecond = delta / 1000;
 
-            const deltaVelocity = entity.getVelocity().multiply(deltaVector);
-            entity.setPosition(entity.getPosition().add(deltaVelocity));
-            entity.setVelocity(entity.getVelocity().substract(deltaVelocity));
-        });
+        // apply entities velocity to position
+        this.activeScene.getEntities()
+            // only get movable entities
+            .filter(this.entityTypeGuard.isMovingEntity)
+            // iterate over these
+            .forEach(entity => {
+
+                // get entities velocity and friction
+                const velocity = entity.getVelocity();
+                const friction = entity.getFriction();
+
+                // scale the velocity vector by the friction amount and the delta amount of the draw process
+                const tempVelocity = velocity.scale(friction).scale(deltaSecond);
+
+                // set new position of the entity
+                entity.setPosition(entity.getPosition().add(tempVelocity));
+                entity.setVelocity(velocity.substract(tempVelocity));
+
+            });
 
         const camera = this.activeScene.getCamera();
         if (camera) {
@@ -150,7 +166,13 @@ export class SceneManager implements Updateable, Drawable {
         // draw world if available
         const world = this.activeScene.getTileworld();
         if (world) {
-            renderer.drawTileWorld(world.getRenderableWorld(), this.currentTileRenderer);
+
+            // use world before drawing
+            renderer.useWorld(world);
+            renderer.usePerspectiveRenderer(this.perspectiveRenderer);
+
+            // draw the world
+            renderer.drawTileWorld(world.getRenderableWorld());
         }
 
         // iterate over the entities and draw them

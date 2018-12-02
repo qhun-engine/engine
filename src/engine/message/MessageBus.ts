@@ -16,11 +16,7 @@ export class MessageBus {
     /**
      * the message observable
      */
-    private messageObserver!: Observer<Message>;
-    private messageObservable = new Observable<Message>(observer => {
-        this.messageObserver = observer;
-        return new Subscription();
-    });
+    private messageObservers: Observer<Message>[] = [];
 
     /**
      * send a message
@@ -73,7 +69,14 @@ export class MessageBus {
      */
     public observe(): Observable<Message> {
 
-        return this.messageObservable;
+        return new Observable<Message>(observer => {
+            this.messageObservers.push(observer);
+            return new Subscription(() => {
+
+                // remove observer from the stack
+                this.messageObservers = this.messageObservers.splice(this.messageObservers.indexOf(observer), 1);
+            });
+        });
     }
 
     /**
@@ -83,13 +86,13 @@ export class MessageBus {
     private dispatchMessages(messages: Message[]): void {
 
         // check if there are subscribers
-        if (!this.messageObserver) { return; }
+        if (this.messageObservers.length === 0) { return; }
 
         // iterate over all messages
         messages.forEach(message =>
 
             // get all subscriptions and call the data event
-            this.messageObserver.next(message)
+            this.messageObservers.forEach(o => o.next(message))
         );
     }
 }

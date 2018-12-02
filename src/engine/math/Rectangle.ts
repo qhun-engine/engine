@@ -1,4 +1,5 @@
 import { DimensionPosition, DimensionSize } from "../constraint/Dimension";
+import { Vector } from "./Vector";
 
 /**
  * a rectangle based util class
@@ -66,6 +67,19 @@ export class Rectangle implements DimensionPosition, DimensionSize {
         this.right = this.x + this.w;
 
         return this;
+    }
+
+    /**
+     * transforms partials of the rectangle into a vector
+     * @param pairs the pairs of the rectangle to put into the vector
+     */
+    public toVector(pairs: "xy" | "wh" = "xy"): Vector {
+
+        if (pairs === "xy") {
+            return Vector.from(this.x, this.y);
+        } else {
+            return Vector.from(this.w, this.h);
+        }
     }
 
     /**

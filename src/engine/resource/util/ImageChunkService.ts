@@ -77,7 +77,7 @@ export class ImageChunkService {
 
         // now iterate over the rows and cols
         yxData.forEach((column, y) => {
-            renderer.sortXAxis(column).forEach((image, x) => {
+            column.forEach((image, x) => {
 
                 // calculate the drawing position based on the perspective
                 const drawingPosition = renderer

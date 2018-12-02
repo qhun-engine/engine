@@ -52,6 +52,7 @@ export * from "./entity/CollidableEntity";
 export * from "./entity/Entity";
 export * from "./entity/RenderableEntity";
 export * from "./entity/impl/ActorEntity";
+export * from "./entity/util/EntityTypeGuardUtil";
 
 // ## ENVIRONMENT
 // currently no exports

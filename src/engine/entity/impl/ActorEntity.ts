@@ -6,11 +6,12 @@ import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
 import { Inject } from "../../di/Inject";
 import { CollisionType } from "../../collision/CollisionType";
+import { MovingEntity } from "../MovingEntity";
 
 /**
  * an entity class that implements renderability, animations, collisions
  */
-export abstract class ActorEntity implements CollidableEntity, RenderableEntity {
+export abstract class ActorEntity implements CollidableEntity, RenderableEntity, MovingEntity {
 
     @Inject()
     private animationManager!: AnimationManager;
@@ -66,6 +67,16 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity 
      * the collision ignore state of the entity
      */
     protected ignoreCollision: boolean = false;
+
+    /**
+     * the current moving speed in pixel per second
+     */
+    protected speed: number = 0;
+
+    /**
+     * the current friction of the entity
+     */
+    protected friction: number = 0;
 
     /**
      * @inheritdoc
@@ -130,9 +141,26 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity 
     /**
      * @inheritdoc
      */
+    public setSpeed(speed: number): this {
+
+        this.speed = speed;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getSpeed(): number {
+
+        return this.speed;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public getCenter(): Vector {
 
-        return this.position.add(this.size).half();
+        return this.position.add(this.size.half());
     }
 
     /**
@@ -149,6 +177,23 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity 
     public setVelocity(velocity: Vector): this {
 
         this.velocity = velocity;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getFriction(): number {
+
+        return this.friction;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setFriction(friction: number): this {
+
+        this.friction = friction;
         return this;
     }
 
@@ -240,5 +285,19 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity 
     public isCollisionIgnored(): boolean {
 
         return this.ignoreCollision;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public move(position: Vector): this {
+
+        // replace the current velocity with the target position
+        const tempVelocity = this.velocity.add(position.substract(this.position));
+
+        // finally set the velocity
+        this.velocity = tempVelocity;
+
+        return this;
     }
 }

@@ -5,6 +5,7 @@ import { RenderableTileWorld } from "../resource/tileset/RenderableTileWorld";
 import { ImageResource } from "../resource/sprite/ImageResource";
 import { TilePerspectiveRendering } from "./util/TileRendering";
 import { Camera } from "../camera/Camera";
+import { Tileworld } from "../resource/tileset/Tileworld";
 
 /**
  * an abstraction layer for webgl and canvas context based rendering
@@ -28,6 +29,18 @@ export interface RenderContext {
     useCamera(camera: Camera): void;
 
     /**
+     * use the given perspective renderer class for perspective depending translation of coordinates
+     * @param perspectiveRenderer the perspective renderer class
+     */
+    usePerspectiveRenderer(perspectiveRenderer: TilePerspectiveRendering): void;
+
+    /**
+     * use the given world for positioning issues
+     * @param world the world to use
+     */
+    useWorld(world: Tileworld): void;
+
+    /**
      * draws the given entity
      * @param entity the entity to draw
      */
@@ -36,9 +49,8 @@ export interface RenderContext {
     /**
      * draws the tilemap based world
      * @param world the tile world to draw
-     * @param renderer the perspective renderer
      */
-    drawTileWorld(world: RenderableTileWorld, renderer: TilePerspectiveRendering): void;
+    drawTileWorld(world: RenderableTileWorld): void;
 
     /**
      * draws the given text onto the given position
@@ -61,10 +73,4 @@ export interface RenderContext {
      */
     isEntityRenderable(entity: Entity): entity is RenderableEntity;
 
-    /**
-     * translates the rednered context to visualize camera movement
-     * @param x the x offset
-     * @param y the y offset
-     */
-    translate(x: number, y: number): void;
 }

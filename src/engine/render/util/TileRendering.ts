@@ -12,16 +12,13 @@ export interface TilePerspectiveRendering {
     getDrawingCoordinate(x: number, y: number, tileWidth: number, tileHeight: number): Vector;
 
     /**
-     * sorts the given data for the x axis keeping the perspective
-     * @param data the data to sort
+     * get the translated position keeping the perspective in mind
+     * @param x the x position
+     * @param y the y position
+     * @param tileWidth the width in px of one tile
+     * @param tileHeight the height in px of one tile
      */
-    sortXAxis<T extends any>(data: T[]): T[];
-
-    /**
-     * sorts the given data for the y axis keeping the perspective
-     * @param data the data to sort
-     */
-    sortYAxis<T extends any>(data: T[]): T[];
+    getTranslatedPosition(x: number, y: number, tileWidth: number, tileHeight: number): Vector;
 
     /**
      * calculates the nessesary offset for the tiles to be visible while translating positions into other perspectives
@@ -31,4 +28,5 @@ export interface TilePerspectiveRendering {
      * @param tileHeight the height of one tile in pixel
      */
     getOffset(xTileNumbers: number, yTileNumbers: number, tileWidth: number, tileHeight: number): Vector;
+
 }

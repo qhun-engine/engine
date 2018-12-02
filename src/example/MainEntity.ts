@@ -4,4 +4,6 @@ import { DeclareAnimation, DeclareTexture, ActorEntity } from "../engine";
 @DeclareTexture("assets/fighter1.png")
 export class MainEntity extends ActorEntity {
 
+    protected speed: number = 100;
+    protected friction: number = .5;
 }

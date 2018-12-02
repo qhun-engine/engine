@@ -5,7 +5,6 @@ import { RenderableEntity } from "../../entity/RenderableEntity";
 import { Vector } from "../../math/Vector";
 import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
 import { ImageResource } from "../../resource/sprite/ImageResource";
-import { TilePerspectiveRendering } from "../util/TileRendering";
 
 /**
  * the webgl render context
@@ -28,7 +27,7 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: RenderableTileWorld, renderer: TilePerspectiveRendering): void {
+    public drawTileWorld(world: RenderableTileWorld): void {
         // @todo: implement
     }
 
@@ -44,14 +43,6 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
      * @inheritdoc
      */
     public drawImageAtPosition(image: ImageResource, position: Vector, dimension?: Vector): void {
-
-        // @todo: implement
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public translate(x: number, y: number): void {
 
         // @todo: implement
     }

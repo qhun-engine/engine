@@ -13,6 +13,7 @@ import { EngineReadyMessage } from "../message/internal/state/EngineReadyMessage
 import { VisibleLoader } from "./VisibleLoader";
 import { ResourceLoader } from "../resource/ResourceLoader";
 import { Environment } from "../environment/Environment";
+import { InputRegistar } from "../input/InputRegistar";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -44,6 +45,9 @@ export class EngineBootstrap {
 
     @Inject()
     private environment!: Environment;
+
+    @Inject()
+    private input!: InputRegistar;
 
     /**
      * the canvas element
@@ -94,6 +98,9 @@ export class EngineBootstrap {
 
         // update environment canvas dimension
         this.environment.updateCanvasDimension();
+
+        // enable input registar
+        this.input.detectBrowserInputCapabilities();
 
         // construct context renderer
         await this.constructRenderContext();

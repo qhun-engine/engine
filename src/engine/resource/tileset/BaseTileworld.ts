@@ -51,25 +51,19 @@ export abstract class BaseTileworld implements Tileworld {
         // get map perspective
         const perspective = this.worldResource.getData().getData().map.__orientation;
 
-        // get world dimension
-        const worldDimension = Vector.from(
-            this.worldResource.getTileDimension().w * this.worldResource.getWorldSize().w,
-            this.worldResource.getTileDimension().h * this.worldResource.getWorldSize().h
-        );
-
         // build camera by perspective
         if (perspective === TileworldPerspective.ORTHOGONAL) {
             return new OrthographicCamera(
                 initialPosition,
                 Vector.from(env.getViewportSize().w, env.getViewportSize().h),
-                worldDimension,
+                this,
                 zoomScale
             );
         } else if (perspective === TileworldPerspective.ISOMETRIC) {
             return new IsometricCamera(
                 initialPosition,
                 Vector.from(env.getViewportSize().w, env.getViewportSize().h),
-                worldDimension,
+                this,
                 zoomScale
             );
         }

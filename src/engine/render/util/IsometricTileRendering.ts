@@ -21,29 +21,23 @@ export class IsometricTileRendering implements TilePerspectiveRendering {
     /**
      * @inheritdoc
      */
-    public getOffset(xTileNumbers: number, yTileNumbers: number, tileWidth: number, tileHeight: number): Vector {
+    public getTranslatedPosition(x: number, y: number, tileWidth: number, tileHeight: number): Vector {
 
-        return Vector.from(
-            (xTileNumbers / 2) * tileWidth,
-            (yTileNumbers / 2) * (tileHeight / 2)
+        // no translation nessesary
+        return this.getDrawingCoordinate(
+            x / tileWidth, x / tileHeight,
+            tileWidth, tileHeight
         );
     }
 
     /**
      * @inheritdoc
      */
-    public sortXAxis<T extends any>(data: T[]): T[] {
+    public getOffset(xTileNumbers: number, yTileNumbers: number, tileWidth: number, tileHeight: number): Vector {
 
-        // x axis must be reversed
-        return data;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public sortYAxis<T extends any>(data: T[]): T[] {
-
-        // no sorting nessesary
-        return data;
+        return Vector.from(
+            ((xTileNumbers / 2) * tileWidth) - tileWidth / 2,
+            -tileHeight
+        );
     }
 }

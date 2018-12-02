@@ -1,11 +1,13 @@
 import {
     QhunGame, SceneManager, AnimationManager, EngineReadyMessage,
-    Once, Vector, FollowElasticCenterStrategy
+    Once, Vector, FollowElasticCenterStrategy, On, Camera
 } from "../engine";
 import { OrthogonalWorld } from "./world/OrthogonalWorld";
 import { MainEntity } from "./MainEntity";
 import { MainScene } from "./MainScene";
 import { IsometricWorld } from "./world/IsometricWorld";
+import { InputPointDownMessage } from "../engine/message/event/input/InputPointDownMessage";
+import { InputPointMoveMessage } from "../engine/message/event/input/InputPointMoveMessage";
 
 @QhunGame({
     exposeGameInstance: true,
@@ -15,6 +17,9 @@ import { IsometricWorld } from "./world/IsometricWorld";
 })
 class Game {
 
+    private entity!: MainEntity;
+    private camera!: Camera;
+
     constructor(
         private sceneMan: SceneManager,
         private anim: AnimationManager
@@ -23,75 +28,62 @@ class Game {
         // noop
     }
 
-    @Once(EngineReadyMessage)
+    @On(InputPointDownMessage)
+    private moveEntity(message: InputPointDownMessage): void {
+
+        // use the camera to cast a ray into the world
+        const ray = this.camera.screenToRay(message.getPayload());
+        console.log(ray);
+        let pos = ray.getCartesianMapPosition();
+
+        // center entity to calculated position
+        pos = pos.substract(this.entity.getSize().half());
+
+        this.entity.move(pos);
+    }
+
+    /*@On(InputPointMoveMessage)
+    private selectTile(message: InputPointMoveMessage): void {
+
+        // raycast to tile
+        const ray = this.camera.screenToRay(message.getPayload());
+    }*/
+
+    // @Once(EngineReadyMessage)
     private startOrthogonal(): void {
 
         const world = new OrthogonalWorld();
-        const entity = new MainEntity();
-        entity.setSize(Vector.from(
-            entity.getTexture().getData().width,
-            entity.getTexture().getData().height
+        this.entity = new MainEntity();
+        this.entity.setSize(Vector.from(
+            this.entity.getTexture().getData().width,
+            this.entity.getTexture().getData().height
         ));
 
-        const scene = new MainScene().setTileworld(world).addEntity(entity);
+        const scene = new MainScene().setTileworld(world).addEntity(this.entity);
 
-        const camera = world.createCamera();
-        camera.follow(entity, new FollowElasticCenterStrategy(.5, .8));
-        scene.setCamera(camera);
+        this.camera = world.createCamera();
+        this.camera.follow(this.entity, new FollowElasticCenterStrategy(.5, .8));
+        scene.setCamera(this.camera);
 
         this.sceneMan.switchScene(scene);
-
-        window.addEventListener("keydown", (e) => {
-            switch (e.keyCode) {
-                case 37: // left arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(-30, 0)));
-                    break;
-                case 38: // up arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(0, -30)));
-                    break;
-                case 39: // right arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(30, 0)));
-                    break;
-                case 40: // down arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(0, 30)));
-                    break;
-            }
-        }, false);
     }
 
-    // @Once(EngineReadyMessage)
+    @Once(EngineReadyMessage)
     private startIsometric(): void {
 
         const world = new IsometricWorld();
-        const entity = new MainEntity();
-        entity.setSize(Vector.from(
-            entity.getTexture().getData().width,
-            entity.getTexture().getData().height
+        this.entity = new MainEntity();
+        this.entity.setSize(Vector.from(
+            this.entity.getTexture().getData().width,
+            this.entity.getTexture().getData().height
         ));
 
-        const scene = new MainScene().setTileworld(world).addEntity(entity);
+        const scene = new MainScene().setTileworld(world).addEntity(this.entity);
 
-        const camera = world.createCamera();
-        camera.follow(entity);
-        scene.setCamera(camera);
+        this.camera = world.createCamera();
+        this.camera.follow(this.entity, new FollowElasticCenterStrategy(.5, .8));
+        scene.setCamera(this.camera);
 
         this.sceneMan.switchScene(scene);
-
-        window.addEventListener("keydown", (e) => {
-            switch (e.keyCode) {
-                case 37: // left arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(-30, 0)));
-                    break;
-                case 38: // up arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(0, -30)));
-                    break;
-                case 39: // right arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(30, 0)));
-                    break;
-                case 40: // down arrow
-                    entity.setPosition(entity.getPosition().add(Vector.from(0, 30)));
-                    break;
-            }
-        }, false);
     }
 }

@@ -45,13 +45,7 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
      */
     public static from(x: number | DimensionPosition, y?: number): Vector {
 
-        // test if x is a number or position
-        if (typeof x === "object") {
-            return new Vector(x.x, x.y);
-        }
-
-        // use x,y setup
-        return new Vector(x, typeof y !== "number" ? x : y);
+        return new Vector(x, y);
     }
 
     /**
@@ -64,13 +58,39 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
     }
 
     /**
-     * @param x x part of the vector
+     * x part of the vector
+     */
+    public x: number = 0;
+
+    /**
+     * y part of the vector
+     */
+    public y: number = 0;
+
+    /**
+     * @param x x part of the vector or a positioning object
      * @param y y part of the vector
      */
     constructor(
-        public x: number,
-        public y: number
-    ) { }
+        x: number | DimensionPosition,
+        y?: number
+    ) {
+
+        // test if x is a number or position
+        if (typeof x === "object") {
+            this.x = x.x;
+            this.y = x.y;
+        } else {
+
+            // use x,y setup
+            this.x = x as number;
+            if (typeof y !== "number") {
+                this.y = x as number;
+            } else {
+                this.y = y;
+            }
+        }
+    }
 
     /**
      * adds the given vector to the current.
@@ -191,11 +211,11 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
     }
 
     /**
-     * divide the vector by (0.5, 0.5)
+     * multiply the vector by (0.5, 0.5)
      */
     public half(): Vector {
 
-        return this.divide(Vector.HALF);
+        return this.multiply(Vector.HALF);
     }
 
     /**
@@ -228,6 +248,41 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
         return this.substract(vector).abs().magnitude() <= tolerance;
     }
 
+    /**
+     * test if the vector is pointing right
+     */
+    public isPointingRight(): boolean {
+
+        return this.x > 0;
+    }
+
+    /**
+     * test if the vector is pointing left
+     */
+    public isPointingLeft(): boolean {
+
+        return this.x < 0;
+    }
+
+    /**
+     * test if the vector is pointing up
+     */
+    public isPointingUp(): boolean {
+
+        return this.y < 0;
+    }
+
+    /**
+     * test if the vector is pointing up
+     */
+    public isPointingDown(): boolean {
+
+        return this.y > 0;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public clone(): Vector {
         return new Vector(this.x, this.y);
     }

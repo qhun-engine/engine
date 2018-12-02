@@ -6,6 +6,9 @@ import { Rectangle } from "../math/Rectangle";
 import { CameraFollowStrategy } from "./follow/CameraFollowStrategy";
 import { Followable } from "./follow/Followable";
 import { FollowCenterStrategy } from "./follow/FollowCenterStrategy";
+import { InputPoint } from "../input/generic/InputPoint";
+import { Ray } from "../math/Ray";
+import { Tileworld } from "../resource/tileset/Tileworld";
 
 /**
  * the base camera for all known cameras in the game
@@ -25,7 +28,7 @@ export abstract class BaseCamera implements Camera {
     /**
      * world bounds as rectangle
      */
-    protected worldBounds: Rectangle = new Rectangle(0, 0, this.far.x, this.far.y);
+    protected worldBounds: Rectangle;
 
     /**
      * the object that is beeing followed
@@ -38,17 +41,33 @@ export abstract class BaseCamera implements Camera {
     protected followingStrategy!: CameraFollowStrategy<Followable>;
 
     /**
+     * the far point of the world. usually world height and width
+     */
+    protected far: Vector;
+
+    /**
      * @param position the current position of the camera
      * @param near the visible area of the camera. in most cases it is the canvas width/height
-     * @param far the maximum world size or maximin view range. In most cases world width/height
+     * @param world the world where the camera is moving in
      * @param zoomScale the current zoom scale of the camera. Must be greater than 0
      */
     constructor(
         protected position: Vector,
         protected near: Vector,
-        protected far: Vector,
+        protected world: Tileworld,
         protected zoomScale: number = 1
-    ) { }
+    ) {
+
+        // set far point for the given world
+        const tileDim = world.getRenderableWorld().getTileDimension();
+        const worldDim = world.getRenderableWorld().getWorldSize();
+
+        // multipy to get the far point of the camera
+        this.far = Vector.from(tileDim.w * worldDim.w, tileDim.h * worldDim.h);
+
+        // set world bounds as rectangle
+        this.worldBounds = new Rectangle(0, 0, this.far.x, this.far.y);
+    }
 
     /**
      * @inheritdoc
@@ -117,15 +136,15 @@ export abstract class BaseCamera implements Camera {
         // update camera position by following strategy
         if (this.followed) {
 
-            // calculate new position using following strategies
+            // calculate new position using following strategy
             this.position = this.followingStrategy.process(this.followed, this, delta);
         }
 
         // adjust the viewport to center the current position
         const tempViewport = this.viewport;
         tempViewport.set(
-            this.position.x - ((this.viewport.w + this.position.x) / 2),
-            this.position.y - ((this.viewport.h + this.position.y) / 2)
+            this.position.x - (this.viewport.w / 2),
+            this.position.y - (this.viewport.h / 2)
         );
 
         // now check if the new viewport is within the world bounds
@@ -182,6 +201,7 @@ export abstract class BaseCamera implements Camera {
         return this;
     }
 
+    public abstract screenToRay(point: InputPoint): Ray;
     public abstract shake(intensity: Vector, duration: number, transition: Transition): void;
     public abstract zoom(scale: number, duration: number, transition: Transition): void;
 

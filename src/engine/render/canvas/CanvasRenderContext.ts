@@ -5,7 +5,6 @@ import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
 import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
-import { TilePerspectiveRendering } from "../util/TileRendering";
 
 /**
  * the canvas rendering context
@@ -30,16 +29,12 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
         this.context.setTransform(1, 0, 0, 1, 0, 0);
 
         if (this.camera) {
+
+            // get viewport and zoom
             const vp = this.camera.getViewport();
-
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            const pixelRatio = window.devicePixelRatio;
-
             const zoom = this.camera.getZoom();
-            const nw = w / zoom / pixelRatio;
-            const nh = h / zoom / pixelRatio;
 
+            // apply to context
             this.context.scale(zoom, zoom);
             this.context.translate(-vp.x, -vp.y);
         }
@@ -88,7 +83,24 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
             this.context.translate(currentPosition.x, currentPosition.y);
             this.context.translate(currentImageVector.x / 2, currentImageVector.y / 2);
             this.context.rotate(entity.getRotation());
-            this.context.drawImage(image, -(currentImageVector.x / 2), -(currentImageVector.y / 2));
+
+            // calculate cartesian x,y
+            const cartesianPosition = Vector.from(currentImageVector.x / 2, currentImageVector.y / 2);
+
+            // add perspective translation
+            let perspectiveTranslation = cartesianPosition;
+            if (this.world) {
+
+                // get world tile info
+                const tileDim = this.world.getRenderableWorld().getTileDimension();
+
+                // perform translation
+                perspectiveTranslation = this.perspectiveRenderer.getTranslatedPosition(
+                    cartesianPosition.x, cartesianPosition.y, tileDim.w, tileDim.h
+                );
+            }
+
+            this.context.drawImage(image, -perspectiveTranslation.x, -perspectiveTranslation.y);
 
             // reset transform matrix
             this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -98,7 +110,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: RenderableTileWorld, renderer: TilePerspectiveRendering): void {
+    public drawTileWorld(world: RenderableTileWorld): void {
 
         // draw the given tileworld
         const layers = world.getLayerCount();
@@ -106,7 +118,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
         const tileSize = world.getTileDimension();
 
         // get static offset for the given perspective
-        const staticOffset = renderer.getOffset(size.w, size.h, tileSize.w, tileSize.h);
+        const staticOffset = this.perspectiveRenderer.getOffset(size.w, size.h, tileSize.w, tileSize.h);
 
         // iterate over all tiles that should be drawn
         for (let l = 0; l < layers; l++) {
@@ -120,7 +132,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
                     if (tileImage) {
 
                         // calculate the drawing position based on the perspective
-                        const drawingPosition = renderer
+                        const drawingPosition = this.perspectiveRenderer
                             // translate to perspective
                             .getDrawingCoordinate(x, y, tileSize.w, tileSize.h)
                             // add static offset
@@ -156,13 +168,5 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
         } else {
             this.context.drawImage(image.getData(), position.x, position.y);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public translate(x: number, y: number): void {
-
-        this.context.translate(x, y);
     }
 }
