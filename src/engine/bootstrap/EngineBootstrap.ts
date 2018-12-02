@@ -12,6 +12,7 @@ import { ResourceManager } from "../resource/ResourceManager";
 import { EngineReadyMessage } from "../message/internal/state/EngineReadyMessage";
 import { VisibleLoader } from "./VisibleLoader";
 import { ResourceLoader } from "../resource/ResourceLoader";
+import { Environment } from "../environment/Environment";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -40,6 +41,9 @@ export class EngineBootstrap {
 
     @Inject()
     private resourceLoader!: ResourceLoader;
+
+    @Inject()
+    private environment!: Environment;
 
     /**
      * the canvas element
@@ -87,6 +91,9 @@ export class EngineBootstrap {
 
         // find game canvas
         this.findGameCanvas();
+
+        // update environment canvas dimension
+        this.environment.updateCanvasDimension();
 
         // construct context renderer
         await this.constructRenderContext();

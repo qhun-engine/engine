@@ -1,52 +1,14 @@
 import { Destroyable } from "../constraint/Destroyable";
-import { Vector } from "../math/Vector";
+import { HasPosition } from "../constraint/HasPosition";
+import { HasVelocity } from "../constraint/HasVelocity";
+import { HasSize } from "../constraint/HasSize";
+import { HasRotation } from "../constraint/HasRotation";
+import { HasAnchor } from "../constraint/HasAnchor";
+import { HasCenter } from "../constraint/HasCenter";
 
 /**
  * the most abstract game object
  */
-export interface Entity extends Destroyable {
+export interface Entity extends HasPosition, HasVelocity, HasSize, HasRotation, HasAnchor, HasCenter, Destroyable {
 
-    /**
-     * get the position of this entity
-     */
-    getPosition(): Vector;
-
-    /**
-     * set the new position for this entity
-     * @param position the new position
-     */
-    setPosition(position: Vector): ThisType<Entity>;
-
-    /**
-     * get the anchor point of this entity
-     */
-    getAnchor(): Vector;
-
-    /**
-     * set the anchor point for this entity
-     * @param anchor the new anchor point
-     */
-    setAnchor(anchor: Vector): ThisType<Entity>;
-
-    /**
-     * get the size of the entity
-     */
-    getSize(): Vector;
-
-    /**
-     * set the new size of the entity
-     * @param size the new size
-     */
-    setSize(size: Vector): ThisType<Entity>;
-
-    /**
-     * get the current rotation in radians
-     */
-    getRotation(): number;
-
-    /**
-     * set the new rotation in radians
-     * @param rotation the new rotation in radians
-     */
-    setRotation(rotation: number): ThisType<Entity>;
 }

@@ -5,7 +5,6 @@ import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
 import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
-import { TileworldPerspective } from "../../resource/tileset/TileworldPerspective";
 import { TilePerspectiveRendering } from "../util/TileRendering";
 
 /**
@@ -26,6 +25,36 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
 
         // clear canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // reset transform matrix
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+
+        if (this.camera) {
+            const vp = this.camera.getViewport();
+
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const pixelRatio = window.devicePixelRatio;
+
+            const zoom = this.camera.getZoom();
+            const nw = w / zoom / pixelRatio;
+            const nh = h / zoom / pixelRatio;
+
+            this.context.scale(zoom, zoom);
+            this.context.translate(-vp.x, -vp.y);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public after(): void {
+
+        /*if (this.camera) {
+            const vp = this.camera.getViewport();
+            console.log(vp);
+            this.context.translate(vp.x, vp.y);
+        }*/
     }
 
     /**
@@ -52,7 +81,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
                         entity.getAnchor()
                     )
                 ).substract(currentImageVector)
-                // finally add the max size of the entity
+                // add the max size of the entity
                 .add(entity.getSize().multiply(Vector.HALF));
 
             // draw the image
@@ -127,5 +156,13 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
         } else {
             this.context.drawImage(image.getData(), position.x, position.y);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public translate(x: number, y: number): void {
+
+        this.context.translate(x, y);
     }
 }

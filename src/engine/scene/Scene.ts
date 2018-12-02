@@ -2,6 +2,7 @@ import { Updateable } from "../constraint/Updateable";
 import { Drawable } from "../constraint/Drawable";
 import { Entity } from "../entity/Entity";
 import { Tileworld } from "../resource/tileset/Tileworld";
+import { Camera } from "../camera/Camera";
 
 export interface Scene extends Partial<Updateable>, Partial<Drawable> {
 
@@ -31,6 +32,17 @@ export interface Scene extends Partial<Updateable>, Partial<Drawable> {
      * @param world the world to set
      */
     setTileworld(world: Tileworld): ThisType<Scene>;
+
+    /**
+     * set the camera to the scene
+     * @param camera the camera to set
+     */
+    setCamera(camera: Camera): ThisType<Scene>;
+
+    /**
+     * get the currently active camera
+     */
+    getCamera(): Camera | undefined;
 
     /**
      * get the currently active tile world

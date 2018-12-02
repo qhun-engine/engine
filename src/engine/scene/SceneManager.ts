@@ -11,6 +11,7 @@ import { RenderContext } from "../render/RenderContext";
 import { RenderableEntity } from "../entity/RenderableEntity";
 import { TilePerspectiveRendering } from "../render/util/TileRendering";
 import { TilePerspectiveRenderingFactory } from "../render/util/TileRenderingFactory";
+import { Vector } from "../math/Vector";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
@@ -105,7 +106,27 @@ export class SceneManager implements Updateable, Drawable {
      * @inheritdoc
      */
     public update(delta: number, timeDelta: number, engine: Engine): void {
-        // noop
+
+        // dont update if there is no active scene
+        if (!this.activeScene) {
+            return;
+        }
+
+        // apply entities velocity to position
+        const deltaVector = Vector.from(delta / 1000);
+        this.activeScene.getEntities().forEach(entity => {
+
+            const deltaVelocity = entity.getVelocity().multiply(deltaVector);
+            entity.setPosition(entity.getPosition().add(deltaVelocity));
+            entity.setVelocity(entity.getVelocity().substract(deltaVelocity));
+        });
+
+        const camera = this.activeScene.getCamera();
+        if (camera) {
+
+            // update camera
+            camera.update(delta);
+        }
     }
 
     /**
@@ -116,6 +137,14 @@ export class SceneManager implements Updateable, Drawable {
         // dont draw if there is no active scene
         if (!this.activeScene) {
             return;
+        }
+
+        // set camera
+        const camera = this.activeScene.getCamera();
+        if (camera) {
+
+            // use the refreshed camera
+            renderer.useCamera(camera);
         }
 
         // draw world if available

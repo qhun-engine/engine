@@ -40,12 +40,18 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
 
     /**
      * alias function for constructing the vector
-     * @param x x part of the vector
+     * @param x x part of the vector or a positioning object
      * @param y y part of the vector
      */
-    public static from(x: number, y: number = x): Vector {
+    public static from(x: number | DimensionPosition, y?: number): Vector {
 
-        return new Vector(x, y);
+        // test if x is a number or position
+        if (typeof x === "object") {
+            return new Vector(x.x, x.y);
+        }
+
+        // use x,y setup
+        return new Vector(x, typeof y !== "number" ? x : y);
     }
 
     /**
@@ -185,6 +191,30 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
     }
 
     /**
+     * divide the vector by (0.5, 0.5)
+     */
+    public half(): Vector {
+
+        return this.divide(Vector.HALF);
+    }
+
+    /**
+     * square the vector
+     */
+    public square(): Vector {
+
+        return this.multiply(this.clone());
+    }
+
+    /**
+     * multiplies the vector by (2, 2)
+     */
+    public double(): Vector {
+
+        return this.multiply(Vector.from(2));
+    }
+
+    /**
      * check if the given vector equals the current vector with optional tolerance
      * @param vector the vector to compare with
      */
@@ -202,6 +232,9 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
         return new Vector(this.x, this.y);
     }
 
+    /**
+     * @override
+     */
     public toString(): string {
 
         return `${Vector.name}[${this.x}, ${this.y}]`;

@@ -47,4 +47,12 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
 
         // @todo: implement
     }
+
+    /**
+     * @inheritdoc
+     */
+    public translate(x: number, y: number): void {
+
+        // @todo: implement
+    }
 }

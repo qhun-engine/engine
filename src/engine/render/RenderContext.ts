@@ -4,6 +4,7 @@ import { Vector } from "../math/Vector";
 import { RenderableTileWorld } from "../resource/tileset/RenderableTileWorld";
 import { ImageResource } from "../resource/sprite/ImageResource";
 import { TilePerspectiveRendering } from "./util/TileRendering";
+import { Camera } from "../camera/Camera";
 
 /**
  * an abstraction layer for webgl and canvas context based rendering
@@ -11,9 +12,20 @@ import { TilePerspectiveRendering } from "./util/TileRendering";
 export interface RenderContext {
 
     /**
-     * function is called before the draw login in the game loop
+     * function is called before the draw phase in the game loop
      */
     before(): void;
+
+    /**
+     * apply camera positioning and camera effects
+     */
+    after(): void;
+
+    /**
+     * use the given camera for positioning the renderable objects on the screen
+     * @param camera the camera to use
+     */
+    useCamera(camera: Camera): void;
 
     /**
      * draws the given entity
@@ -48,4 +60,11 @@ export interface RenderContext {
      * @param entity the entity to test
      */
     isEntityRenderable(entity: Entity): entity is RenderableEntity;
+
+    /**
+     * translates the rednered context to visualize camera movement
+     * @param x the x offset
+     * @param y the y offset
+     */
+    translate(x: number, y: number): void;
 }

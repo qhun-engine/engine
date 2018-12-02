@@ -30,7 +30,8 @@ export interface QhunGameOptions {
     fps: number | "auto" | "max";
 
     /**
-     * enables the debug mode wich prints engine usage and fps
+     * enables the debug mode wich prints engine usage and fps and draws
+     * collision boxes on all game objects
      */
     debugMode: boolean;
 }

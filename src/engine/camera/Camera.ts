@@ -1,34 +1,22 @@
 import { Vector } from "../math/Vector";
 import { Transition } from "../animation/transition/Transition";
 import { RenderContext } from "../render/RenderContext";
+import { Rectangle } from "../math/Rectangle";
+import { CameraFollowStrategy } from "./follow/CameraFollowStrategy";
+import { HasPosition } from "../constraint/HasPosition";
+import { HasVelocity } from "../constraint/HasVelocity";
+import { Followable } from "./follow/Followable";
 
 /**
  * indicates that this class can be used to decide what is on the screen and what is not, that this
  * class can project the world to the player
  */
-export interface Camera {
+export interface Camera extends HasPosition, HasVelocity {
 
     /**
-     * get the current position of the camera for both axis
+     * get the visible part of the world
      */
-    getPosition(): Vector;
-
-    /**
-     * set the new camera position
-     * @param position the new position to set
-     */
-    setPosition(position: Vector): ThisType<Camera>;
-
-    /**
-     * get the cameras moving velocity
-     */
-    getVelocity(): Vector;
-
-    /**
-     * set the new moving velocity of this camera
-     * @param velocity the new velocity
-     */
-    setVelocity(velocity: Vector): ThisType<Camera>;
+    getViewport(): Rectangle;
 
     /**
      * shakes the camera using the given intensity over the given duration
@@ -78,4 +66,11 @@ export interface Camera {
      * determines if the camera is currently zooming in or out
      */
     isZooming(): boolean;
+
+    /**
+     * follows the given object
+     * @param object the object to follow
+     * @param strategy the following strategy
+     */
+    follow<T extends Followable>(object: T, strategy?: CameraFollowStrategy<T>): ThisType<Camera>;
 }

@@ -38,6 +38,11 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity 
     protected position: Vector = Vector.ZERO;
 
     /**
+     * the current velocity of the entity
+     */
+    protected velocity: Vector = Vector.ZERO;
+
+    /**
      * the anchor point of the entity
      */
     protected anchor: Vector = Vector.HALF;
@@ -119,6 +124,31 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity 
     public setPosition(position: Vector): this {
 
         this.position = position;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getCenter(): Vector {
+
+        return this.position.add(this.size).half();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getVelocity(): Vector {
+
+        return this.velocity;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setVelocity(velocity: Vector): this {
+
+        this.velocity = velocity;
         return this;
     }
 

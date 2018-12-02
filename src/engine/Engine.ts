@@ -4,6 +4,7 @@ import { QhunGameOptions } from "./bootstrap/QhunGameOptions";
 import { ConsolePerformanceLogger } from "./debug/ConsolePerformanceLogger";
 import { ConsoleLoggerPrefix } from "./debug/ConsoleLoggerPrefix";
 import { GameLoop } from "./GameLoop";
+import { Environment } from "./environment/Environment";
 
 @Injectable()
 export class Engine {
@@ -37,7 +38,8 @@ export class Engine {
     } = { draw: [], update: [] };
 
     constructor(
-        private logger: ConsolePerformanceLogger
+        private logger: ConsolePerformanceLogger,
+        private environment: Environment
     ) {
 
         // get animation frame function
@@ -64,6 +66,7 @@ export class Engine {
     public setCanvasObject(canvas: HTMLCanvasElement): this {
 
         this.canvasObject = canvas;
+        this.environment.setCanvasObject(canvas);
         return this;
     }
 

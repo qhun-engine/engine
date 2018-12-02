@@ -6,9 +6,9 @@ import { TransitionContainer } from "../animation/transition/TransitionContainer
 import { Inject } from "../di/Inject";
 
 /**
- * A 2d based camera for projecting orthographic objects onto a 2d viewport
+ * A 2.5d based camera for projecting isomatric (3d) objects onto a 2d viewport
  */
-export class OrthographicCamera extends BaseCamera {
+export class IsometricCamera extends BaseCamera {
 
     @Inject()
     protected transitions!: TransitionContainer;

@@ -171,6 +171,9 @@ export class GameLoop {
 
         // execute life cycle hooks
         this.updateHook(delta, timeDelta, this.engine);
+
+        // scene manager update
+        this.sceneManager.update(delta, timeDelta, this.engine);
     }
 
     /**
@@ -191,6 +194,8 @@ export class GameLoop {
 
         // draw debug info
         this.printDebugInformation();
+
+        this.renderContext.after();
     }
 
     /**

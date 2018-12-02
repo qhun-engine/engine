@@ -1,6 +1,7 @@
 import { Scene } from "./Scene";
 import { Entity } from "../entity/Entity";
 import { Tileworld } from "../resource/tileset/Tileworld";
+import { Camera } from "../camera/Camera";
 
 /**
  * a simple scene object wich implements the boilerplate part of the Scene interface
@@ -16,6 +17,11 @@ export abstract class BaseScene implements Scene {
      * the stack of currently existing entities in this scene
      */
     protected entities: Entity[] = [];
+
+    /**
+     * the currently active camera
+     */
+    protected camera!: Camera;
 
     /**
      * the current tilemap based world for the scene
@@ -67,6 +73,23 @@ export abstract class BaseScene implements Scene {
     public getEntities(): Entity[] {
 
         return this.entities;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public setCamera(camera: Camera): this {
+
+        this.camera = camera;
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getCamera(): Camera | undefined {
+
+        return this.camera;
     }
 
     /**
