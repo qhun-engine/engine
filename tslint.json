@@ -20,6 +20,7 @@
         "no-bitwise": false,
         "member-ordering": false,
         "no-angle-bracket-type-assertion": false,
-        "whitespace": false
+        "whitespace": false,
+        "no-namespace": false
     }
 }

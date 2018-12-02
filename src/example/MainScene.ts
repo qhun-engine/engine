@@ -1,4 +1,4 @@
-import { BaseScene } from "../engine/scene/BaseScene";
+import { BaseScene } from "../engine";
 
 export class MainScene extends BaseScene {
 

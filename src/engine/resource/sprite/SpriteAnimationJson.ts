@@ -1,6 +1,6 @@
 import { DimensionSize, DimensionPosition } from "../../constraint/Dimension";
 
-export interface SpriteAnimation {
+export interface SpriteAnimationJson {
 
     /**
      * contains every frame of the animation

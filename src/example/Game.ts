@@ -1,14 +1,11 @@
-import { QhunGame } from "../engine/bootstrap/QhunGame";
-import { EngineReadyMessage } from "../engine/message/internal/state/EngineReadyMessage";
-import { Once } from "../engine/message/decorator/Once";
-import { MainScene } from "./MainScene";
-import { SceneManager } from "../engine/scene/SceneManager";
-import { IsometricWorld } from "./world/IsometricWorld";
+import {
+    QhunGame, SceneManager, AnimationManager, EngineReadyMessage,
+    Once, Vector, FollowElasticCenterStrategy
+} from "../engine";
 import { OrthogonalWorld } from "./world/OrthogonalWorld";
-import { Vector } from "../engine/math/Vector";
 import { MainEntity } from "./MainEntity";
-import { AnimationManager } from "../engine/animation/AnimationManager";
-import { FollowElasticCenterStrategy } from "../engine/camera/follow/FollowElasticCenterStrategy";
+import { MainScene } from "./MainScene";
+import { IsometricWorld } from "./world/IsometricWorld";
 
 @QhunGame({
     exposeGameInstance: true,
@@ -77,7 +74,6 @@ class Game {
         const camera = world.createCamera();
         camera.follow(entity);
         scene.setCamera(camera);
-
 
         this.sceneMan.switchScene(scene);
 

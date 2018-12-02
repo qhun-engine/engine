@@ -1,5 +1,5 @@
 import { Injectable } from "../../di/Injectable";
-import { BrowserUnsupported } from "../../exception/BrowserUnsupported";
+import { BrowserUnsupportedError } from "../../exception/BrowserUnsupportedError";
 import { SoundResource } from "./SoundResource";
 import { SFXSound } from "./SFXSound";
 
@@ -36,7 +36,7 @@ export class SoundManager {
             this.prepareAudioApi();
         } catch (e) {
 
-            throw new BrowserUnsupported(`Audio API is not supported in your current Browser!`);
+            throw new BrowserUnsupportedError(`Audio API is not supported in your current Browser!`);
         }
     }
 

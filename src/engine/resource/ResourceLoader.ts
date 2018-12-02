@@ -5,7 +5,7 @@ import { ResourceOptions } from "./ResourceRequestOptions";
 import { SpriteResource } from "./sprite/SpriteResource";
 import { ImageResource } from "./sprite/ImageResource";
 import { JsonTextResource } from "./text/JsonTextResource";
-import { SpriteAnimation } from "./sprite/SpriteAnimation";
+import { SpriteAnimationJson } from "./sprite/SpriteAnimationJson";
 import { ClassConstructor } from "../constraint/ClassConstructor";
 import { ResourceLoaderUtility } from "./ResourceLoaderUtility";
 import { Resource } from "./Resource";
@@ -120,7 +120,7 @@ export class ResourceLoader {
         // load image and json data
         return Promise.all([
             this.loadImage(imageUrl, resource, options),
-            this.loadText<JsonTextResource<SpriteAnimation>>(animationDataUrl, JsonTextResource, options as ResourceOptions<any>)
+            this.loadText<JsonTextResource<SpriteAnimationJson>>(animationDataUrl, JsonTextResource, options as ResourceOptions<any>)
         ]).then(async (result) => {
 
             // add animation data

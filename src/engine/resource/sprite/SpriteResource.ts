@@ -1,4 +1,4 @@
-import { SpriteAnimation } from "./SpriteAnimation";
+import { SpriteAnimationJson } from "./SpriteAnimationJson";
 import { ImageResource } from "./ImageResource";
 import { Inject } from "../../di/Inject";
 import { SpriteImageExtractor } from "./SpriteImageExtractor";
@@ -12,7 +12,7 @@ export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> exten
     /**
      * the animation data for this sprite
      */
-    protected animation!: SpriteAnimation;
+    protected animation!: SpriteAnimationJson;
 
     /**
      * contains all animation images
@@ -36,7 +36,7 @@ export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> exten
      * set the animation data for this sprite
      * @param animation the animation data
      */
-    public setAnimationData(animation: SpriteAnimation): this {
+    public setAnimationData(animation: SpriteAnimationJson): this {
 
         this.animation = animation;
         return this;
@@ -45,7 +45,7 @@ export class SpriteResource<T extends HTMLImageElement = HTMLImageElement> exten
     /**
      * get the animation data of the sprite
      */
-    public getAnimation(): SpriteAnimation {
+    public getAnimation(): SpriteAnimationJson {
 
         return this.animation;
     }

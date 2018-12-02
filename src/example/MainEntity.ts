@@ -1,6 +1,4 @@
-import { ActorEntity } from "../engine/entity/impl/ActorEntity";
-import { DeclareAnimation } from "../engine/resource/decorator/DeclareAnimation";
-import { DeclareTexture } from "../engine/resource/decorator/DeclareTexture";
+import { DeclareAnimation, DeclareTexture, ActorEntity } from "../engine";
 
 @DeclareAnimation({ name: "idle", fps: 30, animate: ["assets/fighter.png", "assets/fighter.json"] })
 @DeclareTexture("assets/fighter1.png")
