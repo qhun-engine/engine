@@ -8,6 +8,7 @@ import { OrthogonalWorld } from "./world/OrthogonalWorld";
 import { Vector } from "../engine/math/Vector";
 import { MainEntity } from "./MainEntity";
 import { AnimationManager } from "../engine/animation/AnimationManager";
+import { FollowElasticCenterStrategy } from "../engine/camera/follow/FollowElasticCenterStrategy";
 
 @QhunGame({
     exposeGameInstance: true,
@@ -38,9 +39,8 @@ class Game {
         const scene = new MainScene().setTileworld(world).addEntity(entity);
 
         const camera = world.createCamera();
-        camera.follow(entity);
+        camera.follow(entity, new FollowElasticCenterStrategy(.5, .8));
         scene.setCamera(camera);
-
 
         this.sceneMan.switchScene(scene);
 
