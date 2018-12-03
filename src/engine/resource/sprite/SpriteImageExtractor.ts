@@ -1,8 +1,9 @@
 import { Injectable } from "../../di/Injectable";
 import { SpriteResource } from "./SpriteResource";
-import { DimensionSize, DimensionPosition } from "../../constraint/Dimension";
+import { DimensionSize } from "../../constraint/Dimension";
 import { ImageResource } from "./ImageResource";
 import { ImageCropService } from "../util/ImageCropService";
+import { Rectangle } from "../../math/Rectangle";
 
 interface SpriteDecoupleResult extends DimensionSize {
 
@@ -24,16 +25,6 @@ interface SpriteDecoupleResult extends DimensionSize {
 @Injectable()
 export class SpriteImageExtractor {
 
-    /**
-     * the canvas element
-     */
-    private canvas: HTMLCanvasElement = document.createElement("canvas");
-
-    /**
-     * the canvas rendering context
-     */
-    private ctx: CanvasRenderingContext2D = (this.canvas.getContext("2d") as CanvasRenderingContext2D);
-
     constructor(
         private cropService: ImageCropService
     ) { }
@@ -44,7 +35,6 @@ export class SpriteImageExtractor {
      */
     public async extractImagesFromSpriteSheet(sprite: SpriteResource): Promise<SpriteDecoupleResult[]> {
 
-        const images: HTMLImageElement[] = [];
         const convertPromiseStack: Promise<SpriteDecoupleResult>[] = [];
 
         // iterate over every possible sub file
@@ -54,7 +44,8 @@ export class SpriteImageExtractor {
             const frameData = frames[frameName];
 
             // convert this frame into an image
-            convertPromiseStack.push(this.cropService.extractFromImage(sprite.getData(), frameData.frame).then(imageData => {
+            const rect = new Rectangle(frameData.frame.x, frameData.frame.y, frameData.frame.w, frameData.frame.h);
+            convertPromiseStack.push(this.cropService.extractFromImage(sprite.getData(), rect).then(imageData => {
                 return {
                     name: frameName,
                     image: (new ImageResource("@internal:canvas", "@internal:canvas")).setData(imageData)

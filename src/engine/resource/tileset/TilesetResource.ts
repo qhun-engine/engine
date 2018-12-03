@@ -9,6 +9,7 @@ import { ImageCropService } from "../util/ImageCropService";
 import { Injector } from "../../di/Injector";
 import { ResourceError } from "../../exception/ResourceError";
 import { AsyncDataService } from "../../util/AsyncDataService";
+import { Rectangle } from "../../math/Rectangle";
 
 /**
  * a tile set wraped by a resource context
@@ -125,7 +126,7 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
         this.tilesetImage = await loader!.loadImage(url);
 
         // build the rectangles for the extraction process
-        const rectangleStack: (DimensionPosition & DimensionSize)[] = [];
+        const rectangleStack: Rectangle[] = [];
         let currentX = tsx.tileset.__margin || 0;
         let currentY = tsx.tileset.__margin || 0;
         for (let gid = 0; gid < tsx.tileset.__tilecount; gid++) {
@@ -141,9 +142,9 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
             }
 
             // store this position
-            rectangleStack.push({
-                x: currentX, y: currentY, w: tsx.tileset.__tilewidth, h: tsx.tileset.__tileheight
-            });
+            rectangleStack.push(new Rectangle(
+                currentX, currentY, tsx.tileset.__tilewidth, tsx.tileset.__tileheight
+            ));
 
             // increase the currentX with the next spacing
             currentX += tsx.tileset.__tilewidth + (tsx.tileset.__spacing || 0);

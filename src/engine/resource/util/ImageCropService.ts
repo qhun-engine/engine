@@ -1,5 +1,6 @@
 import { Injectable } from "../../di/Injectable";
 import { DimensionPosition, DimensionSize } from "../../constraint/Dimension";
+import { Rectangle } from "../../math/Rectangle";
 
 /**
  * a service that can extract parts of an image
@@ -22,7 +23,7 @@ export class ImageCropService {
      * @param originalImage the original image
      * @param rectangle the rectangle to get the new image of
      */
-    public async extractFromImage(originalImage: HTMLImageElement, rectangle: DimensionPosition & DimensionSize): Promise<HTMLImageElement> {
+    public async extractFromImage(originalImage: HTMLImageElement, rectangle: Rectangle): Promise<HTMLImageElement> {
 
         // prepare the canvas
         this.prepareCanvas(rectangle.w, rectangle.h);
@@ -50,7 +51,7 @@ export class ImageCropService {
      * @param originalImage the original image
      * @param rectangles the rectangles to get the new image of
      */
-    public async extractMultipleFromImage(originalImage: HTMLImageElement, rectangles: (DimensionPosition & DimensionSize)[]): Promise<HTMLImageElement[]> {
+    public async extractMultipleFromImage(originalImage: HTMLImageElement, rectangles: Rectangle[]): Promise<HTMLImageElement[]> {
 
         return Promise.all(rectangles.map(
             rect => this.extractFromImage(originalImage, rect)
