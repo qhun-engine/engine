@@ -1,11 +1,11 @@
 import { RenderableEntity } from "../entity/RenderableEntity";
 import { Entity } from "../entity/Entity";
 import { Vector } from "../math/Vector";
-import { RenderableTileWorld } from "../resource/tileset/RenderableTileWorld";
+import { RenderableWorld } from "../world/RenderableWorld";
 import { ImageResource } from "../resource/sprite/ImageResource";
 import { TilePerspectiveRendering } from "./util/TileRendering";
 import { Camera } from "../camera/Camera";
-import { Tileworld } from "../resource/tileset/Tileworld";
+import { World } from "../world/World";
 
 /**
  * an abstraction layer for webgl and canvas context based rendering
@@ -38,7 +38,7 @@ export interface RenderContext {
      * use the given world for positioning issues
      * @param world the world to use
      */
-    useWorld(world: Tileworld): void;
+    useWorld(world: World): void;
 
     /**
      * draws the given entity
@@ -50,7 +50,7 @@ export interface RenderContext {
      * draws the tilemap based world
      * @param world the tile world to draw
      */
-    drawTileWorld(world: RenderableTileWorld): void;
+    drawTileWorld(world: RenderableWorld): void;
 
     /**
      * draws the given text onto the given position

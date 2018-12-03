@@ -2,12 +2,11 @@ import { TileworldResource } from "./TileworldResource";
 import { TMXTileworld } from "./tiled/TMXTileworld";
 import { XmlTextResource } from "../text/XmlTextResource";
 import { DimensionSize } from "../../constraint/Dimension";
-import { Inject } from "../../di/Inject";
 import { ImageChunkService } from "../util/ImageChunkService";
 import { LayeredWorldProperties } from "./LayeredWorldProperties";
 import { TilePerspectiveRenderingFactory } from "../../render/util/TileRenderingFactory";
 import { Injector } from "../../di/Injector";
-import { TileworldPerspective } from "./TileworldPerspective";
+import { WorldPerspective } from "../../world/WorldPerspective";
 import { ResourceError } from "../../exception/ResourceError";
 
 /**
@@ -86,7 +85,7 @@ export class TileworldChunkedResource<T extends XmlTextResource<TMXTileworld> = 
 
         // currently only orthogonal world resources are chunkable
         // check this first
-        if (this.data.getData().map.__orientation !== TileworldPerspective.ORTHOGONAL) {
+        if (this.data.getData().map.__orientation !== WorldPerspective.ORTHOGONAL) {
 
             throw new ResourceError(`${this.data.getData().map.__orientation} perspectives are currently not chunkable!`);
         }

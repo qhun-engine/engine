@@ -4,15 +4,15 @@ import { XmlTextResource } from "../text/XmlTextResource";
 import { TilesetResource } from "./TilesetResource";
 import { Injector } from "../../di/Injector";
 import { ResourceLoader } from "../ResourceLoader";
-import { RenderableTileWorld } from "./RenderableTileWorld";
+import { RenderableWorld } from "../../world/RenderableWorld";
 import { DimensionSize } from "../../constraint/Dimension";
 import { LayeredWorldProperties } from "./LayeredWorldProperties";
-import { TileworldPerspective } from "./TileworldPerspective";
+import { WorldPerspective } from "../../world/WorldPerspective";
 
 /**
  * a tile world wraped by a resource context
  */
-export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlTextResource<TMXTileworld>> extends BaseResource<T> implements RenderableTileWorld {
+export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlTextResource<TMXTileworld>> extends BaseResource<T> implements RenderableWorld {
 
     /**
      * world data with specific tile gid
@@ -79,7 +79,7 @@ export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlText
     /**
      * @inheritdoc
      */
-    public getTileWorldPerspective(): TileworldPerspective {
+    public getWorldPerspective(): WorldPerspective {
 
         return this.data.getData().map.__orientation;
     }

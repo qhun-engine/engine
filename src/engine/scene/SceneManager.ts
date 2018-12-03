@@ -11,8 +11,9 @@ import { RenderContext } from "../render/RenderContext";
 import { RenderableEntity } from "../entity/RenderableEntity";
 import { TilePerspectiveRendering } from "../render/util/TileRendering";
 import { TilePerspectiveRenderingFactory } from "../render/util/TileRenderingFactory";
-import { Vector } from "../math/Vector";
 import { EntityTypeGuardUtil } from "../entity/util/EntityTypeGuardUtil";
+import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
+import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
@@ -40,7 +41,8 @@ export class SceneManager implements Updateable, Drawable {
     constructor(
         private messageBus: MessageBus,
         private tilePerspectiveRenderingFactory: TilePerspectiveRenderingFactory,
-        private entityTypeGuard: EntityTypeGuardUtil
+        private entityTypeGuard: EntityTypeGuardUtil,
+        private logger: ConsolePerformanceLogger
     ) { }
 
     /**
@@ -49,7 +51,15 @@ export class SceneManager implements Updateable, Drawable {
      */
     public async loadScene(scene: Scene): Promise<void> {
 
+        // log the scene load info
+        this.logger.printGrey(`Loading scene ${scene.constructor.name}...`, ConsoleLoggerPrefix.Scene);
+
         return scene.loadScene().then(() => {
+
+            // scene has been loaded
+            this.logger.printBlack(`Scene ${scene.constructor.name} has been loaded.`, ConsoleLoggerPrefix.Scene);
+
+            // send the message
             this.messageBus.send(new SceneLoadedMessage(scene));
         });
     }
@@ -80,12 +90,11 @@ export class SceneManager implements Updateable, Drawable {
         }
 
         // get the world if any exists
-        const tileWorld = scene.getTileworld();
-        if (tileWorld) {
+        const world = scene.getWorld();
+        if (world) {
 
             // get the perspective renderer
-            // @todo: refactor this unessesary long getter chaining!
-            const perspective = tileWorld.getRenderableWorld().getResource().getData().getData().map.__orientation;
+            const perspective = world.getPerspective();
             this.perspectiveRenderer = this.tilePerspectiveRenderingFactory.createByPerspective(perspective);
         }
 
@@ -110,7 +119,7 @@ export class SceneManager implements Updateable, Drawable {
     public update(delta: number, timeDelta: number, engine: Engine): void {
 
         // dont update if there is no active scene
-        if (!this.activeScene) {
+        if (!this.activeScene || !this.activeScene.isLoaded()) {
             return;
         }
 
@@ -151,7 +160,7 @@ export class SceneManager implements Updateable, Drawable {
     public draw(delta: number, timeDelta: number, renderer: RenderContext, engine: Engine): void {
 
         // dont draw if there is no active scene
-        if (!this.activeScene) {
+        if (!this.activeScene || !this.activeScene.isLoaded()) {
             return;
         }
 
@@ -164,7 +173,7 @@ export class SceneManager implements Updateable, Drawable {
         }
 
         // draw world if available
-        const world = this.activeScene.getTileworld();
+        const world = this.activeScene.getWorld();
         if (world) {
 
             // use world before drawing

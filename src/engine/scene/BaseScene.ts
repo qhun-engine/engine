@@ -1,6 +1,6 @@
 import { Scene } from "./Scene";
 import { Entity } from "../entity/Entity";
-import { Tileworld } from "../resource/tileset/Tileworld";
+import { World } from "../world/World";
 import { Camera } from "../camera/Camera";
 
 /**
@@ -24,9 +24,9 @@ export abstract class BaseScene implements Scene {
     protected camera!: Camera;
 
     /**
-     * the current tilemap based world for the scene
+     * the current world for the scene
      */
-    protected tileworld!: Tileworld;
+    protected world!: World;
 
     /**
      * @inheritdoc
@@ -41,7 +41,14 @@ export abstract class BaseScene implements Scene {
      */
     public async loadScene(): Promise<void> {
 
-        // no loading nessesary
+        // load the world
+        if (this.world) {
+
+            // get resources for the world and load the layout
+            await this.world.load();
+        }
+
+        // set flag
         this.sceneLoaded = true;
 
         return;
@@ -52,7 +59,12 @@ export abstract class BaseScene implements Scene {
      */
     public async unloadScene(): Promise<void> {
 
-        // no unloading nessesary
+        // unload the world
+        if (this.world) {
+            this.world.destroy();
+        }
+
+        // set flag
         this.sceneLoaded = false;
 
         return;
@@ -95,17 +107,17 @@ export abstract class BaseScene implements Scene {
     /**
      * @inheritdoc
      */
-    public setTileworld(world: Tileworld): this {
+    public setWorld(world: World): this {
 
-        this.tileworld = world;
+        this.world = world;
         return this;
     }
 
     /**
      * @inheritdoc
      */
-    public getTileworld(): Tileworld | undefined {
+    public getWorld(): World | undefined {
 
-        return this.tileworld;
+        return this.world;
     }
 }

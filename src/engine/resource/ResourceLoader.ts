@@ -15,6 +15,7 @@ import { XmlTextResource } from "./text/XmlTextResource";
 import { TSXTileset } from "./tileset/tiled/TSXTileset";
 import { TileworldResource } from "./tileset/TileworldResource";
 import { TMXTileworld } from "./tileset/tiled/TMXTileworld";
+import { Loadable } from "./Loadable";
 
 /**
  * The resource loader uses a declarative loading system. Declare your game resources here
@@ -50,6 +51,21 @@ export class ResourceLoader {
                 loader: loader.bind(this, ...params)
             });
         }) as ReturnType<F>;
+    }
+
+    /**
+     * creates a loadable type that can be executed when the resource is needed
+     * @param loader the loader function
+     * @param params the paramters of the loader function
+     */
+    public createLoadable<F extends (...args: any[]) => Promise<Resource>>(loader: F, ...params: Parameters<F>): () => ReturnType<F> {
+
+        // create a bound context for the loadable object
+        return () => {
+
+            // load the requested resource and return a promise
+            return loader.apply(this, params);
+        };
     }
 
     /**

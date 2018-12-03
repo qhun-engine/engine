@@ -3,7 +3,7 @@ import { Entity } from "../entity/Entity";
 import { RenderableEntity } from "../entity/RenderableEntity";
 import { Camera } from "../camera/Camera";
 import { TilePerspectiveRendering } from "./util/TileRendering";
-import { Tileworld } from "../resource/tileset/Tileworld";
+import { World } from "../world/World";
 
 /**
  * a base class for render context classes
@@ -23,7 +23,7 @@ export abstract class BaseRenderContext implements Partial<RenderContext> {
     /**
      * the currently active world
      */
-    protected world!: Tileworld;
+    protected world!: World;
 
     /**
      * @inheritdoc
@@ -52,7 +52,7 @@ export abstract class BaseRenderContext implements Partial<RenderContext> {
     /**
      * @inheritdoc
      */
-    public useWorld(world: Tileworld): void {
+    public useWorld(world: World): void {
 
         this.world = world;
     }

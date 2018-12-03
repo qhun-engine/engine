@@ -1,4 +1,4 @@
-import { TileworldPerspective } from "../TileworldPerspective";
+import { WorldPerspective } from "../../../world/WorldPerspective";
 
 declare type TMXTileset = {
 
@@ -52,7 +52,7 @@ export interface TMXTileworld {
         /**
          * the map type type
          */
-        __orientation: TileworldPerspective.ORTHOGONAL | TileworldPerspective.ISOMETRIC | TileworldPerspective.HEXAGONAL,
+        __orientation: WorldPerspective.ORTHOGONAL | WorldPerspective.ISOMETRIC | WorldPerspective.HEXAGONAL,
 
         /**
          * the desired rendering order

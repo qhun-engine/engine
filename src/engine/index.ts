@@ -125,13 +125,12 @@ export * from "./resource/sprite/SpriteResource";
 export * from "./resource/text/JsonTextResource";
 export * from "./resource/text/TextResource";
 export * from "./resource/text/XmlTextResource";
-export * from "./resource/tileset/BaseTileworld";
+export * from "./world/BaseWorld";
 // export * from "./resource/tileset/LayeredWorldProperties";
-export * from "./resource/tileset/RenderableTileWorld";
+export * from "./world/RenderableWorld";
 export * from "./resource/tileset/TilesetResource";
-export * from "./resource/tileset/Tileworld";
 export * from "./resource/tileset/TileworldChunkedResource";
-export * from "./resource/tileset/TileworldPerspective";
+export * from "./world/WorldPerspective";
 export * from "./resource/tileset/TileworldResource";
 // export * from "./resource/tileset/tiled/TMXTileworld";
 // export * from "./resource/tileset/tiled/TSXTileset";
@@ -154,3 +153,6 @@ export * from "./util/MetadataRegistryService";
 export * from "./util/decorators/AfterConstructionHook";
 export * from "./util/decorators/Draw";
 export * from "./util/decorators/Update";
+
+// ## WORLD
+export * from "./world/World";

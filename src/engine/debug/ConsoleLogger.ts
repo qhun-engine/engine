@@ -22,6 +22,16 @@ export abstract class ConsoleLogger {
     }
 
     /**
+     * prints the given text with black color
+     * @param text the text to print
+     * @param prefix optional prefix
+     */
+    public printBlack(text: string, prefix: ConsoleLoggerPrefix = ConsoleLoggerPrefix.None): void {
+
+        console.log(`%c${prefix}${text}`, "color: #000000;");
+    }
+
+    /**
      * logs all arguments using console.log
      * @param args the arguments to log
      */

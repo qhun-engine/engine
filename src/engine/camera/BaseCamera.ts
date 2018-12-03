@@ -8,7 +8,7 @@ import { Followable } from "./follow/Followable";
 import { FollowCenterStrategy } from "./follow/FollowCenterStrategy";
 import { InputPoint } from "../input/generic/InputPoint";
 import { Ray } from "../math/Ray";
-import { Tileworld } from "../resource/tileset/Tileworld";
+import { World } from "../world/World";
 
 /**
  * the base camera for all known cameras in the game
@@ -54,7 +54,7 @@ export abstract class BaseCamera implements Camera {
     constructor(
         protected position: Vector,
         protected near: Vector,
-        protected world: Tileworld,
+        protected world: World,
         protected zoomScale: number = 1
     ) {
 

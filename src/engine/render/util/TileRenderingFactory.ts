@@ -1,5 +1,5 @@
 import { Injectable } from "../../di/Injectable";
-import { TileworldPerspective } from "../../resource/tileset/TileworldPerspective";
+import { WorldPerspective } from "../../world/WorldPerspective";
 import { TilePerspectiveRendering } from "./TileRendering";
 import { OrthogonalTileRendering } from "./OrthogonalTileRendering";
 import { IsometricTileRendering } from "./IsometricTileRendering";
@@ -15,13 +15,13 @@ export class TilePerspectiveRenderingFactory {
      * create a tile renderer for the given perspective
      * @param perspective the perspective
      */
-    public createByPerspective(perspective: TileworldPerspective): TilePerspectiveRendering {
+    public createByPerspective(perspective: WorldPerspective): TilePerspectiveRendering {
 
-        if (perspective === TileworldPerspective.ORTHOGONAL) {
+        if (perspective === WorldPerspective.ORTHOGONAL) {
 
             // draw using orthogonal algorithm
             return new OrthogonalTileRendering();
-        } else if (perspective === TileworldPerspective.ISOMETRIC) {
+        } else if (perspective === WorldPerspective.ISOMETRIC) {
 
             // draw using isometric algorithm
             return new IsometricTileRendering();

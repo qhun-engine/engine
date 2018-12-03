@@ -4,7 +4,7 @@ import { BaseRenderContext } from "../BaseRenderContext";
 import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
-import { RenderableTileWorld } from "../../resource/tileset/RenderableTileWorld";
+import { RenderableWorld } from "../../world/RenderableWorld";
 
 /**
  * the canvas rendering context
@@ -110,7 +110,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: RenderableTileWorld): void {
+    public drawTileWorld(world: RenderableWorld): void {
 
         // draw the given tileworld
         const layers = world.getLayerCount();

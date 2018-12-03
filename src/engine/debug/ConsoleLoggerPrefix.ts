@@ -2,6 +2,7 @@ export enum ConsoleLoggerPrefix {
 
     None = "",
     Bootstrap = "[BOOT] ",
-    Asset = "[ASSET] "
+    Asset = "[ASSET] ",
+    Scene = "[SCENE] "
 
 }

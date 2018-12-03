@@ -1,5 +1,5 @@
 import { Vector } from "./Vector";
-import { Tileworld } from "../resource/tileset/Tileworld";
+import { World } from "../world/World";
 
 export class Ray {
 
@@ -13,7 +13,7 @@ export class Ray {
         private input: Vector,
         private cartesianPosition: Vector,
         private mapPosition: Vector,
-        private world: Tileworld
+        private world: World
     ) { }
 
     /**

@@ -1,4 +1,4 @@
-export enum TileworldPerspective {
+export enum WorldPerspective {
 
     ORTHOGONAL = "orthogonal",
     ISOMETRIC = "isometric",
