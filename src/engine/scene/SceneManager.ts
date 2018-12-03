@@ -181,7 +181,7 @@ export class SceneManager implements Updateable, Drawable {
             renderer.usePerspectiveRenderer(this.perspectiveRenderer);
 
             // draw the world
-            renderer.drawTileWorld(world.getRenderableWorld());
+            renderer.drawWorld(world);
         }
 
         // iterate over the entities and draw them

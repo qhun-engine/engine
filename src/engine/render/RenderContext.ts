@@ -47,10 +47,10 @@ export interface RenderContext {
     drawEntity(entity: RenderableEntity): void;
 
     /**
-     * draws the tilemap based world
-     * @param world the tile world to draw
+     * draws the given world
+     * @param world the world to draw
      */
-    drawTileWorld(world: RenderableWorld): void;
+    drawWorld(world: World): void;
 
     /**
      * draws the given text onto the given position

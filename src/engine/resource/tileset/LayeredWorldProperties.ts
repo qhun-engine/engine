@@ -1,4 +1,8 @@
 export declare type LayeredWorldProperties<C = number> = {
+
+    xy: C[][],
+    yx: C[][]
+    /*
     xy: {
         [xNumber: number]: {
             [yNumber: number]: C
@@ -8,5 +12,5 @@ export declare type LayeredWorldProperties<C = number> = {
         [yNumber: number]: {
             [xNumber: number]: C
         }
-    }
+    }*/
 }[];

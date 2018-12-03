@@ -129,7 +129,6 @@ export * from "./world/BaseWorld";
 // export * from "./resource/tileset/LayeredWorldProperties";
 export * from "./world/RenderableWorld";
 export * from "./resource/tileset/TilesetResource";
-export * from "./resource/tileset/TileworldChunkedResource";
 export * from "./world/WorldPerspective";
 export * from "./resource/tileset/TileworldResource";
 // export * from "./resource/tileset/tiled/TMXTileworld";

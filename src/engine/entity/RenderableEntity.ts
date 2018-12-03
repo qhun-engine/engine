@@ -1,5 +1,4 @@
 import { Entity } from "./Entity";
-import { ImageResource } from "../resource/sprite/ImageResource";
 import { Renderable } from "../constraint/Renderable";
 
 /**

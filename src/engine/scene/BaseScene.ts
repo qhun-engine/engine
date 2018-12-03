@@ -45,7 +45,9 @@ export abstract class BaseScene implements Scene {
         if (this.world) {
 
             // get resources for the world and load the layout
-            await this.world.load();
+            if (!this.world.isLoaded()) {
+                await this.world.load();
+            }
         }
 
         // set flag

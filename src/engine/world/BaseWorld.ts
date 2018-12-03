@@ -80,6 +80,32 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
     /**
      * @inheritdoc
      */
+    public getSize(): Vector {
+
+        return this.getTileNumbers().multiply(this.getTileSize());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getTileSize(): Vector {
+
+        const size = this.resource.getTileDimension();
+        return Vector.from(size.w, size.h);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getTileNumbers(): Vector {
+
+        const size = this.resource.getWorldSize();
+        return Vector.from(size.w, size.h);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public async load(): Promise<void> {
 
         // load the resource first
@@ -87,6 +113,49 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
 
         // get the perspective out of the loaded resource
         this.perspective = this.resource.getWorldPerspective();
+
+        // now load the world from the resource into the world layout
+        // and create tile instances for each tile to allow animations and
+        // interactions
+
+        // now iterate over all existing layers
+        for (let l = 0; l < this.resource.getLayerCount(); l++) {
+
+            // get layout
+            const layout = this.resource.getWorldLayout()[l].yx;
+
+            // iterate over columns
+            layout.forEach((column, y) => {
+                column.forEach((tileNumber, x) => {
+
+                    // initialize layout array
+                    this.layout[l] = this.layout[l] || [];
+                    this.layout[l][y] = this.layout[l][y] || [];
+
+                    // get tile information
+                    const tile = new Tile();
+
+                    // set texture
+                    tile.setTexture(this.resource.getTileImageByCoordinate(l, x, y));
+
+                    // set position
+                    tile.setPosition(Vector.from(x, y));
+
+                    // get the properties from the tileset resource
+                    const tileset = this.resource.getTilesetByTileGid(tileNumber);
+                    if (tileset) {
+                        const properties = tileset.getTilePropertiesByGid(tileNumber);
+
+                        // set all properties
+                        properties.forEach(prop => tile.setProperty(prop.name as any, prop.value));
+                    }
+
+                    // store tile in the layout
+                    this.layout[l][y][x] = tile;
+                });
+            });
+
+        }
     }
 
     /**

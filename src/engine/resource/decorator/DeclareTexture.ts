@@ -42,7 +42,7 @@ export function DeclareTexture(textureUrl: string): ClassDecorator {
             }
 
             // set the texture
-            entity.setTexture(resourceResult);
+            entity.setTexture(resourceResult.getData());
 
         })(target);
     };

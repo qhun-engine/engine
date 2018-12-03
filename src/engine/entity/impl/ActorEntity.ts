@@ -31,7 +31,7 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity,
     /**
      * the texture resource
      */
-    protected resource!: ImageResource;
+    protected resource!: HTMLImageElement;
 
     /**
      * the current position of the entity
@@ -98,7 +98,7 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity,
     /**
      * @inheritdoc
      */
-    public setTexture(texture: ImageResource): this {
+    public setTexture(texture: HTMLImageElement): this {
 
         this.resource = texture;
         return this;
@@ -107,7 +107,7 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity,
     /**
      * @inheritdoc
      */
-    public setRenderableTexture(texture: ImageResource): this {
+    public setRenderableTexture(texture: HTMLImageElement): this {
 
         this.resource = texture;
         return this;
@@ -116,7 +116,7 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity,
     /**
      * @inheritdoc
      */
-    public getTexture(): ImageResource {
+    public getTexture(): HTMLImageElement {
 
         return this.resource;
     }

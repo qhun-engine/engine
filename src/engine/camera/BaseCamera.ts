@@ -58,12 +58,8 @@ export abstract class BaseCamera implements Camera {
         protected zoomScale: number = 1
     ) {
 
-        // set far point for the given world
-        const tileDim = world.getRenderableWorld().getTileDimension();
-        const worldDim = world.getRenderableWorld().getWorldSize();
-
         // multipy to get the far point of the camera
-        this.far = Vector.from(tileDim.w * worldDim.w, tileDim.h * worldDim.h);
+        this.far = world.getSize();
 
         // set world bounds as rectangle
         this.worldBounds = new Rectangle(0, 0, this.far.x, this.far.y);

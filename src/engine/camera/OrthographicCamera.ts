@@ -54,11 +54,11 @@ export class OrthographicCamera extends BaseCamera {
             .add(point);
 
         // get world info and build a vector to reduce the current tempPoint to the origin cartesian tile base number
-        const tileDim = this.world.getRenderableWorld().getTileDimension();
-        const cartTileNumVector = tempPosition.divide(Vector.from(tileDim.w, tileDim.h));
+        const tileSize = this.world.getTileSize();
+        const cartTileNumVector = tempPosition.divide(tileSize);
 
         // transform the position
-        const mapPosition = tileRendering.getDrawingCoordinate(cartTileNumVector.x, cartTileNumVector.y, tileDim.w, tileDim.h);
+        const mapPosition = tileRendering.getDrawingCoordinate(cartTileNumVector.x, cartTileNumVector.y, tileSize.x, tileSize.y);
 
         // build the ray
         return new Ray(point, tempPosition, mapPosition, this.world);

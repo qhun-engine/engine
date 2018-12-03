@@ -52,6 +52,13 @@ export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlText
     }
 
     /**
+     * get the world as tile number[][][]
+     */
+    public getWorldLayout(): LayeredWorldProperties {
+        return this.world;
+    }
+
+    /**
      * @inheritdoc
      */
     public getLayerCount(): number {
@@ -187,31 +194,31 @@ export class TileworldResource<T extends XmlTextResource<TMXTileworld> = XmlText
     private addWorldCoordinate(layer: number, x: number, y: number, tile: number): void {
 
         // initialize layer
-        this.world[layer] = this.world[layer] || {};
-        this.world[layer].xy = this.world[layer].xy || {};
-        this.world[layer].yx = this.world[layer].yx || {};
+        this.world[layer] = this.world[layer] || [];
+        this.world[layer].xy = this.world[layer].xy || [];
+        this.world[layer].yx = this.world[layer].yx || [];
 
         // set xy first
-        this.world[layer].xy[x] = this.world[layer].xy[x] || {};
+        this.world[layer].xy[x] = this.world[layer].xy[x] || [];
         this.world[layer].xy[x][y] = tile;
 
         // now yx
-        this.world[layer].yx[y] = this.world[layer].yx[y] || {};
+        this.world[layer].yx[y] = this.world[layer].yx[y] || [];
         this.world[layer].yx[y][x] = tile;
 
         // search for the given tile in the tileset to get the correct picture
         const tileset = this.getTilesetByTileGid(tile);
 
         // prepare generated world
-        this.generatedWorld[layer] = this.generatedWorld[layer] || {};
-        this.generatedWorld[layer].xy = this.generatedWorld[layer].xy || {};
-        this.generatedWorld[layer].yx = this.generatedWorld[layer].yx || {};
+        this.generatedWorld[layer] = this.generatedWorld[layer] || [];
+        this.generatedWorld[layer].xy = this.generatedWorld[layer].xy || [];
+        this.generatedWorld[layer].yx = this.generatedWorld[layer].yx || [];
 
         // set xy first
-        this.generatedWorld[layer].xy[x] = this.generatedWorld[layer].xy[x] || {};
+        this.generatedWorld[layer].xy[x] = this.generatedWorld[layer].xy[x] || [];
 
         // now yx
-        this.generatedWorld[layer].yx[y] = this.generatedWorld[layer].yx[y] || {};
+        this.generatedWorld[layer].yx[y] = this.generatedWorld[layer].yx[y] || [];
 
         // set the tile image
         if (tileset) {

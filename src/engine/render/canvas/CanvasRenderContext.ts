@@ -4,7 +4,7 @@ import { BaseRenderContext } from "../BaseRenderContext";
 import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
-import { RenderableWorld } from "../../world/RenderableWorld";
+import { World } from "../../world/World";
 
 /**
  * the canvas rendering context
@@ -61,7 +61,7 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
         if (entity.getTexture()) {
 
             // get the image
-            const image = entity.getTexture().getData();
+            const image = entity.getTexture();
 
             // get the anchor point to check where to draw the image in order
             // to be at the entities position
@@ -92,11 +92,11 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
             if (this.world) {
 
                 // get world tile info
-                const tileDim = this.world.getRenderableWorld().getTileDimension();
+                const tileDim = this.world.getTileSize();
 
                 // perform translation
                 perspectiveTranslation = this.perspectiveRenderer.getTranslatedPosition(
-                    cartesianPosition.x, cartesianPosition.y, tileDim.w, tileDim.h
+                    cartesianPosition.x, cartesianPosition.y, tileDim.x, tileDim.y
                 );
             }
 
@@ -110,39 +110,45 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: RenderableWorld): void {
+    public drawWorld(world: World): void {
 
         // draw the given tileworld
         const layers = world.getLayerCount();
-        const size = world.getWorldSize();
-        const tileSize = world.getTileDimension();
+        const size = world.getTileNumbers();
+        const tileSize = world.getTileSize();
 
         // get static offset for the given perspective
-        const staticOffset = this.perspectiveRenderer.getOffset(size.w, size.h, tileSize.w, tileSize.h);
+        const staticOffset = this.perspectiveRenderer.getOffset(size.x, size.y, tileSize.x, tileSize.y);
 
         // iterate over all tiles that should be drawn
         for (let l = 0; l < layers; l++) {
-            for (let y = 0; y < size.h; y++) {
-                for (let x = 0; x < size.w; x++) {
 
-                    // get the image for this coordinate
-                    const tileImage = world.getTileImageByCoordinate(l, x, y);
+            // get layout for this layer
+            const layout = world.getLayout(l);
+
+            // iterate over y coordinate
+            layout.forEach(column => {
+                column.forEach(tile => {
+
+                    // get tile position and image
+                    const tilePosition = tile.getPosition();
+                    const image = tile.getTexture();
 
                     // draw if image is available
-                    if (tileImage) {
+                    if (image && tilePosition) {
 
                         // calculate the drawing position based on the perspective
                         const drawingPosition = this.perspectiveRenderer
                             // translate to perspective
-                            .getDrawingCoordinate(x, y, tileSize.w, tileSize.h)
+                            .getDrawingCoordinate(tilePosition.x, tilePosition.y, tileSize.x, tileSize.y)
                             // add static offset
                             .add(staticOffset);
 
                         // draw the image at the calculated position
-                        this.context.drawImage(tileImage, drawingPosition.x, drawingPosition.y);
+                        this.context.drawImage(image, drawingPosition.x, drawingPosition.y);
                     }
-                }
-            }
+                });
+            });
         }
     }
 

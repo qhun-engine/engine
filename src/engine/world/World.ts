@@ -5,7 +5,6 @@ import { TileworldResource } from "../resource/tileset/TileworldResource";
 import { Destroyable } from "../constraint/Destroyable";
 import { WorldPerspective } from "./WorldPerspective";
 import { Loadable } from "../resource/Loadable";
-import { RenderableWorld } from "./RenderableWorld";
 
 export interface World<T extends TileworldResource = TileworldResource> extends Destroyable {
 
@@ -15,8 +14,6 @@ export interface World<T extends TileworldResource = TileworldResource> extends 
      * @param zoomScale the initial zoom scale of this camera
      */
     createCamera(initialPosition: Vector, zoomScale: number): Camera;
-
-    getRenderableWorld(): RenderableWorld;
 
     /**
      * get the perspective of the world
@@ -28,6 +25,21 @@ export interface World<T extends TileworldResource = TileworldResource> extends 
      * and second dimension is the X coordinate
      */
     getLayout(layer: number): Tile[][];
+
+    /**
+     * get the size of the world in pixel
+     */
+    getSize(): Vector;
+
+    /**
+     * get the size of one tile in pixel
+     */
+    getTileSize(): Vector;
+
+    /**
+     * get the amount of tiles on x and y axis
+     */
+    getTileNumbers(): Vector;
 
     /**
      * get the amount of layers in this world

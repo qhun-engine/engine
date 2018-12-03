@@ -32,12 +32,11 @@ class Game {
 
         this.entity = new MainEntity();
         this.entity.setSize(Vector.from(
-            this.entity.getTexture().getData().width,
-            this.entity.getTexture().getData().height
+            this.entity.getTexture().width,
+            this.entity.getTexture().height
         ));
 
         const scene = new MainScene().setWorld(world).addEntity(this.entity);
-
 
         await this.sceneMan.switchScene(scene);
 

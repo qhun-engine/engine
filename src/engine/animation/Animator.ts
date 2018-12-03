@@ -121,7 +121,7 @@ export class Animator {
             activeAnimation.currentIndex = nextIndex;
 
             // show next image
-            renderable.setTexture((animation.animate as SpriteResource).getAnimationImages()[nextIndex]);
+            renderable.setTexture((animation.animate as SpriteResource).getAnimationImages()[nextIndex].getData());
         }
 
     }

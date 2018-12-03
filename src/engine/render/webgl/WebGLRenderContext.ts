@@ -3,8 +3,8 @@ import { BaseRenderContext } from "../BaseRenderContext";
 import { Singleton } from "../../constraint/Singleton";
 import { RenderableEntity } from "../../entity/RenderableEntity";
 import { Vector } from "../../math/Vector";
-import { RenderableWorld } from "../../world/RenderableWorld";
 import { ImageResource } from "../../resource/sprite/ImageResource";
+import { World } from "../../world/World";
 
 /**
  * the webgl render context
@@ -27,7 +27,7 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
     /**
      * @inheritdoc
      */
-    public drawTileWorld(world: RenderableWorld): void {
+    public drawWorld(world: World): void {
         // @todo: implement
     }
 

@@ -54,15 +54,15 @@ export class IsometricCamera extends BaseCamera {
             .add(point);
 
         // get world info and build a vector to reduce the current tempPoint to the origin cartesian tile base number
-        const tileDim = this.world.getRenderableWorld().getTileDimension();
-        const worldDim = this.world.getRenderableWorld().getWorldSize();
-        let cartTileNumVector = tempPosition.divide(Vector.from(tileDim.w, tileDim.h));
+        const tileSize = this.world.getTileSize();
+        const worldSize = this.world.getTileNumbers();
+        let cartTileNumVector = tempPosition.divide(tileSize);
 
         // using the offset of isometric world to adjust the cart tile num vector
-        cartTileNumVector = cartTileNumVector.substract(tileRendering.getOffset(worldDim.w, worldDim.h, tileDim.w, tileDim.h));
+        cartTileNumVector = cartTileNumVector.substract(tileRendering.getOffset(worldSize.x, worldSize.x, tileSize.x, tileSize.y));
 
         // transform the position to isometric coordinate system
-        const mapPosition = tileRendering.getDrawingCoordinate(cartTileNumVector.x, cartTileNumVector.y, tileDim.w, tileDim.h);
+        const mapPosition = tileRendering.getDrawingCoordinate(cartTileNumVector.x, cartTileNumVector.y, tileSize.x, tileSize.y);
 
         // build the ray
         return new Ray(point, tempPosition, mapPosition, this.world);

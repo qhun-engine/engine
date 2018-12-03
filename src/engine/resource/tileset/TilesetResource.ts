@@ -11,6 +11,19 @@ import { ResourceError } from "../../exception/ResourceError";
 import { AsyncDataService } from "../../util/AsyncDataService";
 import { Rectangle } from "../../math/Rectangle";
 
+declare type TileProperty = {
+
+    /**
+     * name of the property
+     */
+    name: string,
+
+    /**
+     * value of the property
+     */
+    value: any
+};
+
 /**
  * a tile set wraped by a resource context
  */
@@ -25,18 +38,7 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
      * contains properties of tiles by its gid
      */
     protected tileProperties: {
-        [gid: number]: {
-
-            /**
-             * name of the property
-             */
-            name: string,
-
-            /**
-             * value of the property
-             */
-            value: any
-        }[]
+        [gid: number]: TileProperty[]
     } = {};
 
     /**
@@ -51,6 +53,15 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
     public getTileImageByGid(gid: number): HTMLImageElement | null {
 
         return this.tiles[gid - 1];
+    }
+
+    /**
+     * get properties by tile number
+     * @param gid the tile number
+     */
+    public getTilePropertiesByGid(gid: number): TileProperty[] {
+
+        return this.tileProperties[gid] || [];
     }
 
     /**

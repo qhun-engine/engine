@@ -1,6 +1,6 @@
 import { DeclareTileworld, BaseWorld } from "../../engine";
 
-@DeclareTileworld("assets/world/mainWorld.tmx", 10)
+@DeclareTileworld("assets/world/mainWorld.tmx")
 export class OrthogonalWorld extends BaseWorld {
 
 }
