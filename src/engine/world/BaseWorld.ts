@@ -35,13 +35,14 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
     protected layout: Tile[][][] = [];
 
     /**
+     * represents a blockable tile three dimensional array
+     */
+    protected collisionLayout: boolean[][][] = [];
+
+    /**
      * stores the current perspective of the world
      */
     protected perspective!: WorldPerspective;
-
-    public getRenderableWorld(): RenderableWorld {
-        return this.resource;
-    }
 
     /**
      * @inheritdoc
@@ -50,6 +51,14 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
 
         // return y/x based tile array
         return this.layout[layer];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public getCollisionLayout(layer: number): boolean[][] {
+
+        return this.collisionLayout[layer];
     }
 
     /**
@@ -150,6 +159,9 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
                         properties.forEach(prop => tile.setProperty(prop.name as any, prop.value));
                     }
 
+                    // stores important tile information
+                    this.storeWorldImportantTileProperties(l, tile);
+
                     // store tile in the layout
                     this.layout[l][y][x] = tile;
                 });
@@ -215,5 +227,21 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
         delete this.layout;
         delete this.perspective;
         delete this.loadableResource;
+    }
+
+    /**
+     * extracts important world information from a tile
+     * @param layer the layer where the tile is on
+     * @param tile the tile to extract the information from
+     */
+    private storeWorldImportantTileProperties(layer: number, tile: Tile): void {
+
+        // get tile position
+        const position = tile.getPosition();
+
+        // check for collision tile and init collision array
+        this.collisionLayout[layer] = this.collisionLayout[layer] || [];
+        this.collisionLayout[layer][position.y] = this.collisionLayout[layer][position.y] || [];
+        this.collisionLayout[layer][position.y][position.x] = !!tile.getProperty("blocked");
     }
 }

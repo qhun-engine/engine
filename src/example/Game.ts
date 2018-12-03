@@ -43,5 +43,7 @@ class Game {
         this.camera = world.createCamera();
         this.camera.follow(this.entity, new FollowElasticCenterStrategy(.5, .8));
         scene.setCamera(this.camera);
+
+        console.log(world.getCollisionLayout(0));
     }
 }

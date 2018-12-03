@@ -23,8 +23,15 @@ export interface World<T extends TileworldResource = TileworldResource> extends 
     /**
      * get all available tiles for the given layer. first dimension is Y coordinate
      * and second dimension is the X coordinate
+     * @param layer the layer to get the layout for
      */
     getLayout(layer: number): Tile[][];
+
+    /**
+     * get a two dimensional array with blocking tile information
+     * @param layer the layer to get the data from
+     */
+    getCollisionLayout(layer: number): boolean[][];
 
     /**
      * get the size of the world in pixel
