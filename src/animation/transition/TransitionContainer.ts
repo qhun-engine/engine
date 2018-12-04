@@ -1,9 +1,10 @@
+import { Injectable } from "@qhun-engine/base";
+
 import { EaseIn } from "./EaseIn";
 import { EaseOut } from "./EaseOut";
 import { EaseInOut } from "./EaseInOut";
 import { Linear } from "./Linear";
 import { EaseInElastic } from "./EaseInElastic";
-import { Injectable } from "../../di/Injectable";
 
 /**
  * creates and reuses transition implementations

@@ -1,5 +1,6 @@
+import { Injectable } from "@qhun-engine/base";
+
 import { Transition } from "./Transition";
-import { Injectable } from "../../di/Injectable";
 
 /**
  * implements a transition ease in elastic calculation

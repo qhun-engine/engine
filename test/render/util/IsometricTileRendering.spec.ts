@@ -1,7 +1,7 @@
 import { suite, test, slow, timeout } from "mocha-typescript";
 import { expect } from "chai";
-import { IsometricTileRendering } from "../../../../src/engine/render/util/IsometricTileRendering";
-import { Vector } from "../../../../src/engine/math/Vector";
+import { IsometricTileRendering } from "../../../src/render/util/IsometricTileRendering";
+import { Vector } from "../../../src/math/Vector";
 
 @suite("engine/render/util/IsometricTileRendering") class IsometricTileRenderingSpec {
 

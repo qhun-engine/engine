@@ -1,9 +1,8 @@
-import { ClassConstructor } from "../constraint/ClassConstructor";
-import { Injectable } from "../di/Injectable";
+import { ClassConstructor, Injectable, Injector } from "@qhun-engine/base";
+
 import { poweredBy } from "./poweredBy";
 import { QhunGameOptions } from "./QhunGameOptions";
 import { EngineBootstrap } from "./EngineBootstrap";
-import { Injector } from "../di/Injector";
 import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
 import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 
@@ -22,7 +21,7 @@ export function QhunGame(options: Partial<QhunGameOptions> = {}): ClassDecorator
     // get performance debug logger
     const logger = Injector.getInstance().instantiateClass(ConsolePerformanceLogger);
 
-    return <ClassDecorator>(<T extends ClassConstructor>(target: T) => {
+    return <ClassDecorator>(<T extends ClassConstructor<any>>(target: T) => {
 
         // print powered by
         poweredBy.forEach(line => {

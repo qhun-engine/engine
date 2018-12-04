@@ -75,3 +75,9 @@ typings/
 
 # coveralls config
 .coveralls.yml
+
+# nyc output temp folder
+.nyc_output
+
+# test coverage folder
+coverage

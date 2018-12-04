@@ -1,6 +1,6 @@
 import { suite, test, slow, timeout } from "mocha-typescript";
 import { expect } from "chai";
-import { Rectangle } from "../../../src/engine/math/Rectangle";
+import { Rectangle } from "../../src/math/Rectangle";
 
 @suite("engine/meth/Rectangle") class RectangleSpec {
 

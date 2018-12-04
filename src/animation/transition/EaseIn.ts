@@ -1,4 +1,5 @@
-import { Injectable } from "../../di/Injectable";
+import { Injectable } from "@qhun-engine/base";
+
 import { TransitionInBound } from "./TransitionInBound";
 
 /**

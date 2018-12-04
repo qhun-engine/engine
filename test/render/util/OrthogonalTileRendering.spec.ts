@@ -1,7 +1,7 @@
 import { suite, test, slow, timeout } from "mocha-typescript";
 import { expect } from "chai";
-import { OrthogonalTileRendering } from "../../../../src/engine/render/util/OrthogonalTileRendering";
-import { Vector } from "../../../../src/engine/math/Vector";
+import { OrthogonalTileRendering } from "../../../src/render/util/OrthogonalTileRendering";
+import { Vector } from "../../../src/math/Vector";
 
 @suite("engine/render/util/OrthogonalTileRendering") class OrthogonalTileRenderingSpec {
 

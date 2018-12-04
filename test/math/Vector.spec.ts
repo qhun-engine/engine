@@ -1,6 +1,6 @@
 import { suite, test, slow, timeout } from "mocha-typescript";
 import { expect } from "chai";
-import { Vector } from "../../../src/engine/math/Vector";
+import { Vector } from "../../src/math/Vector";
 
 @suite("engine/meth/Vector") class VectorSpec {
 
