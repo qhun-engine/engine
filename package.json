@@ -2,7 +2,8 @@
   "name": "@qhun-engine/engine",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "./node_modules/.bin/mocha -r ts-node/register \"test/**/*.spec*.ts\"",
     "test:coverage": "./node_modules/.bin/nyc ./node_modules/.bin/mocha -r ts-node/register \"test/**/*.spec*.ts\"",
@@ -10,9 +11,7 @@
     "build:typescript": "./node_modules/.bin/tsc",
     "build:declaration": "./node_modules/.bin/tsc -p ./tsconfig.declaration.json",
     "lint": "./node_modules/.bin/tslint --project .",
-    "start": "run-p start:server start:build",
-    "start:server": "ts-node src/server/index.ts",
-    "start:build": "webpack --watch"
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
