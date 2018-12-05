@@ -5,7 +5,6 @@ import { SceneManager } from "./scene/SceneManager";
 import { MessageBus } from "./message/MessageBus";
 import { Engine } from "./Engine";
 import { QhunGameOptions } from "./bootstrap/QhunGameOptions";
-import "fpsmeter";
 
 @Singleton()
 export class GameLoop {
@@ -40,15 +39,6 @@ export class GameLoop {
      * a sanity check var to dont run into spiral of death
      */
     private updateSteps: number = 0;
-
-    /**
-     * fps recording
-     */
-    private fpsMeter = new FPSMeter(document.body, {
-        decimals: 1, graph: 1, theme: "dark", left: "5px",
-        maxFps: (this.options.fps as number), smoothing: 20,
-        interval: 100, bottom: "5px", top: "auto", position: "absolute"
-    });
 
     constructor(
         private engine: Engine,
@@ -104,9 +94,6 @@ export class GameLoop {
             return;
         }
 
-        // tick fps
-        this.fpsMeter.tickStart();
-
         // only continue if the loop should run
         if (!this.isRunning) {
 
@@ -142,9 +129,6 @@ export class GameLoop {
 
         // render
         this.drawPhase(this.delta, timePassed);
-
-        // tick fps
-        this.fpsMeter.tick();
 
         // next frame
         window.requestAnimationFrame(this.gameLoop.bind(this));

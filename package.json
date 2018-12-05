@@ -27,7 +27,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.1.7",
-    "@types/fpsmeter": "^0.3.29",
     "@types/mocha": "^5.2.5",
     "@types/reflect-metadata": "^0.1.0",
     "chai": "^4.2.0",
@@ -45,7 +44,6 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "fpsmeter": "^0.3.1",
     "@qhun-engine/base": "git+https://github.com/qhun-engine/base.git",
     "fast-xml-parser": "^3.12.9"
   }
