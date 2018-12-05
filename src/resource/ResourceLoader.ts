@@ -60,11 +60,11 @@ export class ResourceLoader {
     public createLoadable<F extends (...args: any[]) => Promise<Resource>>(loader: F, ...params: Parameters<F>): () => ReturnType<F> {
 
         // create a bound context for the loadable object
-        return () => {
+        return (() => {
 
             // load the requested resource and return a promise
             return loader.apply(this, params);
-        };
+        }) as ReturnType<F>;
     }
 
     /**
