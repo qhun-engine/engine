@@ -86,7 +86,7 @@ export class MessageBus {
     private dispatchMessages(messages: Message[]): void {
 
         // check if there are subscribers
-        if (this.messageObservers.length === 0) { return; }
+        if (this.messageObservers.length === 0 || messages.length === 0) { return; }
 
         // iterate over all messages
         messages.forEach(message =>

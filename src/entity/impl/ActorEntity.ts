@@ -1,9 +1,11 @@
 import { CollidableEntity } from "../CollidableEntity";
 import { RenderableEntity } from "../RenderableEntity";
-import { SpriteResource } from "../../resource/sprite/SpriteResource";
 import { Vector } from "../../math/Vector";
 import { CollisionType } from "../../collision/CollisionType";
 import { MovingEntity } from "../MovingEntity";
+import { Injector } from "@qhun-engine/base";
+import { MessageBus } from "../../message/MessageBus";
+import { EntityMoveMessage } from "../../message/event/action/EntityMoveMessage";
 
 /**
  * an entity class that implements renderability, animations, collisions
@@ -279,12 +281,10 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity,
      */
     public move(position: Vector): this {
 
-        // replace the current velocity with the target position
+        // calculate new velocity
         const tempVelocity = this.velocity.add(position.substract(this.position));
 
-        // finally set the velocity
-        this.velocity = tempVelocity;
-
-        return this;
+        // set entity velocity
+        return this.setVelocity(tempVelocity);
     }
 }

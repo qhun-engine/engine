@@ -15,6 +15,8 @@ import { TilePerspectiveRenderingFactory } from "../render/util/TileRenderingFac
 import { EntityTypeGuardUtil } from "../entity/util/EntityTypeGuardUtil";
 import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
+import { On } from "../message/decorator/On";
+import { EntityMoveMessage } from "../message/event/action/EntityMoveMessage";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
@@ -189,5 +191,12 @@ export class SceneManager implements Updateable, Drawable {
         this.activeScene.getEntities()
             .filter(entity => renderer.isEntityRenderable(entity))
             .forEach(entity => renderer.drawEntity(entity as RenderableEntity));
+    }
+
+    @On(EntityMoveMessage)
+    private handleEntityMoveInScene(moveMessage: EntityMoveMessage): void {
+
+        const payload = moveMessage.getPayload();
+        payload.entity.move(payload.to);
     }
 }

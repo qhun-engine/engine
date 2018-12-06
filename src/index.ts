@@ -78,6 +78,10 @@ export * from "./message/event/environment/WindowResizeMessage";
 export * from "./message/event/scene/SceneLoadedMessage";
 export * from "./message/event/scene/SceneSwitchedMessage";
 export * from "./message/event/scene/SceneUnloadedMessage";
+export * from "./message/event/input/InputPointDownMessage";
+export * from "./message/event/input/InputPointMoveMessage";
+export * from "./message/event/input/InputPointUpMessage";
+export * from "./message/event/action/EntityMoveMessage";
 export * from "./message/internal/connection/ConnectionToServerEstablishedMessage";
 export * from "./message/internal/connection/ConnectionToServerLostMessage";
 export * from "./message/internal/state/EngineBootstrapFinishedMessage";
@@ -86,9 +90,6 @@ export * from "./message/internal/state/GameStartMessage";
 export * from "./message/internal/state/GameStopMessage";
 export * from "./message/internal/state/ViewportBlurMessage";
 export * from "./message/internal/state/ViewportFocusMessage";
-export * from "./message/event/input/InputPointDownMessage";
-export * from "./message/event/input/InputPointMoveMessage";
-export * from "./message/event/input/InputPointUpMessage";
 
 // ## PHYSIC
 // currently no exports
