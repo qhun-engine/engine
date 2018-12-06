@@ -2,15 +2,12 @@ import { CollidableEntity } from "../CollidableEntity";
 import { RenderableEntity } from "../RenderableEntity";
 import { Vector } from "../../math/Vector";
 import { CollisionType } from "../../collision/CollisionType";
-import { MovingEntity } from "../MovingEntity";
-import { Injector } from "@qhun-engine/base";
-import { MessageBus } from "../../message/MessageBus";
-import { EntityMoveMessage } from "../../message/event/action/EntityMoveMessage";
+import { MovableEntity } from "../MovableEntity";
 
 /**
  * an entity class that implements renderability, animations, collisions
  */
-export abstract class ActorEntity implements CollidableEntity, RenderableEntity, MovingEntity {
+export abstract class ActorEntity implements CollidableEntity, RenderableEntity, MovableEntity {
 
     /**
      * is the entity currently visible for the renderer

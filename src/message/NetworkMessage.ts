@@ -1,10 +1,5 @@
 import { Serializable } from "@qhun-engine/base";
-
 import { Message } from "./Message";
+import { MessageType } from "./MessageType";
 
-/**
- * an additional constraint for messages that can be send over the network
- */
-export interface NetworkMessage<Payload = void> extends Message<Payload>, Serializable {
-
-}
+export interface NetworkMessage<T extends MessageType = MessageType, D = any> extends Message<T, D>, Serializable { }

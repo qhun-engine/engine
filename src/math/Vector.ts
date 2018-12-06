@@ -169,7 +169,7 @@ export class Vector implements Clonable<Vector>, DimensionPosition {
         const currentDistance = this.distance();
         if (currentDistance > 0) {
 
-            return new Vector(this.x / currentDistance, this.y / currentDistance);
+            return this.divide(Vector.from(currentDistance));
         }
 
         return new Vector(0, 1);

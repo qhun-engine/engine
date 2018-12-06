@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { IsometricTileRendering } from "../../../src/render/util/IsometricTileRendering";
 import { Vector } from "../../../src/math/Vector";
 
-@suite("engine/render/util/IsometricTileRendering") class IsometricTileRenderingSpec {
+@suite("render/util/IsometricTileRendering") class IsometricTileRenderingSpec {
 
     @test "Isometric calculation for positions are correct"() {
 

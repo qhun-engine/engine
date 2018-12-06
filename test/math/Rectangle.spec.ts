@@ -2,7 +2,7 @@ import { suite, test, slow, timeout } from "mocha-typescript";
 import { expect } from "chai";
 import { Rectangle } from "../../src/math/Rectangle";
 
-@suite("engine/meth/Rectangle") class RectangleSpec {
+@suite("math/Rectangle") class RectangleSpec {
 
     @test "Must store constructor values public"() {
 

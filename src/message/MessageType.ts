@@ -1,19 +1,47 @@
 export enum MessageType {
 
     /**
-     * for engine internal messages
-     * @internal
+     * Input type messages are broadcasting messages from the input module.
+     * They indicate that the user has inputted some information.
      */
-    INTERNAL,
+    Input = "Input",
 
     /**
-     * an event message that indicates that something has happend but there
-     * is no need to be sure that this message has been read
+     * Environment type message are broadcasting messages from the environment module.
+     * They indicate that eg. viewport changes happening or an input device has been changed.
+     * Also contains messages for fullscreen enable/disable
      */
-    EVENT,
+    Environment = "Environment",
 
     /**
-     * a command message indicates that the something should happen in the future
+     * Moving messages are targeted messages. They indicate that the receiver of this message should
+     * move to a given position. Targets can be `MovableEntity` objects
      */
-    COMMAND
+    Moving = "Moving",
+
+    /**
+     * Animation messages are targeted messages. They indicate that a certain target should play a defined animaton
+     * Targets can be `RenderableEntity` objects.
+     */
+    Animation = "Animation",
+
+    /**
+     * Scene related broadcasting messages. Contains messages about loading/unloading, switching between scenes
+     */
+    Scene = "Scene",
+
+    /**
+     * Engine internal related broadcasting messages. Contains pause/unpause, engine ready message ...
+     */
+    Engine = "Engine",
+
+    /**
+     * Contains network related status messages as broadcasting messages.
+     */
+    Network = "Network",
+
+    /**
+     * Contains auto related messages. They are targeted
+     */
+    Audio = "Audio"
 }

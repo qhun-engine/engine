@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -r ts-node/register \"test/**/*.spec*.ts\"",
-    "test:coverage": "./node_modules/.bin/nyc ./node_modules/.bin/mocha -r ts-node/register \"test/**/*.spec*.ts\"",
+    "test": "./node_modules/.bin/mocha -r ts-node/register -r test/testSetup.ts \"test/**/*.spec*.ts\"",
+    "test:coverage": "./node_modules/.bin/nyc ./node_modules/.bin/mocha -r ts-node/register -r test/testSetup.ts \"test/**/*.spec*.ts\"",
     "build": "npm-run-all build:typescript build:declaration",
     "build:typescript": "./node_modules/.bin/tsc",
     "build:declaration": "./node_modules/.bin/tsc -p ./tsconfig.declaration.json",
@@ -44,7 +44,7 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "@qhun-engine/base": "git+https://github.com/qhun-engine/base.git",
+    "@qhun-engine/base": "^0.0.1",
     "fast-xml-parser": "^3.12.9"
   }
 }

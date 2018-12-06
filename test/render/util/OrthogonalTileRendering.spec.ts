@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { OrthogonalTileRendering } from "../../../src/render/util/OrthogonalTileRendering";
 import { Vector } from "../../../src/math/Vector";
 
-@suite("engine/render/util/OrthogonalTileRendering") class OrthogonalTileRenderingSpec {
+@suite("render/util/OrthogonalTileRendering") class OrthogonalTileRenderingSpec {
 
     @test "Orthogonal calculation for positions are correct"() {
 
