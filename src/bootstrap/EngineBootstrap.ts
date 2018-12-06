@@ -11,6 +11,7 @@ import { ResourceLoader } from "../resource/ResourceLoader";
 import { Environment } from "../environment/Environment";
 import { EngineReadyMessage } from "./messages/EngineReadyMessage";
 import { EngineBootstrapFinishedMessage } from "./messages/EngineBootstrapFinishedMessage";
+import { InputManager } from "../input/InputManager";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -42,6 +43,9 @@ export class EngineBootstrap {
 
     @Inject()
     private environment!: Environment;
+
+    @Inject()
+    private inputManager!: InputManager;
 
     /**
      * the canvas element
@@ -92,6 +96,9 @@ export class EngineBootstrap {
 
         // update environment canvas dimension
         this.environment.updateCanvasDimension();
+
+        // setup input system
+        this.inputManager.setupInput();
 
         // construct context renderer
         await this.constructRenderContext();

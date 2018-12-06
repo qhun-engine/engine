@@ -1,5 +1,4 @@
 import { ClassConstructor } from "@qhun-engine/base";
-
 import { Message } from "../Message";
 import { On } from "./On";
 import { MessageType } from "../MessageType";
@@ -13,7 +12,7 @@ import { MessageType } from "../MessageType";
  * @param messageClass the message class to expect
  * @param predicate an aditional filter function that is passed into the event stream
  */
-export function Once<K extends MessageType, M extends Message<K>>(
+export function Once<K extends MessageType, M extends Message>(
     type: K,
     messageClass: ClassConstructor<M>,
     predicate: (message: Message) => boolean = () => true

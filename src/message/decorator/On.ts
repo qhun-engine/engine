@@ -2,7 +2,6 @@ import {
     ClassConstructor, MetadataRegistryService, Injector,
     ReflectionMetadata, ConstraintError
 } from "@qhun-engine/base";
-
 import { Message } from "../Message";
 import { MessageBus } from "../MessageBus";
 import { MessageType } from "../MessageType";

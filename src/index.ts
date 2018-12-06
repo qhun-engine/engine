@@ -17,6 +17,8 @@ export * from "./animation/transition/TransitionContainer";
 // ## BOOTSTRAP
 export * from "./bootstrap/QhunGame";
 export * from "./bootstrap/QhunGameOptions";
+export * from "./bootstrap/messages/EngineBootstrapFinishedMessage";
+export * from "./bootstrap/messages/EngineReadyMessage";
 
 // ## CAMERA
 export * from "./camera/BaseCamera";
@@ -42,6 +44,7 @@ export * from "./entity/Entity";
 export * from "./entity/RenderableEntity";
 export * from "./entity/impl/ActorEntity";
 export * from "./entity/util/EntityTypeGuardUtil";
+export * from "./entity/messages/EntityMovingMessage";
 
 // ## ENVIRONMENT
 // currently no exports
@@ -58,6 +61,8 @@ export * from "./input/Pointer";
 export * from "./input/PointerType";
 export * from "./input/impl/PointerDown";
 export * from "./input/impl/PointerUp";
+export * from "./input/messages/InputPointerDownMessage";
+export * from "./input/messages/InputPointerUpMessage";
 
 // ## MATH
 export * from "./math/Random";
@@ -105,13 +110,10 @@ export * from "./resource/text/JsonTextResource";
 export * from "./resource/text/TextResource";
 export * from "./resource/text/XmlTextResource";
 export * from "./world/BaseWorld";
-// export * from "./resource/tileset/LayeredWorldProperties";
 export * from "./world/RenderableWorld";
 export * from "./resource/tileset/TilesetResource";
 export * from "./world/WorldPerspective";
 export * from "./resource/tileset/TileworldResource";
-// export * from "./resource/tileset/tiled/TMXTileworld";
-// export * from "./resource/tileset/tiled/TSXTileset";
 export * from "./resource/util/ImageChunkService";
 export * from "./resource/util/ImageCropService";
 
@@ -119,6 +121,9 @@ export * from "./resource/util/ImageCropService";
 export * from "./scene/BaseScene";
 export * from "./scene/Scene";
 export * from "./scene/SceneManager";
+export * from "./scene/messages/SceneLoadMessage";
+export * from "./scene/messages/SceneSwitchMessage";
+export * from "./scene/messages/SceneUnloadMessage";
 
 // ## THREAD
 export * from "./therad/Thread";
