@@ -19,11 +19,11 @@ const metadataRegistry = MetadataRegistryService.getInstance();
  * @param observe observes the `MessageBus` for this message type and dont stop after the first message
  * @param predicate an aditional filter function that is passed into the event stream
  */
-export function On<K extends MessageType, M extends Message<K>>(
+export function On<K extends MessageType, M extends Message>(
     type: K,
     messageClass: ClassConstructor<M>,
     observe: boolean = true,
-    predicate: (message: M) => boolean = () => true
+    predicate: (message: Message) => boolean = () => true
 ): MethodDecorator {
 
     // tslint:disable-next-line ban-types
@@ -32,7 +32,7 @@ export function On<K extends MessageType, M extends Message<K>>(
         // get the message bus instance and observe it for this kind of message
         const subscription = Injector.get(MessageBus).observe(type)
             // let only pass the correct kind of messages
-            .filter(message => message instanceof messageClass && predicate(message as M))
+            .filter(message => message instanceof messageClass && predicate(message))
             // tell me when one message is available
             .subscribe(message => {
 
@@ -48,6 +48,9 @@ export function On<K extends MessageType, M extends Message<K>>(
                 // since the method decorator does not contain a concrete instance
                 // we need to get the singleton instance from the metadata registry
                 const instance = metadataRegistry.get(ReflectionMetadata.SingletonInstance, target.constructor as ClassConstructor);
+
+                // when no instance is available, ignore the event
+                if (!instance) { return; }
 
                 // call the method on this instance to preserve the context
                 instance[propertyKey](message);
