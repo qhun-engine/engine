@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { DimensionSize } from "../../constraint/Dimension";
 import { ResourceError } from "../../exception/ResourceError";
 import { TilePerspectiveRendering } from "../../render/util/TileRendering";

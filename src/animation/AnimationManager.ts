@@ -2,7 +2,6 @@ import {
     Injectable, Injector, MetadataRegistryService,
     ReflectionMetadata, ClassConstructor
 } from "@qhun-engine/base";
-
 import { Renderable } from "../constraint/Renderable";
 import { Animation, SpriteAnimation, CallbackAnimation } from "./Animation";
 import { Animator } from "./Animator";

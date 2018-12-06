@@ -1,5 +1,4 @@
 import { TargetedMessage } from "../message/TargetedMessage";
-import { Message } from "../message/Message";
 
 export interface CanHandleMessages {
 

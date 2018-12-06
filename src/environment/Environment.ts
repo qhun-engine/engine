@@ -1,8 +1,7 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { DimensionSize } from "../constraint/Dimension";
 import { MessageBus } from "../message/MessageBus";
-import { WindowResizeMessage } from "../message/event/environment/WindowResizeMessage";
+import { ViewportResizeMessage } from "./messages/ViewportResizeMessage";
 
 /**
  * a class that cares about screen width/height, resize events, browser
@@ -52,7 +51,7 @@ export class Environment {
         window.onresize = event => {
 
             // send message
-            this.messageBus.send(new WindowResizeMessage(event));
+            this.messageBus.send(new ViewportResizeMessage(event));
 
             // handle canvas resize
             this.updateCanvasDimension();

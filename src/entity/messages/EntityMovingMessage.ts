@@ -1,4 +1,7 @@
-import { TargetedMessage } from "../../message/TargetedMessage";
-import { MovableEntity } from "../MovableEntity";
+import { TargetedMessageBase } from "../../message/impl/TargetedMessageBase";
+import { MessageType } from "../../message/MessageType";
 
-export class EntityMovingMessage implements TargetedMessage<MovableEntity> { }
+export class EntityMovingMessage extends TargetedMessageBase {
+
+    protected type = MessageType.Moving;
+}

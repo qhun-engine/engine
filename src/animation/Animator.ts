@@ -1,5 +1,4 @@
 import { Singleton } from "@qhun-engine/base";
-
 import { Draw } from "../util/decorators/Draw";
 import { Renderable } from "../constraint/Renderable";
 import { Animation, CallbackAnimation, SpriteAnimation, isCallbackAnimation } from "./Animation";

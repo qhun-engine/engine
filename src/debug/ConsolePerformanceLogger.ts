@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { ConsoleLogger } from "./ConsoleLogger";
 import { ConsoleLoggerPrefix } from "./ConsoleLoggerPrefix";
 

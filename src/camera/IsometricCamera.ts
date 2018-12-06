@@ -6,8 +6,8 @@ import { Transition } from "../animation/transition/Transition";
 import { RenderContext } from "../render/RenderContext";
 import { TransitionContainer } from "../animation/transition/TransitionContainer";
 import { IsometricTileRendering } from "../render/util/IsometricTileRendering";
-import { InputPoint } from "../input/generic/InputPoint";
 import { Ray } from "../math/Ray";
+import { Pointer } from "../input/Pointer";
 
 /**
  * A 2.5d based camera for projecting isomatric (3d) objects onto a 2d viewport
@@ -41,7 +41,7 @@ export class IsometricCamera extends BaseCamera {
     /**
      * @inheritdoc
      */
-    public screenToRay(point: InputPoint): Ray {
+    public screenToRay(point: Pointer): Ray {
 
         // use a tile rendering helper class to transform coordinates
         const tileRendering = new IsometricTileRendering();
@@ -52,7 +52,7 @@ export class IsometricCamera extends BaseCamera {
             // get viewport width/height as vector
             .toVector("wh")
             // add the input point to it
-            .add(point);
+            .add(point.getPosition());
 
         // get world info and build a vector to reduce the current tempPoint to the origin cartesian tile base number
         const tileSize = this.world.getTileSize();
@@ -66,7 +66,7 @@ export class IsometricCamera extends BaseCamera {
         const mapPosition = tileRendering.getDrawingCoordinate(cartTileNumVector.x, cartTileNumVector.y, tileSize.x, tileSize.y);
 
         // build the ray
-        return new Ray(point, tempPosition, mapPosition, this.world);
+        return new Ray(point.getPosition(), tempPosition, mapPosition, this.world);
     }
 
 }

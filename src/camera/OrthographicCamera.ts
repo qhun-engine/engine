@@ -5,9 +5,9 @@ import { BaseCamera } from "./BaseCamera";
 import { Transition } from "../animation/transition/Transition";
 import { RenderContext } from "../render/RenderContext";
 import { TransitionContainer } from "../animation/transition/TransitionContainer";
-import { InputPoint } from "../input/generic/InputPoint";
-import { Ray } from "../math/Ray";
 import { OrthogonalTileRendering } from "../render/util/OrthogonalTileRendering";
+import { Ray } from "../math/Ray";
+import { Pointer } from "../input/Pointer";
 
 /**
  * A 2d based camera for projecting orthographic objects onto a 2d viewport
@@ -41,7 +41,7 @@ export class OrthographicCamera extends BaseCamera {
     /**
      * @inheritdoc
      */
-    public screenToRay(point: InputPoint): Ray {
+    public screenToRay(point: Pointer): Ray {
 
         // use a tile rendering helper class to transform coordinates
         const tileRendering = new OrthogonalTileRendering();
@@ -52,7 +52,7 @@ export class OrthographicCamera extends BaseCamera {
             // get viewport width/height as vector
             .toVector("xy")
             // add the input point to it
-            .add(point);
+            .add(point.getPosition());
 
         // get world info and build a vector to reduce the current tempPoint to the origin cartesian tile base number
         const tileSize = this.world.getTileSize();
@@ -62,7 +62,7 @@ export class OrthographicCamera extends BaseCamera {
         const mapPosition = tileRendering.getDrawingCoordinate(cartTileNumVector.x, cartTileNumVector.y, tileSize.x, tileSize.y);
 
         // build the ray
-        return new Ray(point, tempPosition, mapPosition, this.world);
+        return new Ray(point.getPosition(), tempPosition, mapPosition, this.world);
     }
 
 }

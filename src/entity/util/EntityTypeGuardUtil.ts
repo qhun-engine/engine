@@ -1,7 +1,6 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { Entity } from "../Entity";
-import { MovableEntity } from "../MovingEntity";
+import { MovableEntity } from "../MovableEntity";
 
 /**
  * a util class to call type guard function on existing entities

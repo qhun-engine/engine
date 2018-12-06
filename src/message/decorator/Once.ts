@@ -16,7 +16,7 @@ import { MessageType } from "../MessageType";
 export function Once<K extends MessageType, M extends Message<K>>(
     type: K,
     messageClass: ClassConstructor<M>,
-    predicate: (message: M) => boolean = () => true
+    predicate: (message: Message) => boolean = () => true
 ): MethodDecorator {
 
     // utilize the on decorator and pass the dont observe boolean

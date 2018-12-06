@@ -1,5 +1,4 @@
 import { ClassConstructor, Injectable, Injector } from "@qhun-engine/base";
-
 import { poweredBy } from "./poweredBy";
 import { QhunGameOptions } from "./QhunGameOptions";
 import { EngineBootstrap } from "./EngineBootstrap";

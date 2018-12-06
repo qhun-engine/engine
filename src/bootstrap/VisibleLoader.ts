@@ -1,5 +1,4 @@
 import { Singleton } from "@qhun-engine/base";
-
 import { RenderContext } from "../render/RenderContext";
 import { ResourceLoader } from "../resource/ResourceLoader";
 import { Vector } from "../math/Vector";

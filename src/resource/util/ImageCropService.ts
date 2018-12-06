@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { Rectangle } from "../../math/Rectangle";
 
 /**

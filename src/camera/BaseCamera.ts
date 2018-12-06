@@ -6,9 +6,9 @@ import { Rectangle } from "../math/Rectangle";
 import { CameraFollowStrategy } from "./follow/CameraFollowStrategy";
 import { Followable } from "./follow/Followable";
 import { FollowCenterStrategy } from "./follow/FollowCenterStrategy";
-import { InputPoint } from "../input/generic/InputPoint";
 import { Ray } from "../math/Ray";
 import { World } from "../world/World";
+import { Pointer } from "../input/Pointer";
 
 /**
  * the base camera for all known cameras in the game
@@ -197,7 +197,7 @@ export abstract class BaseCamera implements Camera {
         return this;
     }
 
-    public abstract screenToRay(point: InputPoint): Ray;
+    public abstract screenToRay(point: Pointer): Ray;
     public abstract shake(intensity: Vector, duration: number, transition: Transition): void;
     public abstract zoom(scale: number, duration: number, transition: Transition): void;
 

@@ -1,5 +1,4 @@
 import { Injector } from "@qhun-engine/base";
-
 import { World } from "./World";
 import { WorldPerspective } from "./WorldPerspective";
 import { OrthographicCamera } from "../camera/OrthographicCamera";

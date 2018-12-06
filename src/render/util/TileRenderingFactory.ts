@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { WorldPerspective } from "../../world/WorldPerspective";
 import { TilePerspectiveRendering } from "./TileRendering";
 import { OrthogonalTileRendering } from "./OrthogonalTileRendering";

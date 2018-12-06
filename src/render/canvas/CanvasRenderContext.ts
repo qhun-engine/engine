@@ -1,5 +1,4 @@
 import { Singleton } from "@qhun-engine/base";
-
 import { RenderContext } from "../RenderContext";
 import { BaseRenderContext } from "../BaseRenderContext";
 import { RenderableEntity } from "../../entity/RenderableEntity";

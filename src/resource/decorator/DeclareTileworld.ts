@@ -1,5 +1,4 @@
 import { Injector } from "@qhun-engine/base";
-
 import { ResourceLoader } from "../ResourceLoader";
 import { TileworldResource } from "../tileset/TileworldResource";
 import { AfterConstructionHook } from "../../util/decorators/AfterConstructionHook";

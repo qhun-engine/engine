@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { RenderContext } from "./RenderContext";
 import { QhunGameOptions } from "../bootstrap/QhunGameOptions";
 import { CanvasRenderContext } from "./canvas/CanvasRenderContext";

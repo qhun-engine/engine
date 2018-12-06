@@ -1,10 +1,9 @@
 import { Singleton, Inject } from "@qhun-engine/base";
-
 import { RenderContext } from "./render/RenderContext";
 import { SceneManager } from "./scene/SceneManager";
-import { MessageBus } from "./message/MessageBus";
 import { Engine } from "./Engine";
 import { QhunGameOptions } from "./bootstrap/QhunGameOptions";
+import { InternalMessageBus } from "./message/InternalMessageBus";
 
 @Singleton()
 export class GameLoop {
@@ -13,7 +12,7 @@ export class GameLoop {
     private sceneManager!: SceneManager;
 
     @Inject()
-    private messageBus!: MessageBus;
+    private messageBus!: InternalMessageBus;
 
     /**
      * time since the last frame draw

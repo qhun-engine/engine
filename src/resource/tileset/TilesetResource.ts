@@ -1,5 +1,4 @@
 import { Injector } from "@qhun-engine/base";
-
 import { BaseResource } from "../BaseResource";
 import { TSXTileset, TSXTile } from "./tiled/TSXTileset";
 import { XmlTextResource } from "../text/XmlTextResource";

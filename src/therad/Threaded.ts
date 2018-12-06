@@ -1,5 +1,4 @@
 import { Injector } from "@qhun-engine/base";
-
 import { ThreadFactory } from "./ThreadFactory";
 
 // tslint:disable jsdoc-format

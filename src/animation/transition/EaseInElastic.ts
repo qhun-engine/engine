@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { Transition } from "./Transition";
 
 /**

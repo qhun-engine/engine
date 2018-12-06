@@ -1,10 +1,6 @@
-import { Injectable } from "@qhun-engine/base";
-
+import { Injectable, Optional } from "@qhun-engine/base";
 import { Scene } from "./Scene";
 import { MessageBus } from "../message/MessageBus";
-import { SceneLoadedMessage } from "../message/event/scene/SceneLoadedMessage";
-import { SceneSwitchedMessage } from "../message/event/scene/SceneSwitchedMessage";
-import { SceneUnloadedMessage } from "../message/event/scene/SceneUnloadedMessage";
 import { Updateable } from "../constraint/Updateable";
 import { Drawable } from "../constraint/Drawable";
 import { Engine } from "../Engine";
@@ -16,7 +12,9 @@ import { EntityTypeGuardUtil } from "../entity/util/EntityTypeGuardUtil";
 import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
 import { On } from "../message/decorator/On";
-import { EntityMoveMessage } from "../message/event/action/EntityMoveMessage";
+import { SceneLoadMessage } from "./messages/SceneLoadMessage";
+import { SceneUnloadMessage } from "./messages/SceneUnloadMessage";
+import { SceneSwitchMessage } from "./messages/SceneSwitchMessage";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
@@ -63,7 +61,7 @@ export class SceneManager implements Updateable, Drawable {
             this.logger.printBlack(`Scene ${scene.constructor.name} has been loaded.`, ConsoleLoggerPrefix.Scene);
 
             // send the message
-            this.messageBus.send(new SceneLoadedMessage(scene));
+            this.messageBus.send(new SceneLoadMessage(scene));
         });
     }
 
@@ -74,7 +72,7 @@ export class SceneManager implements Updateable, Drawable {
     public async unloadScene(scene: Scene): Promise<void> {
 
         return scene.unloadScene().then(() => {
-            this.messageBus.send(new SceneUnloadedMessage(scene));
+            this.messageBus.send(new SceneUnloadMessage(scene));
         });
     }
 
@@ -106,7 +104,7 @@ export class SceneManager implements Updateable, Drawable {
         this.activeScene = scene;
 
         // send scene switched message
-        this.messageBus.send(new SceneSwitchedMessage(scene, this.previousScene));
+        this.messageBus.send(new SceneSwitchMessage(scene, Optional.of(this.previousScene)));
 
         // unload the previous scene
         if (unloadPrevious && this.previousScene) {
@@ -191,12 +189,5 @@ export class SceneManager implements Updateable, Drawable {
         this.activeScene.getEntities()
             .filter(entity => renderer.isEntityRenderable(entity))
             .forEach(entity => renderer.drawEntity(entity as RenderableEntity));
-    }
-
-    @On(EntityMoveMessage)
-    private handleEntityMoveInScene(moveMessage: EntityMoveMessage): void {
-
-        const payload = moveMessage.getPayload();
-        payload.entity.move(payload.to);
     }
 }

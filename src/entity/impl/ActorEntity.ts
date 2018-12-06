@@ -3,6 +3,7 @@ import { RenderableEntity } from "../RenderableEntity";
 import { Vector } from "../../math/Vector";
 import { CollisionType } from "../../collision/CollisionType";
 import { MovableEntity } from "../MovableEntity";
+import { Message } from "../../message/Message";
 
 /**
  * an entity class that implements renderability, animations, collisions
@@ -284,4 +285,9 @@ export abstract class ActorEntity implements CollidableEntity, RenderableEntity,
         // set entity velocity
         return this.setVelocity(tempVelocity);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public abstract handleMessage(message: Message): void;
 }

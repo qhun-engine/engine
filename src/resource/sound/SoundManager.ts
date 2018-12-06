@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { BrowserUnsupportedError } from "../../exception/BrowserUnsupportedError";
 import { SoundResource } from "./SoundResource";
 import { SFXSound } from "./SFXSound";

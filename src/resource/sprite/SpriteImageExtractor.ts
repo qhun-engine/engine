@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { SpriteResource } from "./SpriteResource";
 import { DimensionSize } from "../../constraint/Dimension";
 import { ImageResource } from "./ImageResource";

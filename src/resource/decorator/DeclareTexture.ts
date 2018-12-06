@@ -1,5 +1,4 @@
 import { Injector } from "@qhun-engine/base";
-
 import { ResourceLoader } from "../ResourceLoader";
 import { ImageResource } from "../sprite/ImageResource";
 import { AfterConstructionHook } from "../../util/decorators/AfterConstructionHook";

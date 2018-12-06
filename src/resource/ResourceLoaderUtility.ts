@@ -1,5 +1,4 @@
 import { ClassConstructor, Singleton } from "@qhun-engine/base";
-
 import { Resource } from "./Resource";
 import { ResourceOptions } from "./ResourceRequestOptions";
 

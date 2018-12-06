@@ -54,10 +54,10 @@ export * from "./exception/ResourceError";
 export * from "./exception/SpriteUnsupportedError";
 
 // ## INPUT
-export * from "./input/generic/InputPoint";
-export * from "./input/generic/InputPointDown";
-export * from "./input/generic/InputPointUp";
-export * from "./input/generic/InputPointMove";
+export * from "./input/Pointer";
+export * from "./input/PointerType";
+export * from "./input/impl/PointerDown";
+export * from "./input/impl/PointerUp";
 
 // ## MATH
 export * from "./math/Random";
@@ -66,30 +66,16 @@ export * from "./math/Rectangle";
 export * from "./math/Vector";
 
 // ## MESSAGE
-export * from "./message/BaseMessage";
 export * from "./message/Message";
 export * from "./message/MessageBus";
 export * from "./message/MessageType";
 export * from "./message/NetworkMessage";
+export * from "./message/BroadcastMessage";
+export * from "./message/TargetedMessage";
 export * from "./message/decorator/On";
 export * from "./message/decorator/Once";
-export * from "./message/event/EventMessage";
-export * from "./message/event/environment/WindowResizeMessage";
-export * from "./message/event/scene/SceneLoadedMessage";
-export * from "./message/event/scene/SceneSwitchedMessage";
-export * from "./message/event/scene/SceneUnloadedMessage";
-export * from "./message/event/input/InputPointDownMessage";
-export * from "./message/event/input/InputPointMoveMessage";
-export * from "./message/event/input/InputPointUpMessage";
-export * from "./message/event/action/EntityMoveMessage";
-export * from "./message/internal/connection/ConnectionToServerEstablishedMessage";
-export * from "./message/internal/connection/ConnectionToServerLostMessage";
-export * from "./message/internal/state/EngineBootstrapFinishedMessage";
-export * from "./message/internal/state/EngineReadyMessage";
-export * from "./message/internal/state/GameStartMessage";
-export * from "./message/internal/state/GameStopMessage";
-export * from "./message/internal/state/ViewportBlurMessage";
-export * from "./message/internal/state/ViewportFocusMessage";
+export * from "./message/impl/BroadcastMessageBase";
+export * from "./message/impl/TargetedMessageBase";
 
 // ## PHYSIC
 // currently no exports

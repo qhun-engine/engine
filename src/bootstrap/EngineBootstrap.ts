@@ -1,18 +1,16 @@
 import { Singleton, EngineError, Inject } from "@qhun-engine/base";
-
 import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
 import { Engine } from "../Engine";
 import { QhunGameOptions } from "./QhunGameOptions";
 import { RenderContextFactory } from "../render/RenderContextFactory";
 import { ConsoleLoggerPrefix } from "../debug/ConsoleLoggerPrefix";
 import { MessageBus } from "../message/MessageBus";
-import { EngineBootstrapFinishedMessage } from "../message/internal/state/EngineBootstrapFinishedMessage";
 import { ResourceManager } from "../resource/ResourceManager";
-import { EngineReadyMessage } from "../message/internal/state/EngineReadyMessage";
 import { VisibleLoader } from "./VisibleLoader";
 import { ResourceLoader } from "../resource/ResourceLoader";
 import { Environment } from "../environment/Environment";
-import { InputRegistar } from "../input/InputRegistar";
+import { EngineReadyMessage } from "./messages/EngineReadyMessage";
+import { EngineBootstrapFinishedMessage } from "./messages/EngineBootstrapFinishedMessage";
 
 /**
  * responsable for finding the target canvas and enable the qhun engine
@@ -45,9 +43,6 @@ export class EngineBootstrap {
     @Inject()
     private environment!: Environment;
 
-    @Inject()
-    private input!: InputRegistar;
-
     /**
      * the canvas element
      */
@@ -74,7 +69,7 @@ export class EngineBootstrap {
     public engineReady(): void {
 
         // send engine ready message
-        this.messageBus.send(new EngineReadyMessage());
+        this.messageBus.send(new EngineReadyMessage(undefined));
     }
 
     /**
@@ -98,9 +93,6 @@ export class EngineBootstrap {
         // update environment canvas dimension
         this.environment.updateCanvasDimension();
 
-        // enable input registar
-        this.input.detectBrowserInputCapabilities();
-
         // construct context renderer
         await this.constructRenderContext();
 
@@ -108,7 +100,7 @@ export class EngineBootstrap {
         this.visibleLoader.startLoadingScreen();
 
         // send bootstrap finished message
-        this.messageBus.sendImmediately(new EngineBootstrapFinishedMessage(this.engine));
+        this.messageBus.send(new EngineBootstrapFinishedMessage(this.engine));
 
         // return constructed engine
         return this.engine;

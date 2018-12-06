@@ -1,5 +1,4 @@
 import { ClassConstructor, Injectable } from "@qhun-engine/base";
-
 import { SoundResource } from "./sound/SoundResource";
 import { TextResource } from "./text/TextResource";
 import { ResourceOptions } from "./ResourceRequestOptions";

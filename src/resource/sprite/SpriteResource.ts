@@ -1,5 +1,4 @@
 import { Inject } from "@qhun-engine/base";
-
 import { SpriteAnimationJson } from "./SpriteAnimationJson";
 import { ImageResource } from "./ImageResource";
 import { SpriteImageExtractor } from "./SpriteImageExtractor";

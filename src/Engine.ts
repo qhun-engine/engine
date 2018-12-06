@@ -1,5 +1,4 @@
 import { Injectable } from "@qhun-engine/base";
-
 import { RenderContext } from "./render/RenderContext";
 import { QhunGameOptions } from "./bootstrap/QhunGameOptions";
 import { ConsolePerformanceLogger } from "./debug/ConsolePerformanceLogger";
