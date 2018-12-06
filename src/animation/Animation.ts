@@ -42,6 +42,13 @@ export interface CallbackAnimation<R extends Renderable = Renderable> extends An
     time: number;
 
     /**
+     * the callback function type.
+     * - **transitional**: will be called every draw cycle giving a percentage value of completion
+     * - **fixed**: will be called every given fixed time in ms
+     */
+    type: "transitional" | "fixed";
+
+    /**
      * Your callback function to animate the renderable object
      */
     callback: AnimatedCallback<R>;

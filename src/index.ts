@@ -54,7 +54,10 @@ export * from "./exception/ResourceError";
 export * from "./exception/SpriteUnsupportedError";
 
 // ## INPUT
-// currently no exports
+export * from "./input/generic/InputPoint";
+export * from "./input/generic/InputPointDown";
+export * from "./input/generic/InputPointUp";
+export * from "./input/generic/InputPointMove";
 
 // ## MATH
 export * from "./math/Random";
@@ -83,6 +86,9 @@ export * from "./message/internal/state/GameStartMessage";
 export * from "./message/internal/state/GameStopMessage";
 export * from "./message/internal/state/ViewportBlurMessage";
 export * from "./message/internal/state/ViewportFocusMessage";
+export * from "./message/event/input/InputPointDownMessage";
+export * from "./message/event/input/InputPointMoveMessage";
+export * from "./message/event/input/InputPointUpMessage";
 
 // ## PHYSIC
 // currently no exports

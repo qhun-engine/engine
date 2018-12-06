@@ -23,6 +23,11 @@ export class Tile<P extends TileProperties = TileProperties> implements Renderab
     } = {};
 
     /**
+     * indicator that this tile is animated
+     */
+    protected animationFlag: boolean = false;
+
+    /**
      * @inheritdoc
      */
     public getTexture(): HTMLImageElement {
@@ -74,5 +79,23 @@ export class Tile<P extends TileProperties = TileProperties> implements Renderab
     public getProperty<T extends keyof P>(name: T): P[T] | undefined {
 
         return this.properties[name];
+    }
+
+    /**
+     * set the tile to animated
+     * @param animatedFlag the new animation flag
+     */
+    public setHasAnimaion(animatedFlag: boolean): this {
+
+        this.animationFlag = animatedFlag;
+        return this;
+    }
+
+    /**
+     * check if this tile has animations
+     */
+    public hasAnimation(): boolean {
+
+        return this.animationFlag;
     }
 }

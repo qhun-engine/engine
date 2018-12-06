@@ -73,6 +73,9 @@ export class AnimationManager {
         if (typeof animation === "string") {
             playableAnimation = (renderable as Required<AnimatedRenderable>).__declaredAnimations[animation];
         } else {
+
+            // declare this animation for furure stopping
+            this.addAnimation(renderable, animation);
             playableAnimation = animation;
         }
 

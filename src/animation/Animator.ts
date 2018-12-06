@@ -26,7 +26,12 @@ declare type ActiveAnimation = Required<SpriteAnimation> & Required<CallbackAnim
         /**
          * the current index of the sprite animation
          */
-        currentIndex: number
+        currentIndex: number,
+
+        /**
+         * relevant for fixed callback animations
+         */
+        iterations: number
     };
 };
 
@@ -53,7 +58,8 @@ export class Animator {
         (animation as ActiveAnimation).__activeAnimation = {
             currentIndex: -1,
             paused: false,
-            visibleTime: 0
+            visibleTime: 0,
+            iterations: 0
         };
 
         // add to animations
@@ -132,7 +138,7 @@ export class Animator {
      * @param animation the animation data
      * @param renderable the renderable object
      */
-    private animateCallback<R extends Renderable>(animation: Required<CallbackAnimation<R>>, renderable: R): void {
+    private animateCallback<R extends Renderable>(animation: Required<ActiveAnimation>, renderable: R): void {
 
         // get next state
         const pct = (animation as ActiveAnimation).__activeAnimation.visibleTime / animation.time;
@@ -140,8 +146,30 @@ export class Animator {
         // pipe to transition function
         const transitionalValue = (animation.transition as Transition).calculate(pct);
 
-        // call the callback function
-        animation.callback(renderable, transitionalValue);
+        // get the callback type
+        switch (animation.type) {
+
+            case "transitional":
+
+                // call the callback function
+                animation.callback(renderable, transitionalValue);
+                break;
+
+            case "fixed":
+
+                // check if the callback should be called
+                if (Math.floor(pct) > animation.__activeAnimation.iterations) {
+
+                    // call the callback function
+                    animation.callback(renderable, animation.__activeAnimation.iterations);
+
+                    // increase iterations
+                    ++animation.__activeAnimation.iterations;
+                }
+
+                break;
+        }
+
     }
 
     /**

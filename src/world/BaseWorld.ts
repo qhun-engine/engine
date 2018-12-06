@@ -11,6 +11,13 @@ import { Environment } from "../environment/Environment";
 import { Tile } from "./Tile";
 import { TileworldResource } from "../resource/tileset/TileworldResource";
 import { Loadable } from "../resource/Loadable";
+import { AnimationManager } from "../animation/AnimationManager";
+import { TilesetResource } from "../resource/tileset/TilesetResource";
+
+declare type AnimatedTile = Tile & {
+
+    __tileAnimationData: HTMLImageElement[]
+};
 
 /**
  * a base class for tileworlds
@@ -123,6 +130,9 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
         // get the perspective out of the loaded resource
         this.perspective = this.resource.getWorldPerspective();
 
+        // prepare animation manager to animate tiles
+        const animationManager = Injector.getInstance().instantiateClass(AnimationManager);
+
         // now load the world from the resource into the world layout
         // and create tile instances for each tile to allow animations and
         // interactions
@@ -157,6 +167,9 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
 
                         // set all properties
                         properties.forEach(prop => tile.setProperty(prop.name as any, prop.value));
+
+                        // add animation if any
+                        this.addTileAnimation(tile, tileNumber, tileset, animationManager);
                     }
 
                     // stores important tile information
@@ -223,6 +236,20 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
      */
     public destroy(): void {
 
+        // get animation manager to remove animations
+        const animationManager = Injector.getInstance().instantiateClass(AnimationManager);
+
+        // stop all tile animations
+        this.layout.forEach(layer => {
+            layer.forEach(column => {
+                column.forEach(tile => {
+                    if (tile.hasAnimation()) {
+                        animationManager.stopAnimation(tile, "__tileAnimation");
+                    }
+                });
+            });
+        });
+
         delete this.resource;
         delete this.layout;
         delete this.perspective;
@@ -243,5 +270,50 @@ export abstract class BaseWorld<T extends TileworldResource = TileworldResource>
         this.collisionLayout[layer] = this.collisionLayout[layer] || [];
         this.collisionLayout[layer][position.y] = this.collisionLayout[layer][position.y] || [];
         this.collisionLayout[layer][position.y][position.x] = !!tile.getProperty("blocked");
+    }
+
+    /**
+     * add the available tile animation if any
+     * @param tile the tile to animate
+     * @param tileNumber the gid of the tile
+     * @param tileset the corresponding tileset
+     * @param animationManager the animation manager instance
+     */
+    private addTileAnimation(tile: Tile, tileNumber: number, tileset: TilesetResource, animationManager: AnimationManager): void {
+
+        // get animation metadata
+        const animData = tileset.getTileAnimationByGid(tileNumber);
+
+        // check if there are any animations
+        if (!(animData && animData.length > 1)) {
+            return;
+        }
+
+        // add animation metadata to tile
+        (tile as AnimatedTile).__tileAnimationData = animData
+            // get tile numbers for animation
+            .map(anim => anim.tileGid + 1)
+            // get pictures for tile number
+            .map(anim => tileset.getTileImageByGid(anim)!);
+
+        // set tile animated
+        tile.setHasAnimaion(true);
+
+        // get tile animation data if any
+        animationManager.startAnimation(tile, {
+            name: "__tileAnimation",
+            type: "fixed",
+            time: animData[0].duration,
+            callback: (animatedTile, iterations) => {
+
+                const imageAmount = (animatedTile as AnimatedTile).__tileAnimationData.length;
+
+                // get image by pct value
+                const nextImage = Math.floor(iterations % imageAmount);
+
+                // set picture
+                animatedTile.setTexture((animatedTile as AnimatedTile).__tileAnimationData[nextImage]);
+            }
+        });
     }
 }

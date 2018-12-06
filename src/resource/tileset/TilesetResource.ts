@@ -1,7 +1,7 @@
 import { Injector } from "@qhun-engine/base";
 
 import { BaseResource } from "../BaseResource";
-import { TSXTileset } from "./tiled/TSXTileset";
+import { TSXTileset, TSXTile } from "./tiled/TSXTileset";
 import { XmlTextResource } from "../text/XmlTextResource";
 import { ResourceLoader } from "../ResourceLoader";
 import { ImageResource } from "../sprite/ImageResource";
@@ -23,6 +23,19 @@ declare type TileProperty = {
     value: any
 };
 
+declare type TileAnimation = {
+
+    /**
+     * the tile number
+     */
+    tileGid: number,
+
+    /**
+     * the frame duration in ms
+     */
+    duration: number
+};
+
 /**
  * a tile set wraped by a resource context
  */
@@ -38,6 +51,13 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
      */
     protected tileProperties: {
         [gid: number]: TileProperty[]
+    } = {};
+
+    /**
+     * contains animated tiles of this tileset
+     */
+    protected tileAnimations: {
+        [gid: number]: TileAnimation[]
     } = {};
 
     /**
@@ -60,7 +80,16 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
      */
     public getTilePropertiesByGid(gid: number): TileProperty[] {
 
-        return this.tileProperties[gid] || [];
+        return this.tileProperties[gid - 1] || [];
+    }
+
+    /**
+     * get animations of this tile
+     * @param gid the tile number
+     */
+    public getTileAnimationByGid(gid: number): TileAnimation[] {
+
+        return this.tileAnimations[gid - 1] || [];
     }
 
     /**
@@ -70,6 +99,11 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
 
         // get tsx data
         const tsx = data.getData();
+
+        // cast tile array info
+        if (tsx.tileset.tile && !Array.isArray(tsx.tileset.tile)) {
+            tsx.tileset.tile = [tsx.tileset.tile || []];
+        }
 
         // test if the tileset contains one sprite sheet or multiple tile images
         if (tsx.tileset.image) {
@@ -85,32 +119,45 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
             throw new ResourceError(`This tileset resource does not contain any information about tile images!`);
         }
 
-        // extract properties from the tileset if available
-        if (tsx.tileset.tile && tsx.tileset.tile[0].properties && tsx.tileset.tile[0].properties.property) {
+        // iterate over all tile informations
+        tsx.tileset.tile!.filter(tile => !!tile).forEach(tile => {
 
-            // iterate over all properties
-            tsx.tileset.tile.forEach(propertiesWrapper => {
+            // get properties
+            if (tile.properties && tile.properties.property) {
 
                 // initialize if empty
-                this.tileProperties[propertiesWrapper.__id] = this.tileProperties[propertiesWrapper.__id] || [];
+                this.tileProperties[tile.__id] = this.tileProperties[tile.__id] || [];
 
-                // set every property as array
-                let propData = propertiesWrapper.properties.property;
-                if (!Array.isArray(propData)) {
-                    propData = [propData];
-                }
+                const properties = Array.isArray(tile.properties.property) ? tile.properties.property : [tile.properties.property];
 
                 // add these properties
-                this.tileProperties[propertiesWrapper.__id].push(...propData.map(prop => {
+                this.tileProperties[tile.__id].push(...properties.map(prop => {
 
                     // cast to internal property
                     return {
                         name: prop.__name,
                         value: prop.__value
-                    };
+                    } as TileProperty;
                 }));
-            });
-        }
+            }
+
+            // get animations
+            if (tile.animation && tile.animation.frame) {
+
+                // initialize if empty
+                this.tileAnimations[tile.__id] = this.tileAnimations[tile.__id] || [];
+
+                // iterate over all frames
+                this.tileAnimations[tile.__id].push(...tile.animation.frame.map(frame => {
+
+                    return {
+                        tileGid: frame.__tileid,
+                        duration: frame.__duration
+                    } as TileAnimation;
+                }));
+            }
+
+        });
 
         // return the data without any changes
         return data;
@@ -179,7 +226,7 @@ export class TilesetResource<T extends XmlTextResource<TSXTileset> = XmlTextReso
         const tsx = data.getData();
 
         // iterate over the tiles and get its origin
-        this.tiles = await asyncData.asyncMap(tsx.tileset.tile!, async tile => {
+        this.tiles = await asyncData.asyncMap((tsx.tileset.tile as TSXTile[]), async tile => {
 
             // does this tile have an image?
             if (tile.image) {

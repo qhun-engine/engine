@@ -1,4 +1,4 @@
-declare type TSXProperty = {
+export declare type TSXProperty = {
 
     /**
      * name of the property
@@ -14,6 +14,68 @@ declare type TSXProperty = {
      * the value of the property (can be boolean, string, number ...)
      */
     __value: any
+};
+
+export declare type TSXTileAnimation = {
+
+    frame: {
+
+        /**
+         * the tile gid
+         */
+        __tileid: number,
+
+        /**
+         * the duration of the frame in ms
+         */
+        __duration: number
+    }[]
+};
+
+export declare type TSXTile = {
+
+    /**
+     * the gid of the tile
+     */
+    __id: number,
+
+    /**
+     * a tile that contains a single image
+     */
+    image?: {
+
+        /**
+         * height of the image in px
+         */
+        __height: number,
+
+        /**
+         * the filename of the image
+         */
+        __source: string,
+
+        /**
+         * width of the image in px
+         */
+        _width: number
+    },
+
+    /**
+     * xml wrapper object for properties
+     */
+    properties?: {
+
+        /**
+         * contains one or more tile properties
+         */
+        property: TSXProperty | TSXProperty[]
+
+    },
+
+    /**
+     * contains tile animation data
+     */
+    animation?: TSXTileAnimation
 };
 
 /**
@@ -95,45 +157,6 @@ export interface TSXTileset {
         /**
          * contains information about tile properties
          */
-        tile?: {
-
-            /**
-             * the gid of the tile
-             */
-            __id: number,
-
-            /**
-             * a tile that contains a single image
-             */
-            image?: {
-
-                /**
-                 * height of the image in px
-                 */
-                __height: number,
-
-                /**
-                 * the filename of the image
-                 */
-                __source: string,
-
-                /**
-                 * width of the image in px
-                 */
-                _width: number
-            },
-
-            /**
-             * xml wrapper object for properties
-             */
-            properties: {
-
-                /**
-                 * contains one or more tile properties
-                 */
-                property: TSXProperty | TSXProperty[]
-
-            }
-        }[]
+        tile?: TSXTile | TSXTile[]
     };
 }
