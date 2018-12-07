@@ -26,6 +26,11 @@ export enum MessageType {
     Animation = "Animation",
 
     /**
+     * Targeted messages about an object collides with another object
+     */
+    Collision = "Collision",
+
+    /**
      * Scene related broadcasting messages. Contains messages about loading/unloading, switching between scenes
      */
     Scene = "Scene",

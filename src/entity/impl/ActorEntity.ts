@@ -1,7 +1,7 @@
 import { CollidableEntity } from "../CollidableEntity";
 import { RenderableEntity } from "../RenderableEntity";
 import { Vector } from "../../math/Vector";
-import { CollisionType } from "../../collision/CollisionType";
+import { CollisionType } from "../../physic/collision/CollisionType";
 import { MovableEntity } from "../MovableEntity";
 import { Message } from "../../message/Message";
 

@@ -1,10 +1,11 @@
 import { Entity } from "./Entity";
-import { CollisionType } from "../collision/CollisionType";
+import { CollisionType } from "../physic/collision/CollisionType";
+import { HasVelocity } from "../constraint/HasVelocity";
 
 /**
  * an entity that can collide with other objects
  */
-export interface CollidableEntity extends Entity {
+export interface CollidableEntity extends Entity, HasVelocity {
 
     /**
      * get the collision type of the entity

@@ -32,9 +32,6 @@ export * from "./camera/follow/FollowAverageCenterStrategy";
 export * from "./camera/follow/FollowElasticAverageCenterStrategy";
 export * from "./camera/follow/Followable";
 
-// ## COLLISION
-export * from "./collision/CollisionType";
-
 // ## DEBUG
 export * from "./debug/ConsoleLogger";
 export * from "./debug/ConsoleLoggerPrefix";
@@ -87,7 +84,15 @@ export * from "./message/impl/BroadcastMessageBase";
 export * from "./message/impl/TargetedMessageBase";
 
 // ## PHYSIC
-// currently no exports
+export * from "./physic/collision/CanCalculateContains";
+export * from "./physic/collision/CollisionType";
+export * from "./physic/collision/HasBounds";
+export * from "./physic/shape/CircleShape";
+export * from "./physic/shape/PolygonShape";
+export * from "./physic/shape/RectangleShape";
+export * from "./physic/shape/Shape";
+export * from "./physic/messages/CollisionWithEntityDetectedMessage";
+export * from "./physic/messages/CollisionWithWorldDetectedMessage";
 
 // ## RENDER
 export * from "./render/RenderContext";

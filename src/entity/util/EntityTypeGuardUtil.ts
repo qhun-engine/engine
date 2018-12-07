@@ -1,6 +1,7 @@
 import { Injectable } from "@qhun-engine/base";
 import { Entity } from "../Entity";
 import { MovableEntity } from "../MovableEntity";
+import { CollidableEntity } from "../CollidableEntity";
 
 /**
  * a util class to call type guard function on existing entities
@@ -16,6 +17,16 @@ export class EntityTypeGuardUtil {
 
         const functions: (keyof MovableEntity)[] = ["getSpeed", "getVelocity", "move", "setSpeed", "setVelocity"];
         return EntityTypeGuardUtil.functionsExists(functions, entity as MovableEntity);
+    }
+
+    /**
+     * test if the given entity is a `CollidableEntity`
+     * @param entity the entity to check
+     */
+    public isCollidableEntity(entity: Entity): entity is CollidableEntity {
+
+        const functions: (keyof CollidableEntity)[] = ["isCollisionIgnored"];
+        return EntityTypeGuardUtil.functionsExists(functions, entity as CollidableEntity);
     }
 
     /**

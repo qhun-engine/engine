@@ -79,17 +79,34 @@ export class InternalMessageBus<T extends MessageType = MessageType> {
     /**
      * dispatches all messages on the queue
      */
-    public dispatch(): void {
+    public dispatch(type?: MessageType): void {
 
-        // iterate over all message types
-        (Object.keys(this.queue) as T[]).forEach(messageType => {
+        // if a certain type is given, iterate over those messages only
+        if (type) {
+
+            // check if there are messages for this type
+            if (!Array.isArray(this.queue[type]) || this.queue[type].length === 0) {
+                return;
+            }
 
             // dispatch those messages from this category
-            this.dispatchMessages(this.queue[messageType]);
+            this.dispatchMessages(this.queue[type]);
 
             // empty the queue for this type
-            this.queue[messageType] = [];
-        });
+            this.queue[type] = [];
+        } else {
+
+            // iterate over all message types
+            (Object.keys(this.queue) as T[]).forEach(messageType => {
+
+                // dispatch those messages from this category
+                this.dispatchMessages(this.queue[messageType]);
+
+                // empty the queue for this type
+                this.queue[messageType] = [];
+            });
+
+        }
     }
 
     /**

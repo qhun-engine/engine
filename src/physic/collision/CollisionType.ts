@@ -3,5 +3,7 @@
  */
 export enum CollisionType {
 
-    Rectangle
+    Rectangle = "Rectangle",
+    Circle = "Circle",
+    Polygon = "Polygon"
 }

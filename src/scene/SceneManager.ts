@@ -15,6 +15,9 @@ import { On } from "../message/decorator/On";
 import { SceneLoadMessage } from "./messages/SceneLoadMessage";
 import { SceneUnloadMessage } from "./messages/SceneUnloadMessage";
 import { SceneSwitchMessage } from "./messages/SceneSwitchMessage";
+import { CollisionDetector } from "../physic/CollisionDetector";
+import { InternalMessageBus } from "../message/InternalMessageBus";
+import { MessageType } from "../message/MessageType";
 
 /**
  * the scene manager is responsable for loading a scene with its actors, switching between scenes and
@@ -43,7 +46,9 @@ export class SceneManager implements Updateable, Drawable {
         private messageBus: MessageBus,
         private tilePerspectiveRenderingFactory: TilePerspectiveRenderingFactory,
         private entityTypeGuard: EntityTypeGuardUtil,
-        private logger: ConsolePerformanceLogger
+        private logger: ConsolePerformanceLogger,
+        private collisionDetector: CollisionDetector,
+        private internalMessageBus: InternalMessageBus
     ) { }
 
     /**
@@ -147,6 +152,21 @@ export class SceneManager implements Updateable, Drawable {
 
             });
 
+        // make collision detection entity with entity
+        this.collisionDetector.hitTestEntityWithEntity(this.activeScene.getEntities());
+
+        // make collision entity with world test
+        const world = this.activeScene.getWorld();
+        if (world) {
+            this.collisionDetector.hitTestEntityWithWorld(this.activeScene.getEntities(), world);
+        }
+
+        // dispatch collision messages, the physic manager will automaticly
+        // receive those messages and handles the position correction
+        // for collided entities
+        this.internalMessageBus.dispatch(MessageType.Collision);
+
+        // update camera if available
         const camera = this.activeScene.getCamera();
         if (camera) {
 

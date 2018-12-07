@@ -1,10 +1,11 @@
 import { DimensionPosition, DimensionSize } from "../constraint/Dimension";
 import { Vector } from "./Vector";
+import { Clonable } from "../constraint/Clonable";
 
 /**
  * a rectangle based util class
  */
-export class Rectangle implements DimensionPosition, DimensionSize {
+export class Rectangle implements DimensionPosition, DimensionSize, Clonable<Rectangle> {
 
     /**
      * the right point of this rectangle
@@ -88,5 +89,13 @@ export class Rectangle implements DimensionPosition, DimensionSize {
     public toString(): string {
 
         return `${Rectangle.name}[${this.x}, ${this.y}]`;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public clone(): Rectangle {
+
+        return new Rectangle(this.x, this.y, this.w, this.h);
     }
 }
