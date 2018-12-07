@@ -28,6 +28,8 @@ export * from "./camera/OrthographicCamera";
 export * from "./camera/follow/CameraFollowStrategy";
 export * from "./camera/follow/FollowCenterStrategy";
 export * from "./camera/follow/FollowElasticCenterStrategy";
+export * from "./camera/follow/FollowAverageCenterStrategy";
+export * from "./camera/follow/FollowElasticAverageCenterStrategy";
 export * from "./camera/follow/Followable";
 
 // ## COLLISION
@@ -61,8 +63,10 @@ export * from "./input/Pointer";
 export * from "./input/PointerType";
 export * from "./input/impl/PointerDown";
 export * from "./input/impl/PointerUp";
+export * from "./input/impl/PointerMove";
 export * from "./input/messages/InputPointerDownMessage";
 export * from "./input/messages/InputPointerUpMessage";
+export * from "./input/messages/InputPointerMoveMessage";
 
 // ## MATH
 export * from "./math/Random";

@@ -4,6 +4,8 @@ import { InputPointerDownMessage } from "./messages/InputPointerDownMessage";
 import { PointerDown } from "./impl/PointerDown";
 import { InputPointerUpMessage } from "./messages/InputPointerUpMessage";
 import { PointerUp } from "./impl/PointerUp";
+import { InputPointerMoveMessage } from "./messages/InputPointerMoveMessage";
+import { PointerMove } from "./impl/PointerMove";
 
 @Injectable()
 export class InputManager {
@@ -19,6 +21,7 @@ export class InputManager {
 
         window.addEventListener("pointerdown", this.handlePointerDown.bind(this));
         window.addEventListener("pointerup", this.handlePointerUp.bind(this));
+        window.addEventListener("pointermove", this.handlePointerMove.bind(this));
     }
 
     /**
@@ -40,6 +43,17 @@ export class InputManager {
 
         this.messageBus.send(new InputPointerUpMessage(
             PointerUp.fromPointerEvent(PointerUp, event)
+        ));
+    }
+
+    /**
+     * handles pointer move events
+     * @param event the original pointer event
+     */
+    private handlePointerMove(event: PointerEvent): void {
+
+        this.messageBus.send(new InputPointerMoveMessage(
+            PointerMove.fromPointerEvent(PointerMove, event)
         ));
     }
 }

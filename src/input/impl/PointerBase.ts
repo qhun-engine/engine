@@ -21,7 +21,7 @@ export abstract class PointerBase implements Pointer {
      */
     public static fromPointerEvent<T extends Pointer>(classConstructor: ClassConstructor<T>, event: PointerEvent): T {
 
-        return new classConstructor(event.type, Vector.from(event.clientX, event.clientY), event);
+        return new classConstructor(event.pointerType, Vector.from(event.clientX, event.clientY), event);
     }
 
     /**
