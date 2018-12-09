@@ -5,6 +5,7 @@ import { RenderableEntity } from "../../entity/RenderableEntity";
 import { Vector } from "../../math/Vector";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { World } from "../../world/World";
+import { Particle } from "../../particle/Particle";
 
 /**
  * the webgl render context
@@ -43,6 +44,14 @@ export class WebGLRenderContext extends BaseRenderContext implements RenderConte
      * @inheritdoc
      */
     public drawImageAtPosition(image: ImageResource, position: Vector, dimension?: Vector): void {
+
+        // @todo: implement
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public drawParticles(particles: Particle[]): void {
 
         // @todo: implement
     }

@@ -5,6 +5,7 @@ import { RenderableEntity } from "../../entity/RenderableEntity";
 import { ImageResource } from "../../resource/sprite/ImageResource";
 import { Vector } from "../../math/Vector";
 import { World } from "../../world/World";
+import { Particle } from "../../particle/Particle";
 
 /**
  * the canvas rendering context
@@ -175,4 +176,32 @@ export class CanvasRenderContext extends BaseRenderContext implements RenderCont
             this.context.drawImage(image.getData(), position.x, position.y);
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    public drawParticles(particles: Particle[]): void {
+
+        this.context.globalCompositeOperation = "overlay";
+
+        // tslint:disable prefer-for-of
+        for (let i = 0; i < particles.length; i++) {
+
+            const particle = particles[i];
+            const color = particle.getColor();
+            const position = particle.getPosition();
+
+            // set fill style
+            this.context.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${color[3]})`;
+
+            // draw the particle
+            this.context.beginPath();
+            this.context.arc(position.x, position.y, particle.getSize(), 0, this.PI_2, true);
+            this.context.closePath();
+            this.context.fill();
+        }
+
+        this.context.globalCompositeOperation = "source-over";
+    }
+
 }

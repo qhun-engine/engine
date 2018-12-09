@@ -22,6 +22,9 @@ export class InputManager {
         window.addEventListener("pointerdown", this.handlePointerDown.bind(this));
         window.addEventListener("pointerup", this.handlePointerUp.bind(this));
         window.addEventListener("pointermove", this.handlePointerMove.bind(this));
+
+        // ignore contextmenu event
+        window.addEventListener("contextmenu", event => event.preventDefault(), false);
     }
 
     /**
@@ -29,6 +32,9 @@ export class InputManager {
      * @param event the original pointer event
      */
     private handlePointerDown(event: PointerEvent): void {
+
+        event.stopPropagation();
+        event.stopImmediatePropagation();
 
         this.messageBus.send(new InputPointerDownMessage(
             PointerDown.fromPointerEvent(PointerDown, event)

@@ -4,7 +4,7 @@ import { Engine } from "../../Engine";
 /**
  * a method level decorator to tell the renderer that this method should be called during game loop at update stage
  */
-export function Update(): MethodDecorator {
+/*export function Update(): MethodDecorator {
 
     return <MethodDecorator>(<T>(target: T, propertyKey: keyof T, descriptor: TypedPropertyDescriptor<T>) => {
 
@@ -23,4 +23,4 @@ export function Update(): MethodDecorator {
                 });
             });
     });
-}
+}*/

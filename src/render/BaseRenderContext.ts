@@ -26,6 +26,11 @@ export abstract class BaseRenderContext implements Partial<RenderContext> {
     protected world!: World;
 
     /**
+     * constant for `Math.PI * 2`
+     */
+    protected readonly PI_2: number = Math.PI * 2;
+
+    /**
      * @inheritdoc
      */
     public isEntityRenderable(entity: Entity): entity is RenderableEntity {

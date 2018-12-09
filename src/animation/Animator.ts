@@ -1,9 +1,13 @@
 import { Singleton } from "@qhun-engine/base";
-import { Draw } from "../util/decorators/Draw";
 import { Renderable } from "../constraint/Renderable";
 import { Animation, CallbackAnimation, SpriteAnimation, isCallbackAnimation } from "./Animation";
 import { SpriteResource } from "../resource/sprite/SpriteResource";
 import { Transition } from "./transition/Transition";
+import { Once } from "../message/decorator/Once";
+import { MessageType } from "../message/MessageType";
+import { EngineReadyMessage } from "../bootstrap/messages/EngineReadyMessage";
+import { RenderContext } from "../render/RenderContext";
+import { Engine } from "../Engine";
 
 declare type ActiveAnimation = Required<SpriteAnimation> & Required<CallbackAnimation> & {
 
@@ -79,31 +83,34 @@ export class Animator {
     /**
      * redraw every animation
      */
-    @Draw()
-    private updateAnimations(delta: number, timeDelta: number): void {
+    @Once(MessageType.Engine, EngineReadyMessage)
+    private updateAnimations(message: EngineReadyMessage): void {
 
-        // handle every animation in the storage
-        this.activeAnimations.forEach(anim => {
+        message.getData().addLifeCycleHook("draw", (delta: number, timeDelta: number, renderContent: RenderContext, engine: Engine) => {
 
-            // get values from the tuple
-            const data = anim[1];
+            // handle every animation in the storage
+            this.activeAnimations.forEach(anim => {
 
-            // dont go with paused animations
-            if (data.__activeAnimation.paused) {
-                return;
-            }
+                // get values from the tuple
+                const data = anim[1];
 
-            // increase the current visible time of the current animation state
-            data.__activeAnimation.visibleTime += timeDelta;
+                // dont go with paused animations
+                if (data.__activeAnimation.paused) {
+                    return;
+                }
 
-            // calculate the next state of the animation
-            if (isCallbackAnimation(data)) {
+                // increase the current visible time of the current animation state
+                data.__activeAnimation.visibleTime += timeDelta;
 
-                return this.animateCallback(data, anim[0]);
-            }
+                // calculate the next state of the animation
+                if (isCallbackAnimation(data)) {
 
-            // sprite animation left, so dot it
-            this.animateSprite(data, anim[0]);
+                    return this.animateCallback(data, anim[0]);
+                }
+
+                // sprite animation left, so dot it
+                this.animateSprite(data, anim[0]);
+            });
         });
     }
 

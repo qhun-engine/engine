@@ -19,5 +19,5 @@ export function Once<K extends MessageType, M extends Message>(
 ): MethodDecorator {
 
     // utilize the on decorator and pass the dont observe boolean
-    return On(type, messageClass, false, predicate);
+    return On(type, messageClass, true, predicate);
 }

@@ -83,6 +83,10 @@ export * from "./message/decorator/Once";
 export * from "./message/impl/BroadcastMessageBase";
 export * from "./message/impl/TargetedMessageBase";
 
+// ## PARTICLE
+export * from "./particle/ParticleEmitterFactory";
+export * from "./particle/ParticleEmitterConfiguration";
+
 // ## PHYSIC
 export * from "./physic/collision/CanCalculateContains";
 export * from "./physic/collision/CollisionType";

@@ -169,11 +169,11 @@ export class GameLoop {
         // call before draw render context
         this.renderContext.before();
 
-        // execute life cycle hooks
-        this.drawHook(delta, timeDelta, this.renderContext, this.engine);
-
         // scene manager draw
         this.sceneManager.draw(delta, timeDelta, this.renderContext, this.engine);
+
+        // execute life cycle hooks
+        this.drawHook(delta, timeDelta, this.renderContext, this.engine);
 
         // draw debug info
         this.printDebugInformation();

@@ -1,4 +1,4 @@
-import { Singleton, EngineError, Inject } from "@qhun-engine/base";
+import { Singleton, EngineError, Inject, MetadataRegistryService, ReflectionMetadata, Injector, ClassConstructor } from "@qhun-engine/base";
 import { ConsolePerformanceLogger } from "../debug/ConsolePerformanceLogger";
 import { Engine } from "../Engine";
 import { QhunGameOptions } from "./QhunGameOptions";
@@ -77,7 +77,7 @@ export class EngineBootstrap {
     public engineReady(): void {
 
         // send engine ready message
-        this.messageBus.send(new EngineReadyMessage(undefined));
+        this.messageBus.send(new EngineReadyMessage(this.engine));
     }
 
     /**
@@ -112,6 +112,16 @@ export class EngineBootstrap {
 
         // show loading screen
         this.visibleLoader.startLoadingScreen();
+
+        // instantiate every injectable that requested to beeing instanciated
+        // at bootstrap time
+        const injectables: ClassConstructor[] = MetadataRegistryService.getInstance().get(ReflectionMetadata.InjectableInstanciateAtBoot, Injector) || [];
+
+        // instantiate every
+        const injectorInst = Injector.getInstance();
+        injectables.forEach(injectable => {
+            injectorInst.instantiateClass(injectable);
+        });
 
         // send bootstrap finished message
         this.messageBus.send(new EngineBootstrapFinishedMessage(this.engine));

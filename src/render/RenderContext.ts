@@ -5,6 +5,7 @@ import { ImageResource } from "../resource/sprite/ImageResource";
 import { TilePerspectiveRendering } from "./util/TileRendering";
 import { Camera } from "../camera/Camera";
 import { World } from "../world/World";
+import { Particle } from "../particle/Particle";
 
 /**
  * an abstraction layer for webgl and canvas context based rendering
@@ -71,5 +72,11 @@ export interface RenderContext {
      * @param entity the entity to test
      */
     isEntityRenderable(entity: Entity): entity is RenderableEntity;
+
+    /**
+     * draws all given particles
+     * @param particles the particles to draw
+     */
+    drawParticles(particles: Particle[]): void;
 
 }

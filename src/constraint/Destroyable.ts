@@ -6,5 +6,5 @@ export interface Destroyable {
     /**
      * destroys this object
      */
-    destroy(): void;
+    destroy(...args: any[]): void;
 }

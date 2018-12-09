@@ -136,8 +136,8 @@ export class Engine {
         return 0;
     }
 
-    public addLifeCycleHook(phase: "draw", method: (delta: number, renderContent: RenderContext, engine: Engine) => void): void;
-    public addLifeCycleHook(phase: "update", method: (delta: number, engine: Engine) => void): void;
+    public addLifeCycleHook(phase: "draw", method: (delta: number, timeDelta: number, renderContent: RenderContext, engine: Engine) => void): void;
+    public addLifeCycleHook(phase: "update", method: (delta: number, timeDelta: number, engine: Engine) => void): void;
     public addLifeCycleHook(phase: string, method: (...args: any[]) => void): void {
 
         if (typeof this.lifeCycleHooks[phase as "draw"] === "object") {

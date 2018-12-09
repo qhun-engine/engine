@@ -40,6 +40,14 @@ export class Random {
     }
 
     /**
+     * get a random number between -1 and 1 inclusive
+     */
+    public getFloatWithSign(): number {
+
+        return this.getFloat() * this.getFrom([1, -1]);
+    }
+
+    /**
      * get a random non floating number
      */
     public getInt(): number {
